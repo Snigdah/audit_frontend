@@ -1,5 +1,7 @@
 import { useForm } from "react-hook-form";
 import { InputField } from "../../components/common/InputField";
+import type { LoginRequest } from "../../types/auth";
+import AuthService from "../../services/AuthService";
 
 type LoginFormData = {
   employeeId: string;
@@ -14,8 +16,21 @@ export const LoginPage = () => {
   } = useForm<LoginFormData>();
 
   const onSubmit = (data: LoginFormData) => {
-    console.log(data);
-    // Handle login logic here
+    const loginPayload: LoginRequest = {
+      ...data,
+      screenResolution: `${window.screen.width}x${window.screen.height}`,
+    };
+
+    AuthService.login(loginPayload)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.error("Login error:", err);
+      })
+      .finally(() => {
+        console.log("Login attempt complete");
+      });
   };
 
   return (
@@ -58,10 +73,6 @@ export const LoginPage = () => {
               required
               registerOptions={{
                 required: "Employee ID is required",
-                pattern: {
-                  value: /^[a-zA-Z0-9]+$/,
-                  message: "Invalid employee ID format",
-                },
               }}
             />
 
@@ -76,7 +87,7 @@ export const LoginPage = () => {
               registerOptions={{
                 required: "Password is required",
                 minLength: {
-                  value: 8,
+                  value: 4,
                   message: "Password must be at least 8 characters",
                 },
               }}
