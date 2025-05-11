@@ -1,0 +1,213 @@
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { FaBars, FaTimes } from "react-icons/fa";
+import {
+  MdKeyboardArrowDown,
+  MdKeyboardArrowRight,
+  MdChevronLeft,
+  MdChevronRight,
+} from "react-icons/md";
+import sidebarData from "../data/sidebarData";
+import type { SidebarItem, SubMenuItem } from "../types/sidebar";
+
+interface SidebarProps {
+  onCollapseChange?: (collapsed: boolean) => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
+  const [collapsed, setCollapsed] = useState(false);
+  const [sidebar, setSidebar] = useState(false);
+  const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth >= 768) {
+        setSidebar(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const toggleCollapse = () => {
+    const newValue = !collapsed;
+    setCollapsed(newValue);
+    if (onCollapseChange) {
+      onCollapseChange(newValue);
+    }
+  };
+
+  const toggleSidebar = () => setSidebar(!sidebar);
+
+  const toggleSubMenu = (title: string) => {
+    if (openSubMenu === title) {
+      setOpenSubMenu(null);
+    } else {
+      setOpenSubMenu(title);
+    }
+  };
+
+  const handleSubMenuClick = (
+    e: React.MouseEvent<HTMLDivElement>,
+    item: SidebarItem
+  ) => {
+    if (item.subMenu) {
+      e.preventDefault();
+      toggleSubMenu(item.title);
+    }
+  };
+
+  const handleSubMenuItemClick = () => {
+    if (isMobile) {
+      setSidebar(false);
+    }
+  };
+
+  const renderSubMenu = (subMenu: SubMenuItem[], itemTitle: string) => {
+    if (openSubMenu !== itemTitle || collapsed) return null;
+
+    return (
+      <ul className="pl-4 py-1 bg-gray-800">
+        {subMenu.map((subItem, index) => (
+          <li key={index} className="py-2">
+            <Link
+              to={subItem.path}
+              className="flex items-center text-gray-300 hover:text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-all"
+              onClick={handleSubMenuItemClick}
+            >
+              {subItem.icon && <span className="mr-2">{subItem.icon}</span>}
+              <span className="text-sm">{subItem.title}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  return (
+    <div className="sidebar-container">
+      {/* Main sidebar */}
+      <div
+        className={`fixed top-0 left-0 z-40 h-screen transition-all duration-300 ease-in-out ${
+          sidebar
+            ? "translate-x-0"
+            : isMobile
+            ? "-translate-x-full"
+            : "translate-x-0"
+        } ${
+          collapsed && !isMobile ? "w-16" : "w-64"
+        } bg-gray-900 shadow-lg overflow-hidden`}
+      >
+        {/* Collapse toggle button - only visible on desktop */}
+        <div
+          className={`absolute top-4 -right-[-6px] z-50 ${
+            isMobile ? "hidden" : "block"
+          }`}
+        >
+          <button
+            onClick={toggleCollapse}
+            className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-gray-800 shadow-md hover:bg-white transition-all"
+          >
+            {collapsed ? (
+              <MdChevronRight size={16} />
+            ) : (
+              <MdChevronLeft size={16} />
+            )}
+          </button>
+        </div>
+
+        {/* Logo/Name header */}
+        <div className="p-5 flex items-center justify-between border-b border-gray-800">
+          {!collapsed && (
+            <span className="text-white font-semibold text-lg">ERP System</span>
+          )}
+          {isMobile && (
+            <button
+              className="text-gray-300 hover:text-white"
+              onClick={toggleSidebar}
+            >
+              <FaTimes className="text-xl" />
+            </button>
+          )}
+        </div>
+
+        <div className="flex flex-col h-full justify-between overflow-y-auto">
+          <nav className="py-4">
+            <ul className="space-y-1">
+              {sidebarData.map((item, index) => (
+                <li key={index}>
+                  <div
+                    className="cursor-pointer"
+                    onClick={(e) => handleSubMenuClick(e, item)}
+                  >
+                    <Link
+                      to={item.subMenu ? "#" : item.path}
+                      className={`flex items-center justify-between text-gray-300 hover:text-white px-6 py-3 rounded-md hover:bg-gray-800 transition-all ${
+                        collapsed ? "justify-center px-3" : ""
+                      }`}
+                      onClick={() => {
+                        if (!item.subMenu && isMobile) {
+                          setSidebar(false);
+                        }
+                      }}
+                    >
+                      <div
+                        className={`flex items-center ${
+                          collapsed ? "justify-center" : ""
+                        }`}
+                      >
+                        <span className={collapsed ? "" : "mr-3"}>
+                          {item.icon}
+                        </span>
+                        {!collapsed && <span>{item.title}</span>}
+                      </div>
+                      {item.subMenu && !collapsed && (
+                        <span>
+                          {openSubMenu === item.title ? (
+                            <MdKeyboardArrowDown className="text-lg" />
+                          ) : (
+                            <MdKeyboardArrowRight className="text-lg" />
+                          )}
+                        </span>
+                      )}
+                    </Link>
+                  </div>
+                  {item.subMenu && renderSubMenu(item.subMenu, item.title)}
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div
+            className={`p-4 text-gray-400 text-xs border-t border-gray-800 ${
+              collapsed ? "text-center" : ""
+            }`}
+          >
+            {!collapsed && <p>© 2025 ERP System v1.0</p>}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile overlay - semi-transparent */}
+      <div
+        className={`fixed inset-0 bg-black bg-opacity-30 z-30 md:hidden ${
+          sidebar ? "block" : "hidden"
+        }`}
+        onClick={toggleSidebar}
+      ></div>
+
+      {/* Mobile toggle button */}
+      <button
+        className="fixed top-4 left-4 z-20 md:hidden bg-gray-900 text-white p-2 rounded-md shadow-md"
+        onClick={toggleSidebar}
+      >
+        <FaBars className="text-xl" />
+      </button>
+    </div>
+  );
+};
+
+export default Sidebar;
