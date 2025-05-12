@@ -3,7 +3,7 @@ import Layout from "./components/Layout";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Stock from "./pages/inventory/Stock";
 import { LoginPage } from "./pages/auth/LoginPage";
-import BuildingsPage from "./pages/infrastructure/BuildingsPage";
+import BuildingsPage from "./pages/infrastructure/Buildings";
 import FloorsPage from "./pages/infrastructure/FloorsPage ";
 
 function App() {

@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { InputField } from "../../components/common/InputField";
 import type { LoginRequest } from "../../types/auth";
 import AuthService from "../../services/AuthService";
+import { useNavigate } from "react-router-dom";
 
 type LoginFormData = {
   employeeId: string;
@@ -9,6 +10,8 @@ type LoginFormData = {
 };
 
 export const LoginPage = () => {
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -23,7 +26,8 @@ export const LoginPage = () => {
 
     AuthService.login(loginPayload)
       .then((res) => {
-        console.log(res);
+        // Redirect to dashboard or home page after successful login
+        navigate("/dashboard");
       })
       .catch((err) => {
         console.error("Login error:", err);

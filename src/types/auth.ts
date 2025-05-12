@@ -9,3 +9,13 @@ export interface LoginResponse {
   employeeId: string;
   role: string;
 }
+
+export interface TokenRefreshResponse {
+  accessToken: string;
+}
+
+export interface AuthState {
+  isAuthenticated: boolean;
+  employeeId: string | null;
+  role: string | null;
+}
