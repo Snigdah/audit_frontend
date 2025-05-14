@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
 import {
   MdKeyboardArrowDown,
@@ -8,7 +8,8 @@ import {
   MdChevronRight,
 } from "react-icons/md";
 import sidebarData from "../data/sidebarData";
-import type { SidebarItem, SubMenuItem } from "../types/sidebar";
+import type { SidebarItem, SubMenuItem, Role } from "../types/sidebar";
+import { useAuth } from "../context/AuthContext";
 
 interface SidebarProps {
   onCollapseChange?: (collapsed: boolean) => void;
@@ -19,6 +20,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
   const [sidebar, setSidebar] = useState(false);
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const { authState } = useAuth();
+  const location = useLocation();
 
   useEffect(() => {
     const handleResize = () => {
@@ -66,12 +69,38 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
     }
   };
 
+  // Check if user has access to a menu item based on roles
+  const hasAccess = (requiredRoles?: Role[]) => {
+    // If no roles are required, everyone can access
+    if (!requiredRoles || requiredRoles.length === 0) {
+      return true;
+    }
+
+    // If authentication is required but user is not authenticated
+    if (!authState.isAuthenticated || !authState.role) {
+      return false;
+    }
+
+    // Check if user's role is in the required roles list
+    return requiredRoles.includes(authState.role as Role);
+  };
+
+  // Filter sidebar data based on user role
+  const filteredSidebarData = sidebarData.filter((item) =>
+    hasAccess(item.access)
+  );
+
   const renderSubMenu = (subMenu: SubMenuItem[], itemTitle: string) => {
     if (openSubMenu !== itemTitle || collapsed) return null;
 
+    // Filter submenu items based on user role
+    const filteredSubMenu = subMenu.filter((subItem) =>
+      hasAccess(subItem.access)
+    );
+
     return (
       <ul className="pl-4 py-1 bg-gray-800">
-        {subMenu.map((subItem, index) => (
+        {filteredSubMenu.map((subItem, index) => (
           <li key={index} className="py-2">
             <Link
               to={subItem.path}
@@ -137,47 +166,60 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
         <div className="flex flex-col h-full justify-between overflow-y-auto">
           <nav className="py-4">
             <ul className="space-y-1">
-              {sidebarData.map((item, index) => (
-                <li key={index}>
-                  <div
-                    className="cursor-pointer"
-                    onClick={(e) => handleSubMenuClick(e, item)}
-                  >
-                    <Link
-                      to={item.subMenu ? "#" : item.path}
-                      className={`flex items-center justify-between text-gray-300 hover:text-white px-6 py-3 rounded-md hover:bg-gray-800 transition-all ${
-                        collapsed ? "justify-center px-3" : ""
-                      }`}
-                      onClick={() => {
-                        if (!item.subMenu && isMobile) {
-                          setSidebar(false);
-                        }
-                      }}
+              {filteredSidebarData.map((item, index) => {
+                // Skip rendering items that the user doesn't have access to
+                if (!hasAccess(item.access)) return null;
+
+                // Check if the item has submenu and if user has access to any submenu item
+                const hasAccessibleSubmenu = item.subMenu
+                  ? item.subMenu.some((subItem) => hasAccess(subItem.access))
+                  : true;
+
+                // Skip items with submenu if the user doesn't have access to any submenu item
+                if (item.subMenu && !hasAccessibleSubmenu) return null;
+
+                return (
+                  <li key={index}>
+                    <div
+                      className="cursor-pointer"
+                      onClick={(e) => handleSubMenuClick(e, item)}
                     >
-                      <div
-                        className={`flex items-center ${
-                          collapsed ? "justify-center" : ""
+                      <Link
+                        to={item.subMenu ? "#" : item.path}
+                        className={`flex items-center justify-between text-gray-300 hover:text-white px-6 py-3 rounded-md hover:bg-gray-800 transition-all ${
+                          collapsed ? "justify-center px-3" : ""
                         }`}
+                        onClick={() => {
+                          if (!item.subMenu && isMobile) {
+                            setSidebar(false);
+                          }
+                        }}
                       >
-                        <span className={collapsed ? "" : "mr-3"}>
-                          {item.icon}
-                        </span>
-                        {!collapsed && <span>{item.title}</span>}
-                      </div>
-                      {item.subMenu && !collapsed && (
-                        <span>
-                          {openSubMenu === item.title ? (
-                            <MdKeyboardArrowDown className="text-lg" />
-                          ) : (
-                            <MdKeyboardArrowRight className="text-lg" />
-                          )}
-                        </span>
-                      )}
-                    </Link>
-                  </div>
-                  {item.subMenu && renderSubMenu(item.subMenu, item.title)}
-                </li>
-              ))}
+                        <div
+                          className={`flex items-center ${
+                            collapsed ? "justify-center" : ""
+                          }`}
+                        >
+                          <span className={collapsed ? "" : "mr-3"}>
+                            {item.icon}
+                          </span>
+                          {!collapsed && <span>{item.title}</span>}
+                        </div>
+                        {item.subMenu && !collapsed && (
+                          <span>
+                            {openSubMenu === item.title ? (
+                              <MdKeyboardArrowDown className="text-lg" />
+                            ) : (
+                              <MdKeyboardArrowRight className="text-lg" />
+                            )}
+                          </span>
+                        )}
+                      </Link>
+                    </div>
+                    {item.subMenu && renderSubMenu(item.subMenu, item.title)}
+                  </li>
+                );
+              })}
             </ul>
           </nav>
 
@@ -186,7 +228,14 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
               collapsed ? "text-center" : ""
             }`}
           >
-            {!collapsed && <p>© 2025 ERP System v1.0</p>}
+            {!collapsed && (
+              <div>
+                <p>© 2025 ERP System v1.0</p>
+                {authState.isAuthenticated && authState.role && (
+                  <p className="mt-1">Role: {authState.role}</p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

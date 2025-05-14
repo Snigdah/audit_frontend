@@ -5,23 +5,39 @@ import Stock from "./pages/inventory/Stock";
 import { LoginPage } from "./pages/auth/LoginPage";
 import BuildingsPage from "./pages/infrastructure/Buildings";
 import FloorsPage from "./pages/infrastructure/FloorsPage ";
+import { AuthProvider } from "./context/AuthContext";
+import Unauthorized from "./components/Unauthorized";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 function App() {
   return (
     <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/inventory/stock" element={<Stock />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/infrastructure/building" element={<BuildingsPage />} />
-          <Route
-            path="/buildings/:buildingId/floors"
-            element={<FloorsPage />}
-          />
-          {/* Add more routes as needed */}
-        </Routes>
-      </Layout>
+      <AuthProvider>
+        <Layout>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
+
+            {/* Routes for all authenticated users */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/inventory/stock" element={<Stock />} />
+              <Route
+                path="/infrastructure/building"
+                element={<BuildingsPage />}
+              />
+
+              {/* Routes that require specific roles */}
+              <Route element={<ProtectedRoute allowedRoles={["MANAGER"]} />}>
+                <Route path="/infrastructure/floor" element={<FloorsPage />} />
+              </Route>
+
+              {/* Add more routes as needed */}
+            </Route>
+          </Routes>
+        </Layout>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

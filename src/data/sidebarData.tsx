@@ -23,7 +23,7 @@ import type { SidebarItem } from "../types/sidebar";
 const sidebarData: SidebarItem[] = [
   {
     title: "Dashboard",
-    path: "/",
+    path: "/dashboard",
     icon: <AiFillHome className="text-xl" />,
     cName: "nav-text",
   },
@@ -73,7 +73,7 @@ const sidebarData: SidebarItem[] = [
     path: "/admin",
     icon: <FaShieldAlt className="text-xl" />,
     cName: "nav-text",
-    /// access: ["ADMIN"], // Based on your Role enum
+    access: ["SUPERVISOR"], // Based on your Role enum
     subMenu: [
       {
         title: "System Settings",

@@ -1,3 +1,4 @@
+// AuthContext.jsx
 import React, {
   createContext,
   useContext,
@@ -5,11 +6,13 @@ import React, {
   useState,
   type ReactNode,
 } from "react";
-import { useNavigate } from "react-router-dom";
-import type { AuthState } from "../../types/auth";
-import AuthService from "../../services/AuthService";
+import { useNavigate, useLocation } from "react-router-dom";
+import type { AuthState } from "../types/auth";
+import AuthService from "../services/AuthService";
+
 interface AuthContextProps {
   authState: AuthState;
+  isLoading: boolean; // Add loading state
   login: (employeeId: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -20,6 +23,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
   const [authState, setAuthState] = useState<AuthState>({
     isAuthenticated: false,
     employeeId: null,
@@ -28,15 +33,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   // Initialize auth state from localStorage on component mount
   useEffect(() => {
-    const token = AuthService.getAccessToken();
-    const employeeId = AuthService.getEmployeeId();
-    const role = AuthService.getUserRole();
+    const initializeAuth = async () => {
+      try {
+        const token = AuthService.getAccessToken();
+        const employeeId = AuthService.getEmployeeId();
+        const role = AuthService.getUserRole();
 
-    setAuthState({
-      isAuthenticated: !!token,
-      employeeId: employeeId,
-      role: role,
-    });
+        setAuthState({
+          isAuthenticated: !!token,
+          employeeId: employeeId,
+          role: role,
+        });
+      } catch (error) {
+        console.error("Error initializing auth:", error);
+      } finally {
+        setIsLoading(false); // Set loading to false when done
+      }
+    };
+
+    initializeAuth();
   }, []);
 
   const login = async (employeeId: string, password: string): Promise<void> => {
@@ -54,7 +69,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         role: response.role,
       });
 
-      navigate("/dashboard");
+      // Navigate to the saved location or default to home
+      const origin = location.state?.from?.pathname || "/dashboard";
+      navigate(origin, { replace: true });
     } catch (error) {
       console.error("Login failed:", error);
       throw error;
@@ -78,7 +95,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   return (
-    <AuthContext.Provider value={{ authState, login, logout }}>
+    <AuthContext.Provider value={{ authState, isLoading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

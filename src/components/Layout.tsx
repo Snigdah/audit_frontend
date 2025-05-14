@@ -1,7 +1,10 @@
+// Layout.tsx with authentication-aware sidebar
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
+import { useAuth } from "../context/AuthContext";
 
 interface LayoutProps {
   children: ReactNode;
@@ -10,6 +13,14 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const { authState, isLoading } = useAuth();
+  const location = useLocation();
+
+  // Determine if we're on an auth page (login, register, etc.)
+  const isAuthPage =
+    location.pathname === "/login" ||
+    location.pathname === "/register" ||
+    location.pathname === "/unauthorized";
 
   useEffect(() => {
     const handleResize = () => {
@@ -20,22 +31,19 @@ const Layout = ({ children }: LayoutProps) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Determine if we should show the sidebar
+  const showSidebar = authState.isAuthenticated && !isAuthPage && !isLoading;
+
   return (
     <div className="flex h-screen bg-gray-100">
-      <Sidebar onCollapseChange={setCollapsed} />
+      {/* Only render sidebar if authenticated and not on an auth page */}
+      {showSidebar && <Sidebar onCollapseChange={setCollapsed} />}
 
       <div
         className={`flex-1 flex flex-col overflow-hidden transition-all duration-300 ${
-          isMobile ? "ml-0" : collapsed ? "ml-16" : "ml-64"
+          isMobile || !showSidebar ? "ml-0" : collapsed ? "ml-16" : "ml-64"
         }`}
       >
-        {/* Header with app name, only shown when sidebar is collapsed on desktop */}
-        {/* {collapsed && !isMobile && (
-          <header className="bg-white shadow-sm py-4 px-6">
-            <h1 className="text-xl font-semibold text-gray-800">ERP System</h1>
-          </header>
-        )} */}
-
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           {children}
         </main>
