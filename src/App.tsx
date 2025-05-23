@@ -3,7 +3,7 @@ import Layout from "./components/Layout";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Stock from "./pages/inventory/Stock";
 import { LoginPage } from "./pages/auth/LoginPage";
-import BuildingsPage from "./pages/infrastructure/Buildings";
+import BuildingsPage from "./pages/infrastructure/BuildingPage";
 import FloorsPage from "./pages/infrastructure/FloorsPage ";
 import { AuthProvider } from "./context/AuthContext";
 import Unauthorized from "./components/Unauthorized";
@@ -21,6 +21,7 @@ function App() {
 
             {/* Routes for all authenticated users */}
             <Route element={<ProtectedRoute />}>
+              <Route path="/" />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/inventory/stock" element={<Stock />} />
               <Route

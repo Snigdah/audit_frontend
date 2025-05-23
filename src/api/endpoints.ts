@@ -14,6 +14,7 @@ export const ENDPOINTS = {
   BUILDING: {
     CREATE: `${BASE.BUILDING}`,
     FETCH_ALL: `${BASE.BUILDING}`,
+    UPDATE: (id: number) => `${BASE.BUILDING}/${id}`,
     FETCH_BY_ID: (id: number) => `${BASE.BUILDING}/${id}`,
     DELETE_BY_ID: (id: number) => `${BASE.BUILDING}/${id}`,
   },
