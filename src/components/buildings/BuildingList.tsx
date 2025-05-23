@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { BuildingFormData, BuildingResponse } from "../../types/building";
+import type { BuildingResponse } from "../../types/building";
 import BuildingService from "../../services/BuildingService";
 import type { ColumnsType } from "antd/es/table";
 import {
@@ -19,7 +19,6 @@ const BuildingList = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [editingBuilding, setEditingBuilding] =
     useState<BuildingResponse | null>(null);
-  const [modalLoading, setModalLoading] = useState<boolean>(false);
 
   const fetchBuildings = async () => {
     setLoading(true);
@@ -58,13 +57,14 @@ const BuildingList = () => {
     }
   };
 
-  const handleModalCancel = () => {
-    setEditingBuilding(null);
+  const handleModalClose = () => {
     setModalVisible(false);
+    setEditingBuilding(null);
   };
 
-  const handleModalSuccess = async () => {
-    await fetchBuildings();
+  const handleModalSuccess = () => {
+    handleModalClose();
+    fetchBuildings();
   };
 
   const filteredBuildings = buildings.filter(
@@ -72,15 +72,6 @@ const BuildingList = () => {
       building.buildingName.toLowerCase().includes(searchText.toLowerCase()) ||
       building.id.toString().includes(searchText)
   );
-
-  const getInitialFormData = (): BuildingFormData | null => {
-    if (!editingBuilding) return null;
-
-    return {
-      name: editingBuilding.buildingName || "",
-      ...(editingBuilding.id && { id: editingBuilding.id }),
-    } as BuildingFormData;
-  };
 
   const columns: ColumnsType<BuildingResponse> = [
     {
@@ -190,13 +181,12 @@ const BuildingList = () => {
           }}
         />
       </div>
+
       <BuildingAddOrUpdate
-        key={editingBuilding?.id || "new"}
-        initialData={getInitialFormData()}
         visible={modalVisible}
-        onCancel={handleModalCancel}
+        editingData={editingBuilding}
+        onCancel={handleModalClose}
         onSuccess={handleModalSuccess}
-        loading={modalLoading}
       />
     </div>
   );
