@@ -9,16 +9,19 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import SectionHeader from "../common/SectionHeader";
-import { Table, Button, Space, Popconfirm, message, Input } from "antd";
+import { Table, Button, Space, message, Input } from "antd";
 import BuildingAddOrUpdate from "./BuildingAddOrUpdate ";
+import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 
 const BuildingList = () => {
   const [buildings, setBuildings] = useState<BuildingResponse[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [editingBuilding, setEditingBuilding] =
+  const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
+  const [selectedBuilding, setSelectedBuilding] =
     useState<BuildingResponse | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
   const fetchBuildings = () => {
     setLoading(true);
@@ -40,36 +43,44 @@ const BuildingList = () => {
   }, []);
 
   const handleAdd = () => {
-    setEditingBuilding(null);
+    setSelectedBuilding(null);
     setModalVisible(true);
   };
 
   const handleEdit = (record: BuildingResponse) => {
-    setEditingBuilding(record);
+    setSelectedBuilding(record);
     setModalVisible(true);
   };
 
-  const handleDelete = (record: BuildingResponse) => {
-    setLoading(true);
-    BuildingService.deleteBuilding(record.id)
+  const handleDeleteClick = (record: BuildingResponse) => {
+    setSelectedBuilding(record);
+    setDeleteModalVisible(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (!selectedBuilding) return;
+
+    setDeleteLoading(true);
+    BuildingService.deleteBuilding(selectedBuilding.id)
       .then(() => {
         message.success(
-          `Building "${record.buildingName}" deleted successfully`
+          `Building "${selectedBuilding.buildingName}" deleted successfully`
         );
         fetchBuildings();
+        setDeleteModalVisible(false);
       })
       .catch((error) => {
         console.error(error);
         message.error("Failed to delete building");
       })
       .finally(() => {
-        setLoading(false);
+        setDeleteLoading(false);
       });
   };
 
   const handleModalClose = () => {
     setModalVisible(false);
-    setEditingBuilding(null);
+    setSelectedBuilding(null);
   };
 
   const handleModalSuccess = () => {
@@ -119,24 +130,16 @@ const BuildingList = () => {
           >
             Edit
           </Button>
-          <Popconfirm
-            title="Delete Building"
-            description={`Are you sure to delete "${record.buildingName}"?`}
-            onConfirm={() => handleDelete(record)}
-            okText="Delete"
-            cancelText="Cancel"
-            okButtonProps={{ danger: true }}
+          <Button
+            type="text"
+            size="small"
+            danger
+            icon={<DeleteOutlined />}
+            className="hover:bg-red-50"
+            onClick={() => handleDeleteClick(record)}
           >
-            <Button
-              type="text"
-              size="small"
-              danger
-              icon={<DeleteOutlined />}
-              className="hover:bg-red-50"
-            >
-              Delete
-            </Button>
-          </Popconfirm>
+            Delete
+          </Button>
         </Space>
       ),
     },
@@ -194,9 +197,19 @@ const BuildingList = () => {
 
       <BuildingAddOrUpdate
         visible={modalVisible}
-        editingData={editingBuilding}
+        editingData={selectedBuilding}
         onCancel={handleModalClose}
         onSuccess={handleModalSuccess}
+      />
+
+      <DeleteConfirmationModal
+        visible={deleteModalVisible}
+        onCancel={() => setDeleteModalVisible(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Building"
+        description={`Are you sure you want to delete "${selectedBuilding?.buildingName}"?`}
+        confirmText="Delete"
+        loading={deleteLoading}
       />
     </div>
   );
