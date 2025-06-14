@@ -20,17 +20,19 @@ const BuildingList = () => {
   const [editingBuilding, setEditingBuilding] =
     useState<BuildingResponse | null>(null);
 
-  const fetchBuildings = async () => {
+  const fetchBuildings = () => {
     setLoading(true);
-    try {
-      const res = await BuildingService.getAllBuildings();
-      setBuildings(res);
-    } catch (err) {
-      console.error(err);
-      message.error("Failed to fetch buildings");
-    } finally {
-      setLoading(false);
-    }
+    BuildingService.getAllBuildings()
+      .then((res) => {
+        setBuildings(res);
+      })
+      .catch((err) => {
+        console.error(err);
+        message.error("Failed to fetch buildings");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -47,14 +49,22 @@ const BuildingList = () => {
     setModalVisible(true);
   };
 
-  const handleDelete = async (record: BuildingResponse) => {
-    try {
-      // await BuildingService.deleteBuilding(record.id);
-      message.success(`Building "${record.buildingName}" deleted successfully`);
-      fetchBuildings();
-    } catch (error) {
-      message.error("Failed to delete building");
-    }
+  const handleDelete = (record: BuildingResponse) => {
+    setLoading(true);
+    BuildingService.deleteBuilding(record.id)
+      .then(() => {
+        message.success(
+          `Building "${record.buildingName}" deleted successfully`
+        );
+        fetchBuildings();
+      })
+      .catch((error) => {
+        console.error(error);
+        message.error("Failed to delete building");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   const handleModalClose = () => {

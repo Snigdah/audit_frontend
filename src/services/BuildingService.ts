@@ -30,6 +30,16 @@ class BuildingService {
     );
     return response.data.data;
   }
+
+  async deleteBuilding(id: number): Promise<void> {
+    if (!id) {
+      throw new Error("Building ID is required for deletion");
+    }
+
+    await apiClient.delete<ApiResponse<void>>(
+      ENDPOINTS.BUILDING.DELETE_BY_ID(id)
+    );
+  }
 }
 
 export default new BuildingService();
