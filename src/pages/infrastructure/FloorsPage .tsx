@@ -20,7 +20,7 @@ const FloorsPage = () => {
       </div>
 
       <div className="pb-8">
-        <FloorList />
+        {buildingId && <FloorList buildingId={buildingId} />}
       </div>
     </div>
   );

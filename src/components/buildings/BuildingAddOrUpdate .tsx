@@ -114,12 +114,8 @@ const BuildingAddOrUpdate = ({
                 message: "Building name must be at least 2 characters",
               },
               maxLength: {
-                value: 100,
-                message: "Building name must not exceed 100 characters",
-              },
-              pattern: {
-                value: /^[a-zA-Z0-9\s\-_.()]+$/,
-                message: "Building name contains invalid characters",
+                value: 20,
+                message: "Building name must not exceed 20 characters",
               },
             }}
           />

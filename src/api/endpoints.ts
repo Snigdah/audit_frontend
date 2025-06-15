@@ -1,8 +1,8 @@
 const BASE = {
   AUTH: "audit",
-  USER: "user",
   STUDENT: "student",
   BUILDING: "building",
+  FLOOR: "floor",
 };
 
 export const ENDPOINTS = {
@@ -18,8 +18,14 @@ export const ENDPOINTS = {
     FETCH_BY_ID: (id: number) => `${BASE.BUILDING}/${id}`,
     DELETE_BY_ID: (id: number) => `${BASE.BUILDING}/${id}`,
   },
-  USER: {
-    FETCH_ALL: "user/all",
+  FLOOR: {
+    CREATE: `${BASE.FLOOR}`,
+    FETCH_ALL: `${BASE.FLOOR}`,
+    FETCH_BY_ID: (id: number) => `${BASE.FLOOR}/${id}`,
+    FETCH_BY_BUILDING_ID: (buildingId: number) =>
+      `${BASE.FLOOR}/building/${buildingId}`,
+    UPDATE: (id: number) => `${BASE.FLOOR}/${id}`,
+    DELETE: (id: number) => `${BASE.FLOOR}/${id}`,
   },
   STUDENT: {
     FETCH_BY_ID: (id: number) => `student/${id}`,
