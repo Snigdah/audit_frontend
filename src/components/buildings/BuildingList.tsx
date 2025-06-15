@@ -12,6 +12,7 @@ import SectionHeader from "../common/SectionHeader";
 import { Table, Button, Space, message, Input } from "antd";
 import BuildingAddOrUpdate from "./BuildingAddOrUpdate ";
 import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
+import { Link } from "react-router-dom";
 
 const BuildingList = () => {
   const [buildings, setBuildings] = useState<BuildingResponse[]>([]);
@@ -107,6 +108,14 @@ const BuildingList = () => {
       dataIndex: "buildingName",
       key: "buildingName",
       sorter: (a, b) => a.buildingName.localeCompare(b.buildingName),
+      render: (text, record) => (
+        <Link
+          to={`/infrastructure/building/${record.id}`}
+          className="text-blue-600 hover:underline font-medium"
+        >
+          {text}
+        </Link>
+      ),
     },
     {
       title: "Total Floors",
@@ -146,7 +155,7 @@ const BuildingList = () => {
   ];
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-sm">
+    <div className="p-4 bg-white rounded-lg shadow-sm">
       <div className="flex flex-col space-y-6">
         <SectionHeader
           title="Building Management"

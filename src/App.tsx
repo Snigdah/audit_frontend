@@ -28,6 +28,10 @@ function App() {
                 path="/infrastructure/building"
                 element={<BuildingsPage />}
               />
+              <Route
+                path="/infrastructure/building/:buildingId"
+                element={<FloorsPage />}
+              />
 
               {/* Routes that require specific roles */}
               <Route element={<ProtectedRoute allowedRoles={["MANAGER"]} />}>

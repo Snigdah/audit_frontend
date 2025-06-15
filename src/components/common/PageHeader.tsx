@@ -1,6 +1,7 @@
 import { Breadcrumb } from "antd";
 import { HomeOutlined } from "@ant-design/icons";
 import React from "react";
+import { Link } from "react-router-dom";
 
 interface PageHeaderProps {
   title: string;
@@ -26,12 +27,11 @@ const PageHeader: React.FC<PageHeaderProps> = ({
             }
             className="text-sm"
           >
-            <Breadcrumb.Item
-              href="/"
-              className="text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors duration-200"
-            >
-              <HomeOutlined className="mr-1" />
-              <span>Home</span>
+            <Breadcrumb.Item className="text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors duration-200">
+              <Link to="/" className="flex items-center">
+                <HomeOutlined className="mr-1" />
+                <span>Home</span>
+              </Link>
             </Breadcrumb.Item>
             {breadcrumbs.map((item, index) => (
               <Breadcrumb.Item
@@ -39,9 +39,9 @@ const PageHeader: React.FC<PageHeaderProps> = ({
                 className="text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors duration-200"
               >
                 {item.path ? (
-                  <a href={item.path} className="font-medium">
+                  <Link to={item.path} className="font-medium">
                     {item.label}
-                  </a>
+                  </Link>
                 ) : (
                   <span className="font-medium text-gray-600 dark:text-gray-300">
                     {item.label}
