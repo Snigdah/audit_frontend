@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { BuildingFormData, BuildingResponse } from "../../types/building";
+import type { BuildingResponse } from "../../types/building";
 import BuildingService from "../../services/BuildingService";
 import type { ColumnsType } from "antd/es/table";
 import {
@@ -19,19 +19,20 @@ const BuildingList = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [editingBuilding, setEditingBuilding] =
     useState<BuildingResponse | null>(null);
-  const [modalLoading, setModalLoading] = useState<boolean>(false);
 
-  const fetchBuildings = async () => {
+  const fetchBuildings = () => {
     setLoading(true);
-    try {
-      const res = await BuildingService.getAllBuildings();
-      setBuildings(res);
-    } catch (err) {
-      console.error(err);
-      message.error("Failed to fetch buildings");
-    } finally {
-      setLoading(false);
-    }
+    BuildingService.getAllBuildings()
+      .then((res) => {
+        setBuildings(res);
+      })
+      .catch((err) => {
+        console.error(err);
+        message.error("Failed to fetch buildings");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -48,23 +49,32 @@ const BuildingList = () => {
     setModalVisible(true);
   };
 
-  const handleDelete = async (record: BuildingResponse) => {
-    try {
-      // await BuildingService.deleteBuilding(record.id);
-      message.success(`Building "${record.buildingName}" deleted successfully`);
-      fetchBuildings();
-    } catch (error) {
-      message.error("Failed to delete building");
-    }
+  const handleDelete = (record: BuildingResponse) => {
+    setLoading(true);
+    BuildingService.deleteBuilding(record.id)
+      .then(() => {
+        message.success(
+          `Building "${record.buildingName}" deleted successfully`
+        );
+        fetchBuildings();
+      })
+      .catch((error) => {
+        console.error(error);
+        message.error("Failed to delete building");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
-  const handleModalCancel = () => {
-    setEditingBuilding(null);
+  const handleModalClose = () => {
     setModalVisible(false);
+    setEditingBuilding(null);
   };
 
-  const handleModalSuccess = async () => {
-    await fetchBuildings();
+  const handleModalSuccess = () => {
+    handleModalClose();
+    fetchBuildings();
   };
 
   const filteredBuildings = buildings.filter(
@@ -72,15 +82,6 @@ const BuildingList = () => {
       building.buildingName.toLowerCase().includes(searchText.toLowerCase()) ||
       building.id.toString().includes(searchText)
   );
-
-  const getInitialFormData = (): BuildingFormData | null => {
-    if (!editingBuilding) return null;
-
-    return {
-      name: editingBuilding.buildingName || "",
-      ...(editingBuilding.id && { id: editingBuilding.id }),
-    } as BuildingFormData;
-  };
 
   const columns: ColumnsType<BuildingResponse> = [
     {
@@ -190,13 +191,12 @@ const BuildingList = () => {
           }}
         />
       </div>
+
       <BuildingAddOrUpdate
-        key={editingBuilding?.id || "new"}
-        initialData={getInitialFormData()}
         visible={modalVisible}
-        onCancel={handleModalCancel}
+        editingData={editingBuilding}
+        onCancel={handleModalClose}
         onSuccess={handleModalSuccess}
-        loading={modalLoading}
       />
     </div>
   );

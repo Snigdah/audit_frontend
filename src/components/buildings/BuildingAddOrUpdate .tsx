@@ -4,30 +4,33 @@ import { Button, Spin, message } from "antd";
 import ModalComponent from "../common/ModalComponent";
 import { InputField } from "../common/InputField";
 import BuildingService from "../../services/BuildingService";
-import { BuildingModel, type BuildingFormData } from "../../types/building";
+import {
+  BuildingModel,
+  type BuildingFormData,
+  type BuildingResponse,
+} from "../../types/building";
 
 interface Props {
-  initialData?: BuildingFormData | null;
   visible: boolean;
+  editingData?: BuildingResponse | null;
   onCancel: () => void;
   onSuccess: () => void;
-  loading?: boolean;
 }
 
 const BuildingAddOrUpdate = ({
-  initialData,
   visible,
+  editingData,
   onCancel,
   onSuccess,
-  loading = false,
 }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const isEditMode = !!initialData;
+  const isEditMode = !!editingData;
 
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isDirty },
   } = useForm<BuildingFormData>({
     defaultValues: {
@@ -35,55 +38,56 @@ const BuildingAddOrUpdate = ({
     },
   });
 
+  // Handle modal open/close and form reset
   useEffect(() => {
     if (visible) {
-      reset(initialData || { name: "" });
+      if (editingData) {
+        // Edit mode: populate form with existing data
+        setValue("name", editingData.buildingName);
+      } else {
+        // Add mode: reset form
+        reset({ name: "" });
+      }
+    } else {
+      // Modal closed: always reset form
+      reset({ name: "" });
     }
-  }, [visible, initialData, reset]);
+  }, [visible, editingData, setValue, reset]);
 
-  const handleFormSubmit: SubmitHandler<BuildingFormData> = (data) => {
+  const handleFormSubmit: SubmitHandler<BuildingFormData> = async (data) => {
     setIsSubmitting(true);
 
-    const payload = new BuildingModel(
-      data.name,
-      isEditMode && initialData ? (initialData as any).id : undefined
-    );
+    try {
+      const payload = new BuildingModel(
+        data.name,
+        isEditMode ? editingData?.id : undefined
+      );
 
-    const serviceCall = isEditMode
-      ? BuildingService.updateBuilding(payload)
-      : BuildingService.createBuilding(payload);
+      if (isEditMode) {
+        console.log(payload);
 
-    serviceCall
-      .then((response) => {
-        message.success(
-          isEditMode
-            ? "Building updated successfully!"
-            : "Building created successfully!"
-        );
+        await BuildingService.updateBuilding(payload);
+        message.success("Building updated successfully!");
+      } else {
+        await BuildingService.createBuilding(payload);
+        message.success("Building created successfully!");
+      }
 
-        if (!isEditMode) {
-          reset();
-        }
-
-        onSuccess();
-        onCancel();
-      })
-      .catch((error) => {
-        console.error("Building operation failed:", error);
-        message.error(
-          isEditMode
-            ? "Failed to update building. Please try again."
-            : "Failed to create building. Please try again."
-        );
-      })
-      .finally(() => {
-        setIsSubmitting(false);
-      });
+      onSuccess();
+    } catch (error) {
+      console.error("Building operation failed:", error);
+      message.error(
+        isEditMode
+          ? "Failed to update building. Please try again."
+          : "Failed to create building. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCancel = () => {
     if (isSubmitting) return;
-    reset();
     onCancel();
   };
 
@@ -94,7 +98,7 @@ const BuildingAddOrUpdate = ({
       handleCancel={handleCancel}
       width={600}
     >
-      <Spin spinning={loading || isSubmitting}>
+      <Spin spinning={isSubmitting}>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <InputField
             name="name"
