@@ -12,6 +12,7 @@ import FloorService from "../../services/FloorService";
 import SectionHeader from "../common/SectionHeader";
 import FloorAddOrUpdate from "./FloorAddOrUpdate";
 import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
+import CustomButton from "../common/CustomButton";
 
 const FloorList = ({ buildingId }: { buildingId: string }) => {
   const [floors, setFloors] = useState<FloorResponse[]>([]);
@@ -151,13 +152,10 @@ const FloorList = ({ buildingId }: { buildingId: string }) => {
                 allowClear
                 className="w-64"
               />
-              <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={handleAdd}
-              >
+
+              <CustomButton onClick={handleAdd} icon={<PlusOutlined />}>
                 Add Floor
-              </Button>
+              </CustomButton>
             </Space>
           }
         />

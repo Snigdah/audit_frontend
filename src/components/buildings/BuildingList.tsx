@@ -13,6 +13,7 @@ import { Table, Button, Space, message, Input } from "antd";
 import BuildingAddOrUpdate from "./BuildingAddOrUpdate ";
 import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import { Link } from "react-router-dom";
+import CustomButton from "../common/CustomButton";
 
 const BuildingList = () => {
   const [buildings, setBuildings] = useState<BuildingResponse[]>([]);
@@ -168,14 +169,9 @@ const BuildingList = () => {
                 allowClear
                 className="w-64"
               />
-              <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={handleAdd}
-                className="bg-primary-600 hover:bg-primary-700"
-              >
+              <CustomButton onClick={handleAdd} icon={<PlusOutlined />}>
                 Add Building
-              </Button>
+              </CustomButton>
             </Space>
           }
         />
@@ -192,7 +188,7 @@ const BuildingList = () => {
             showSizeChanger: true,
             showTotal: (total) => `Total ${total} buildings`,
           }}
-          scroll={{ x: 400 }}
+          scroll={{ x: 50 }}
           bordered
           size="middle"
           className="shadow-sm"

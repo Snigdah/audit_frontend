@@ -11,11 +11,12 @@ const FloorsPage = () => {
       <PageHeader
         title="Floor"
         breadcrumbs={[
+          { label: "Infrastructure" },
           { label: "Buildings", path: "/infrastructure/building" },
           { label: "Floors" },
         ]}
       />
-      <div className="pb-8">
+      <div className="pb-2">
         {buildingId && <BuildingDetails buildingId={buildingId} />}
       </div>
 

@@ -3,6 +3,7 @@ const BASE = {
   STUDENT: "student",
   BUILDING: "building",
   FLOOR: "floor",
+  PASSWORD_POLICY: "password-policy",
 };
 
 export const ENDPOINTS = {
@@ -26,6 +27,10 @@ export const ENDPOINTS = {
       `${BASE.FLOOR}/building/${buildingId}`,
     UPDATE: (id: number) => `${BASE.FLOOR}/${id}`,
     DELETE: (id: number) => `${BASE.FLOOR}/${id}`,
+  },
+  PASSWORD_POLICY: {
+    CREATE: `${BASE.PASSWORD_POLICY}`,
+    FETCH: `${BASE.PASSWORD_POLICY}`,
   },
   STUDENT: {
     FETCH_BY_ID: (id: number) => `student/${id}`,

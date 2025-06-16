@@ -6,6 +6,7 @@ import { InputField } from "../common/InputField";
 import type { FloorFormData, FloorResponse } from "../../types/floor";
 import { FloorModel } from "../../types/floor";
 import FloorService from "../../services/FloorService.ts";
+import CustomButton from "../common/CustomButton.tsx";
 
 interface Props {
   visible: boolean;
@@ -134,20 +135,25 @@ const FloorAddOrUpdate = ({
             />
           )}
 
-          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
-            <Button onClick={handleCancel} disabled={isSubmitting} size="large">
+          <div className="flex flex-col-reverse gap-3 mt-3 pt-2 border-t border-gray-200 sm:flex-row sm:justify-end">
+            <Button
+              className="w-full sm:w-auto !bg-white !text-red-600 !border !border-red-500 hover:!bg-red-50 hover:!text-red-700 !py-2 !min-h-[36px] !px-4 sm:!px-6 rounded-md font-medium shadow-sm"
+              onClick={handleCancel}
+              disabled={isSubmitting}
+              size="large"
+            >
               Cancel
             </Button>
-            <Button
+
+            <CustomButton
               htmlType="submit"
-              type="primary"
               loading={isSubmitting}
               disabled={!isDirty && isEditMode}
               size="large"
-              className="min-w-[100px]"
+              className="w-full sm:w-auto min-w-[100px] !bg-gray-900 hover:!bg-gray-700 !text-white !py-2 !min-h-[36px] !px-4 sm:!px-6 rounded-md font-medium shadow-sm"
             >
               {isEditMode ? "Update Floor" : "Add Floor"}
-            </Button>
+            </CustomButton>
           </div>
         </form>
       </Spin>

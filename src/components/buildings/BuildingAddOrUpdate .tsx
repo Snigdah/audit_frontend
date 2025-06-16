@@ -9,6 +9,7 @@ import {
   type BuildingFormData,
   type BuildingResponse,
 } from "../../types/building";
+import CustomButton from "../common/CustomButton";
 
 interface Props {
   visible: boolean;
@@ -120,20 +121,27 @@ const BuildingAddOrUpdate = ({
             }}
           />
 
-          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
-            <Button onClick={handleCancel} disabled={isSubmitting} size="large">
+          <div className="flex flex-col-reverse md:flex-row justify-end gap-3 mt-3 pt-2 border-t border-gray-200">
+            {/* Cancel Button */}
+            <Button
+              className="w-full md:w-auto !bg-white !text-red-600 !border !border-red-500 hover:!bg-red-50 hover:!text-red-700 !py-2 !min-h-[36px] !px-4 sm:!px-6 rounded-md font-medium shadow-sm"
+              onClick={handleCancel}
+              disabled={isSubmitting}
+              size="large"
+            >
               Cancel
             </Button>
-            <Button
+
+            {/* Submit Button */}
+            <CustomButton
               htmlType="submit"
-              type="primary"
               loading={isSubmitting}
               disabled={!isDirty && isEditMode}
+              className="w-full md:w-auto min-w-[100px] !bg-gray-900 hover:!bg-gray-700 !text-white !py-2 !min-h-[36px] !px-4 sm:!px-6 rounded-md font-medium shadow-sm"
               size="large"
-              className="min-w-[100px]"
             >
               {isEditMode ? "Update Building" : "Add Building"}
-            </Button>
+            </CustomButton>
           </div>
         </form>
       </Spin>

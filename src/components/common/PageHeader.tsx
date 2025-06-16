@@ -15,7 +15,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   rightContent,
 }) => {
   return (
-    <div className="w-full mb-8 pb-6 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 px-6 py-4 rounded-lg shadow-xs">
+    <div className="w-full mb-2 pb-6 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 px-6 py-4 rounded-lg shadow-xs">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-[27px] sm:pt-0">
         <div className="flex flex-col space-y-2">
           <h1 className="text-2xl md:text-3xl font-semibold text-gray-800 dark:text-white leading-tight">
