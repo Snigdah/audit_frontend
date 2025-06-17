@@ -1,9 +1,9 @@
 const BASE = {
   AUTH: "audit",
-  STUDENT: "student",
   BUILDING: "building",
   FLOOR: "floor",
   PASSWORD_POLICY: "password-policy",
+  DESIGNATION: "designation",
 };
 
 export const ENDPOINTS = {
@@ -32,7 +32,10 @@ export const ENDPOINTS = {
     CREATE: `${BASE.PASSWORD_POLICY}`,
     FETCH: `${BASE.PASSWORD_POLICY}`,
   },
-  STUDENT: {
-    FETCH_BY_ID: (id: number) => `student/${id}`,
+  DESIGNATION: {
+    CREATE: `${BASE.DESIGNATION}`,
+    FETCH_ALL: `${BASE.DESIGNATION}`,
+    SEARCH: (query: string) => `${BASE.DESIGNATION}?search=${query}`,
+    UPDATE: (id: number) => `${BASE.DESIGNATION}/${id}`,
   },
 };

@@ -1,4 +1,5 @@
 import PageHeader from "../../components/common/PageHeader";
+import Designation from "../../components/settings/Designation";
 
 const DesignationPage = () => {
   return (
@@ -7,9 +8,7 @@ const DesignationPage = () => {
         title="Designation"
         breadcrumbs={[{ label: "Settings" }, { label: "Designation" }]}
       />
-      <div>
-        <h1>This is designation page</h1>
-      </div>
+      <Designation />
     </div>
   );
 };
