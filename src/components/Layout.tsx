@@ -44,7 +44,7 @@ const Layout = ({ children }: LayoutProps) => {
           isMobile || !showSidebar ? "ml-0" : collapsed ? "ml-16" : "ml-64"
         }`}
       >
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        <main className="flex-1 overflow-y-auto p-2 sm:p-2 lg:p-2">
           {children}
         </main>
 

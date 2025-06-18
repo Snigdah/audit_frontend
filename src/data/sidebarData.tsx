@@ -5,6 +5,8 @@ import {
   FaChartBar,
   FaClipboardList,
   FaBoxOpen,
+  FaKey,
+  FaUserCog,
 } from "react-icons/fa";
 import { AiFillHome, AiFillSetting } from "react-icons/ai";
 import { IoIosPaper, IoMdPeople, IoMdHelpCircle } from "react-icons/io";
@@ -65,6 +67,24 @@ const sidebarData: SidebarItem[] = [
         title: "Supervisor",
         path: "/resource/supervisor",
         icon: <FaUserFriends />,
+      },
+    ],
+  },
+  {
+    title: "Settings",
+    path: "/system",
+    icon: <FaCogs className="text-xl" />,
+    cName: "nav-text",
+    subMenu: [
+      {
+        title: "Password Policy",
+        path: "/system/password-policy",
+        icon: <FaKey />,
+      },
+      {
+        title: "Designation",
+        path: "/system/designation",
+        icon: <FaUserCog />,
       },
     ],
   },
@@ -180,12 +200,6 @@ const sidebarData: SidebarItem[] = [
     title: "Support",
     path: "/support",
     icon: <IoMdHelpCircle className="text-xl" />,
-    cName: "nav-text",
-  },
-  {
-    title: "Settings",
-    path: "/settings",
-    icon: <AiFillSetting className="text-xl" />,
     cName: "nav-text",
   },
 ];

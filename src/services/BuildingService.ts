@@ -11,6 +11,13 @@ class BuildingService {
     return response.data.data;
   }
 
+  async getBuildingById(id: number): Promise<BuildingResponse> {
+    const response = await apiClient.get<ApiResponse<BuildingResponse>>(
+      ENDPOINTS.BUILDING.FETCH_BY_ID(id)
+    );
+    return response.data.data;
+  }
+
   async createBuilding(building: BuildingModel): Promise<BuildingResponse> {
     const response = await apiClient.post<ApiResponse<BuildingResponse>>(
       ENDPOINTS.BUILDING.CREATE,

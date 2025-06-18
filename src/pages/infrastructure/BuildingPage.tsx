@@ -3,13 +3,10 @@ import PageHeader from "../../components/common/PageHeader";
 
 const Buildings = () => {
   return (
-    <div className="p-4  min-h-screen">
+    <div className="min-h-screen">
       <PageHeader
         title="Building"
-        breadcrumbs={[
-          { label: "Dashboard", path: "/dashboard" },
-          { label: "Buildings" },
-        ]}
+        breadcrumbs={[{ label: "Infrastructure" }, { label: "Building" }]}
       />
 
       <BuildingList />

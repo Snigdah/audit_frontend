@@ -12,6 +12,7 @@ export interface BuildingResponse {
   id: number;
   buildingName: string;
   totalFloor: number;
+  lastModifiedTime: string;
 }
 
 export class BuildingModel {

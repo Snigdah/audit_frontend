@@ -8,6 +8,8 @@ import FloorsPage from "./pages/infrastructure/FloorsPage ";
 import { AuthProvider } from "./context/AuthContext";
 import Unauthorized from "./components/Unauthorized";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import PasswordPolicyPage from "./pages/settings/PasswordPolicyPage";
+import DesignationPage from "./pages/settings/DesignationPage";
 
 function App() {
   return (
@@ -24,10 +26,29 @@ function App() {
               <Route path="/" />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/inventory/stock" element={<Stock />} />
+
+              {/* ======================= Infrastructure ======================== */}
               <Route
                 path="/infrastructure/building"
                 element={<BuildingsPage />}
               />
+              <Route
+                path="/infrastructure/building/:buildingId"
+                element={<FloorsPage />}
+              />
+
+              <Route
+                path="/infrastructure/building"
+                element={<BuildingsPage />}
+              />
+
+              {/* ======================= Settings ======================== */}
+              <Route
+                path="/system/password-policy"
+                element={<PasswordPolicyPage />}
+              />
+
+              <Route path="/system/designation" element={<DesignationPage />} />
 
               {/* Routes that require specific roles */}
               <Route element={<ProtectedRoute allowedRoles={["MANAGER"]} />}>

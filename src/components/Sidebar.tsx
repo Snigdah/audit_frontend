@@ -242,18 +242,25 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
 
       {/* Mobile overlay - semi-transparent */}
       <div
-        className={`fixed inset-0 bg-black bg-opacity-30 z-30 md:hidden ${
+        className={`fixed inset-0  bg-opacity-30 z-30 md:hidden ${
           sidebar ? "block" : "hidden"
         }`}
         onClick={toggleSidebar}
       ></div>
 
       {/* Mobile toggle button */}
-      <button
+      {/* <button
         className="fixed top-4 left-4 z-20 md:hidden bg-gray-900 text-white p-2 rounded-md shadow-md"
         onClick={toggleSidebar}
       >
         <FaBars className="text-xl" />
+      </button> */}
+      <button
+        className="fixed top-4 left-4 z-20 md:hidden text-gray-400 hover:text-gray-200 p-1 transition-colors duration-200"
+        onClick={toggleSidebar}
+        aria-label="Toggle menu"
+      >
+        <FaBars className="text-lg" />
       </button>
     </div>
   );

@@ -3,22 +3,18 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { Button, Spin, message } from "antd";
 import ModalComponent from "../common/ModalComponent";
 import { InputField } from "../common/InputField";
-import BuildingService from "../../services/BuildingService";
-import {
-  BuildingModel,
-  type BuildingFormData,
-  type BuildingResponse,
-} from "../../types/building";
+import DesignationService from "../../services/DesignationService";
+import { DesignationModel, type Designation } from "../../types/designation";
 import CustomButton from "../common/CustomButton";
 
 interface Props {
   visible: boolean;
-  editingData?: BuildingResponse | null;
+  editingData?: Designation | null;
   onCancel: () => void;
   onSuccess: () => void;
 }
 
-const BuildingAddOrUpdate = ({
+const DesignationAddOrUpdate = ({
   visible,
   editingData,
   onCancel,
@@ -33,58 +29,49 @@ const BuildingAddOrUpdate = ({
     reset,
     setValue,
     formState: { errors, isDirty },
-  } = useForm<BuildingFormData>({
+  } = useForm<{ designationName: string }>({
     defaultValues: {
-      name: "",
+      designationName: "",
     },
   });
 
-  // Handle modal open/close and form reset
+  // Handle modal state and form initialization
   useEffect(() => {
-    if (visible) {
-      if (editingData) {
-        // Edit mode: populate form with existing data
-        setValue("name", editingData.buildingName);
-      } else {
-        // Add mode: reset form
-        reset({ name: "" });
-      }
-    } else {
-      // Modal closed: always reset form
-      reset({ name: "" });
+    if (!visible) {
+      reset({ designationName: "" });
+      return;
     }
+
+    editingData
+      ? setValue("designationName", editingData.name)
+      : reset({ designationName: "" });
   }, [visible, editingData, setValue, reset]);
 
-  const handleFormSubmit: SubmitHandler<BuildingFormData> = async (data) => {
+  const handleFormSubmit: SubmitHandler<{ designationName: string }> = (
+    data
+  ) => {
     setIsSubmitting(true);
 
-    try {
-      const payload = new BuildingModel(
-        data.name,
-        isEditMode ? editingData?.id : undefined
-      );
+    const payload = new DesignationModel(
+      data.designationName,
+      isEditMode ? editingData?.id : undefined
+    );
 
-      if (isEditMode) {
-        console.log(payload);
+    const operation = isEditMode
+      ? DesignationService.updateDesignation(payload)
+      : DesignationService.createDesignation(payload);
 
-        await BuildingService.updateBuilding(payload);
-        message.success("Building updated successfully!");
-      } else {
-        await BuildingService.createBuilding(payload);
-        message.success("Building created successfully!");
-      }
-
-      onSuccess();
-    } catch (error) {
-      console.error("Building operation failed:", error);
-      message.error(
-        isEditMode
-          ? "Failed to update building. Please try again."
-          : "Failed to create building. Please try again."
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+    operation
+      .then(() => {
+        console.log("Designation operation successful");
+        onSuccess();
+      })
+      .catch((error) => {
+        console.error("Designation operation failed:", error);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   };
 
   const handleCancel = () => {
@@ -94,7 +81,7 @@ const BuildingAddOrUpdate = ({
 
   return (
     <ModalComponent
-      title={isEditMode ? "Edit Building" : "Add New Building"}
+      title={isEditMode ? "Edit Designation" : "Add New Designation"}
       visible={visible}
       handleCancel={handleCancel}
       width={600}
@@ -102,21 +89,21 @@ const BuildingAddOrUpdate = ({
       <Spin spinning={isSubmitting}>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <InputField
-            name="name"
-            label="Building Name"
-            placeholder="Enter building name (e.g. Main Office)"
+            name="designationName"
+            label="Designation Name"
+            placeholder="Enter designation name (e.g. Senior Developer)"
             register={register}
-            error={errors.name}
+            error={errors.designationName}
             required
             registerOptions={{
-              required: "Building name is required",
+              required: "Designation name is required",
               minLength: {
                 value: 2,
-                message: "Building name must be at least 2 characters",
+                message: "Designation name must be at least 2 characters",
               },
               maxLength: {
-                value: 20,
-                message: "Building name must not exceed 20 characters",
+                value: 100,
+                message: "Designation name must not exceed 100 characters",
               },
             }}
           />
@@ -140,7 +127,7 @@ const BuildingAddOrUpdate = ({
               className="w-full md:w-auto min-w-[100px] !bg-gray-900 hover:!bg-gray-700 !text-white !py-2 !min-h-[36px] !px-4 sm:!px-6 rounded-md font-medium shadow-sm"
               size="large"
             >
-              {isEditMode ? "Update Building" : "Add Building"}
+              {isEditMode ? "Update" : "Add "}
             </CustomButton>
           </div>
         </form>
@@ -149,4 +136,4 @@ const BuildingAddOrUpdate = ({
   );
 };
 
-export default BuildingAddOrUpdate;
+export default DesignationAddOrUpdate;

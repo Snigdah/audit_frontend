@@ -1,8 +1,9 @@
 const BASE = {
   AUTH: "audit",
-  USER: "user",
-  STUDENT: "student",
   BUILDING: "building",
+  FLOOR: "floor",
+  PASSWORD_POLICY: "password-policy",
+  DESIGNATION: "designation",
 };
 
 export const ENDPOINTS = {
@@ -18,10 +19,23 @@ export const ENDPOINTS = {
     FETCH_BY_ID: (id: number) => `${BASE.BUILDING}/${id}`,
     DELETE_BY_ID: (id: number) => `${BASE.BUILDING}/${id}`,
   },
-  USER: {
-    FETCH_ALL: "user/all",
+  FLOOR: {
+    CREATE: `${BASE.FLOOR}`,
+    FETCH_ALL: `${BASE.FLOOR}`,
+    FETCH_BY_ID: (id: number) => `${BASE.FLOOR}/${id}`,
+    FETCH_BY_BUILDING_ID: (buildingId: number) =>
+      `${BASE.FLOOR}/building/${buildingId}`,
+    UPDATE: (id: number) => `${BASE.FLOOR}/${id}`,
+    DELETE: (id: number) => `${BASE.FLOOR}/${id}`,
   },
-  STUDENT: {
-    FETCH_BY_ID: (id: number) => `student/${id}`,
+  PASSWORD_POLICY: {
+    CREATE: `${BASE.PASSWORD_POLICY}`,
+    FETCH: `${BASE.PASSWORD_POLICY}`,
+  },
+  DESIGNATION: {
+    CREATE: `${BASE.DESIGNATION}`,
+    FETCH_ALL: `${BASE.DESIGNATION}`,
+    SEARCH: (query: string) => `${BASE.DESIGNATION}?search=${query}`,
+    UPDATE: (id: number) => `${BASE.DESIGNATION}/${id}`,
   },
 };
