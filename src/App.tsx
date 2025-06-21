@@ -10,10 +10,13 @@ import Unauthorized from "./components/Unauthorized";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import PasswordPolicyPage from "./pages/settings/PasswordPolicyPage";
 import DesignationPage from "./pages/settings/DesignationPage";
+import DepartmentsPage from "./pages/infrastructure/DepartmentPage";
+import ScrollToTop from "./components/common/ScrollToTop";
 
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <AuthProvider>
         <Layout>
           <Routes>
@@ -36,10 +39,9 @@ function App() {
                 path="/infrastructure/building/:buildingId"
                 element={<FloorsPage />}
               />
-
               <Route
-                path="/infrastructure/building"
-                element={<BuildingsPage />}
+                path="/infrastructure/building/:buildingId/floor/:floorId"
+                element={<DepartmentsPage />}
               />
 
               {/* ======================= Settings ======================== */}
@@ -52,7 +54,7 @@ function App() {
 
               {/* Routes that require specific roles */}
               <Route element={<ProtectedRoute allowedRoles={["MANAGER"]} />}>
-                <Route path="/infrastructure/floor" element={<FloorsPage />} />
+                {/* <Route path="/infrastructure/floor" element={<FloorsPage />} /> */}
               </Route>
 
               {/* Add more routes as needed */}
