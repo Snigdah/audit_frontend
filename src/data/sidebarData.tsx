@@ -18,9 +18,10 @@ import {
   FaCogs,
   FaUserShield,
 } from "react-icons/fa";
-import { MdAttachMoney, MdInventory } from "react-icons/md";
+import { MdAttachMoney, MdInventory, MdApartment } from "react-icons/md";
 import { BsFillCalendarCheckFill } from "react-icons/bs";
 import type { SidebarItem } from "../types/sidebar";
+import { GiToolbox } from "react-icons/gi";
 
 const sidebarData: SidebarItem[] = [
   {
@@ -41,16 +42,21 @@ const sidebarData: SidebarItem[] = [
         icon: <FaBuilding />,
       },
       {
-        title: "Floor",
-        path: "/infrastructure/floor",
-        icon: <FaClipboardList />,
+        title: "Department",
+        path: "/infrastructure/department",
+        icon: <MdApartment />,
+      },
+      {
+        title: "Equipment",
+        path: "/infrastructure/equipment",
+        icon: <GiToolbox />,
       },
     ],
   },
   {
     title: "Resource",
     path: "/resource",
-    icon: <FaTools className="text-xl" />,
+    icon: <FaUsersCog className="text-xl" />,
     cName: "nav-text",
     subMenu: [
       {

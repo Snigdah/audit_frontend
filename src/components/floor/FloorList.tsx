@@ -13,6 +13,7 @@ import SectionHeader from "../common/SectionHeader";
 import FloorAddOrUpdate from "./FloorAddOrUpdate";
 import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import CustomButton from "../common/CustomButton";
+import { Link } from "react-router-dom";
 
 const FloorList = ({ buildingId }: { buildingId: string }) => {
   const [floors, setFloors] = useState<FloorResponse[]>([]);
@@ -102,7 +103,16 @@ const FloorList = ({ buildingId }: { buildingId: string }) => {
       dataIndex: "floorName",
       key: "floorName",
       sorter: (a, b) => a.floorName.localeCompare(b.floorName),
+      render: (text, record) => (
+        <Link
+          to={`/infrastructure/building/${record.buildingId}/floor/${record.id}`}
+          className="text-blue-600 hover:underline font-medium"
+        >
+          {text}
+        </Link>
+      ),
     },
+
     {
       title: "Floor Level",
       dataIndex: "floorLevel",

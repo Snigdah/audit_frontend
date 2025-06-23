@@ -2,6 +2,7 @@ const BASE = {
   AUTH: "audit",
   BUILDING: "building",
   FLOOR: "floor",
+  DEPARTMENT: "department",
   PASSWORD_POLICY: "password-policy",
   DESIGNATION: "designation",
 };
@@ -27,6 +28,17 @@ export const ENDPOINTS = {
       `${BASE.FLOOR}/building/${buildingId}`,
     UPDATE: (id: number) => `${BASE.FLOOR}/${id}`,
     DELETE: (id: number) => `${BASE.FLOOR}/${id}`,
+  },
+  DEPARTMENT: {
+    CREATE: `${BASE.DEPARTMENT}`,
+    FETCH_ALL: `${BASE.DEPARTMENT}`,
+    FETCH_BY_ID: (id: number) => `${BASE.DEPARTMENT}/${id}`,
+    FETCH_BY_FLOOR_ID: (floorId: number) =>
+      `${BASE.DEPARTMENT}/floor/${floorId}`,
+    SEARCH: (query: string) => `${BASE.DEPARTMENT}?search=${query}`,
+    UPDATE: (id: number) => `${BASE.DEPARTMENT}/${id}`,
+    DELETE: (id: number) => `${BASE.DEPARTMENT}/${id}`,
+    DROPDOWN: `${BASE.DEPARTMENT}/dropdown`,
   },
   PASSWORD_POLICY: {
     CREATE: `${BASE.PASSWORD_POLICY}`,
