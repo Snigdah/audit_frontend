@@ -12,6 +12,7 @@ import PasswordPolicyPage from "./pages/settings/PasswordPolicyPage";
 import DesignationPage from "./pages/settings/DesignationPage";
 import DepartmentsPage from "./pages/infrastructure/DepartmentPage";
 import ScrollToTop from "./components/common/ScrollToTop";
+import DepartmentTopPage from "./pages/infrastructure/DepartmentTopPage";
 
 function App() {
   return (
@@ -34,6 +35,10 @@ function App() {
               <Route
                 path="/infrastructure/building"
                 element={<BuildingsPage />}
+              />
+              <Route
+                path="/infrastructure/department"
+                element={<DepartmentTopPage />}
               />
               <Route
                 path="/infrastructure/building/:buildingId"
