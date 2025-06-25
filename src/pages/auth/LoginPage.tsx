@@ -19,9 +19,7 @@ export const LoginPage = () => {
   const onSubmit = (data: LoginFormData) => {
     try {
       login(data.employeeId, data.password); // ⬅ This handles token, authState, and redirect
-    } catch (err) {
-      console.error("Login error:", err);
-    }
+    } catch (err) {}
   };
 
   return (

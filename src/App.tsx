@@ -13,12 +13,14 @@ import DesignationPage from "./pages/settings/DesignationPage";
 import DepartmentsPage from "./pages/infrastructure/DepartmentPage";
 import ScrollToTop from "./components/common/ScrollToTop";
 import DepartmentTopPage from "./pages/infrastructure/DepartmentTopPage";
+import { ToastContainer } from "./components/common/Toast";
 
 function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
       <AuthProvider>
+        <ToastContainer />
         <Layout>
           <Routes>
             {/* Public routes */}

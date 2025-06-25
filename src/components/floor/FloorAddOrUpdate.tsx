@@ -7,6 +7,7 @@ import type { FloorFormData, FloorResponse } from "../../types/floor";
 import { FloorModel } from "../../types/floor";
 import FloorService from "../../services/FloorService.ts";
 import CustomButton from "../common/CustomButton.tsx";
+import { toast } from "../common/Toast.tsx";
 
 interface Props {
   visible: boolean;
@@ -65,20 +66,15 @@ const FloorAddOrUpdate = ({
 
       if (isEditMode) {
         await FloorService.updateFloor(payload);
-        message.success("Floor updated successfully!");
+        toast.success("Floor updated");
       } else {
         await FloorService.createFloor(payload);
-        message.success("Floor created successfully!");
+        toast.success("Floor created");
       }
 
       onSuccess();
-    } catch (error) {
-      console.error("Floor operation failed:", error);
-      message.error(
-        isEditMode
-          ? "Failed to update floor. Please try again."
-          : "Failed to create floor. Please try again."
-      );
+    } catch (error: any) {
+      toast.error(error.response?.data?.devMessage || "Floor operation failed");
     } finally {
       setIsSubmitting(false);
     }

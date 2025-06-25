@@ -10,6 +10,7 @@ import {
   type BuildingResponse,
 } from "../../types/building";
 import CustomButton from "../common/CustomButton";
+import { toast } from "../common/Toast";
 
 interface Props {
   visible: boolean;
@@ -68,19 +69,16 @@ const BuildingAddOrUpdate = ({
         console.log(payload);
 
         await BuildingService.updateBuilding(payload);
-        message.success("Building updated successfully!");
+        toast.success("Building updated");
       } else {
         await BuildingService.createBuilding(payload);
-        message.success("Building created successfully!");
+        toast.success("Building created");
       }
 
       onSuccess();
-    } catch (error) {
-      console.error("Building operation failed:", error);
-      message.error(
-        isEditMode
-          ? "Failed to update building. Please try again."
-          : "Failed to create building. Please try again."
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.devMessage || "Building operation failed"
       );
     } finally {
       setIsSubmitting(false);
