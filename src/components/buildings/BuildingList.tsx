@@ -14,6 +14,7 @@ import BuildingAddOrUpdate from "./BuildingAddOrUpdate ";
 import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import { Link } from "react-router-dom";
 import CustomButton from "../common/CustomButton";
+import { toast } from "../common/Toast";
 
 const BuildingList = () => {
   const [buildings, setBuildings] = useState<BuildingResponse[]>([]);
@@ -65,15 +66,17 @@ const BuildingList = () => {
     setDeleteLoading(true);
     BuildingService.deleteBuilding(selectedBuilding.id)
       .then(() => {
-        message.success(
+        toast.warning(
           `Building "${selectedBuilding.buildingName}" deleted successfully`
         );
         fetchBuildings();
         setDeleteModalVisible(false);
       })
-      .catch((error) => {
-        console.error(error);
-        message.error("Failed to delete building");
+      .catch((error: any) => {
+        setDeleteModalVisible(false);
+        toast.error(
+          error.response?.data?.devMessage || "Failed to delete building"
+        );
       })
       .finally(() => {
         setDeleteLoading(false);

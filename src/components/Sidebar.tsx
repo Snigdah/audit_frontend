@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FaBars, FaTimes } from "react-icons/fa";
+import { FaBars, FaTimes, FaSignOutAlt } from "react-icons/fa";
 import {
   MdKeyboardArrowDown,
   MdKeyboardArrowRight,
@@ -20,7 +20,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
   const [sidebar, setSidebar] = useState(false);
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const { authState } = useAuth();
+  const { authState, logout } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
@@ -66,6 +66,17 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
   const handleSubMenuItemClick = () => {
     if (isMobile) {
       setSidebar(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      if (isMobile) {
+        setSidebar(false);
+      }
+    } catch (error) {
+      console.error("Logout failed:", error);
     }
   };
 
@@ -164,7 +175,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
         </div>
 
         <div className="flex flex-col h-full justify-between overflow-y-auto">
-          <nav className="py-4">
+          <nav className="py-4 flex-1">
             <ul className="space-y-1">
               {filteredSidebarData.map((item, index) => {
                 // Skip rendering items that the user doesn't have access to
@@ -223,19 +234,55 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
             </ul>
           </nav>
 
-          <div
-            className={`p-4 text-gray-400 text-xs border-t border-gray-800 ${
-              collapsed ? "text-center" : ""
-            }`}
-          >
-            {!collapsed && (
-              <div>
-                <p>© 2025 ERP System v1.0</p>
-                {authState.isAuthenticated && authState.role && (
-                  <p className="mt-1">Role: {authState.role}</p>
-                )}
+          {/* Bottom section with logout and info */}
+          <div className="border-t border-gray-800">
+            {/* Logout Button */}
+            {authState.isAuthenticated && (
+              <div className="p-4">
+                <button
+                  onClick={handleLogout}
+                  className={`w-full flex items-center text-gray-300 hover:text-white hover:bg-red-600 px-4 py-3 rounded-md transition-all duration-200 group ${
+                    collapsed ? "justify-center px-3" : "justify-start"
+                  }`}
+                  title={collapsed ? "Logout" : ""}
+                >
+                  <FaSignOutAlt
+                    className={`${
+                      collapsed ? "text-lg" : "mr-3 text-base"
+                    } group-hover:text-white`}
+                  />
+                  {!collapsed && <span className="font-medium">Logout</span>}
+                </button>
               </div>
             )}
+
+            {/* Footer Info */}
+            <div
+              className={`p-4 text-gray-400 text-xs ${
+                collapsed ? "text-center" : ""
+              }`}
+            >
+              {!collapsed && (
+                <div>
+                  <p className="font-medium">© 2025 ERP System v1.0</p>
+                  {authState.isAuthenticated && authState.role && (
+                    <p className="mt-1 text-gray-500">
+                      Role:{" "}
+                      <span className="text-gray-300 font-medium">
+                        {authState.role}
+                      </span>
+                    </p>
+                  )}
+                </div>
+              )}
+              {collapsed && authState.isAuthenticated && (
+                <div className="text-center">
+                  <p className="text-xs text-gray-500 transform rotate-90 origin-center whitespace-nowrap">
+                    v1.0
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -249,12 +296,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
       ></div>
 
       {/* Mobile toggle button */}
-      {/* <button
-        className="fixed top-4 left-4 z-20 md:hidden bg-gray-900 text-white p-2 rounded-md shadow-md"
-        onClick={toggleSidebar}
-      >
-        <FaBars className="text-xl" />
-      </button> */}
       <button
         className="fixed top-4 left-4 z-20 md:hidden text-gray-400 hover:text-gray-200 p-1 transition-colors duration-200"
         onClick={toggleSidebar}

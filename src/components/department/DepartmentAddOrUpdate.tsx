@@ -7,6 +7,7 @@ import type { DepartmentFormData, Department } from "../../types/department";
 import { DepartmentModel } from "../../types/department";
 import DepartmentService from "../../services/DepartmentService";
 import CustomButton from "../common/CustomButton";
+import { toast } from "../common/Toast";
 
 interface Props {
   visible: boolean;
@@ -62,19 +63,16 @@ const DepartmentAddOrUpdate = ({
 
       if (isEditMode) {
         await DepartmentService.updateDepartment(payload);
-        message.success("Department updated successfully!");
+        toast.success("Department updated");
       } else {
         await DepartmentService.createDepartment(payload);
-        message.success("Department created successfully!");
+        toast.success("Department created");
       }
 
       onSuccess();
-    } catch (error) {
-      console.error("Department operation failed:", error);
-      message.error(
-        isEditMode
-          ? "Failed to update department. Please try again."
-          : "Failed to create department. Please try again."
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.devMessage || "Department operation failed"
       );
     } finally {
       setIsSubmitting(false);

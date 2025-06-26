@@ -9,6 +9,7 @@ import React, {
 import { useNavigate, useLocation } from "react-router-dom";
 import type { AuthState } from "../types/auth";
 import AuthService from "../services/AuthService";
+import { toast } from "../components/common/Toast";
 
 interface AuthContextProps {
   authState: AuthState;
@@ -69,11 +70,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         role: response.role,
       });
 
+      toast.success("Login successful!");
+
       // Navigate to the saved location or default to home
-      const origin = location.state?.from?.pathname || "/dashboard";
+      const origin = "/dashboard";
       navigate(origin, { replace: true });
-    } catch (error) {
-      console.error("Login failed:", error);
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.devMessage || "Failed to load buildings"
+      );
       throw error;
     }
   };

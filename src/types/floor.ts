@@ -2,6 +2,7 @@
 export interface FloorResponse {
   id: number;
   buildingId: number;
+  buildingName: string;
   floorLevel: number;
   floorName: string;
 }
