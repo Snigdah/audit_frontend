@@ -73,7 +73,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       toast.success("Login successful!");
 
       // Navigate to the saved location or default to home
-      const origin = location.state?.from?.pathname || "/dashboard";
+      const origin = "/dashboard";
       navigate(origin, { replace: true });
     } catch (error: any) {
       toast.error(

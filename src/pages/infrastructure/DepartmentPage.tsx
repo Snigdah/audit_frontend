@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import PageHeader from "../../components/common/PageHeader";
 import DepartmentList from "../../components/department/DepartmentList";
+import FloorDetails from "../../components/floor/FloorDetails";
 
 const DepartmentsPage = () => {
   const { buildingId, floorId } = useParams();
@@ -15,6 +16,9 @@ const DepartmentsPage = () => {
           { label: "Departments" },
         ]}
       />
+      <div className="pb-2">
+        {floorId && <FloorDetails floorId={floorId} />}
+      </div>
       <div className="pb-2">
         {floorId && <DepartmentList floorId={floorId} />}
       </div>
