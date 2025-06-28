@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 import { InputField } from "../../components/common/InputField";
 import { useAuth } from "../../context/AuthContext";
 import { motion } from "framer-motion";
+import { useState } from "react"; // Added import
 
 type LoginFormData = {
   employeeId: string;
@@ -10,6 +11,7 @@ type LoginFormData = {
 
 export const LoginPage = () => {
   const { login } = useAuth();
+  const [isLoading, setIsLoading] = useState(false); // Added loading state
 
   const {
     register,
@@ -17,10 +19,16 @@ export const LoginPage = () => {
     formState: { errors },
   } = useForm<LoginFormData>();
 
-  const onSubmit = (data: LoginFormData) => {
+  const onSubmit = async (data: LoginFormData) => {
+    // Made async
     try {
-      login(data.employeeId, data.password);
-    } catch (err) {}
+      setIsLoading(true);
+      await login(data.employeeId, data.password);
+    } catch (err) {
+      // Handle error if needed
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -117,9 +125,38 @@ export const LoginPage = () => {
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 transition duration-200"
+                disabled={isLoading} // Disable button when loading
+                className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 transition duration-200 ${
+                  isLoading ? "opacity-75 cursor-not-allowed" : ""
+                }`}
               >
-                Sign In
+                {isLoading ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Signing in...
+                  </>
+                ) : (
+                  "Sign In"
+                )}
               </button>
             </div>
           </form>

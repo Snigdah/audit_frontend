@@ -5,6 +5,7 @@ const BASE = {
   DEPARTMENT: "department",
   PASSWORD_POLICY: "password-policy",
   DESIGNATION: "designation",
+  SUPERVISOR: "supervisor",
 };
 
 export const ENDPOINTS = {
@@ -12,6 +13,7 @@ export const ENDPOINTS = {
     LOGIN: `${BASE.AUTH}/login`,
     REFRESH_TOKEN: `${BASE.AUTH}/refreshtoken`,
     LOGOUT: `${BASE.AUTH}/logout`,
+    REGISTER: `${BASE.AUTH}/register`,
   },
   BUILDING: {
     CREATE: `${BASE.BUILDING}`,
@@ -49,5 +51,10 @@ export const ENDPOINTS = {
     FETCH_ALL: `${BASE.DESIGNATION}`,
     SEARCH: (query: string) => `${BASE.DESIGNATION}?search=${query}`,
     UPDATE: (id: number) => `${BASE.DESIGNATION}/${id}`,
+  },
+  SUPERVISOR: {
+    FETCH_BY_ID: (id: number) => `${BASE.SUPERVISOR}/${id}`,
+    FETCH_ALL: (search?: string) =>
+      search ? `${BASE.SUPERVISOR}?search=${search}` : `${BASE.SUPERVISOR}`,
   },
 };
