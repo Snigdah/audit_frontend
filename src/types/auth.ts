@@ -19,3 +19,11 @@ export interface AuthState {
   employeeId: string | null;
   role: string | null;
 }
+
+export interface RegisterRequest {
+  employeeId: string;
+  userName: string;
+  password: string;
+  designation: number;
+  role: string;
+}

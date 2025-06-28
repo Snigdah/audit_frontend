@@ -5,6 +5,7 @@ import type { ApiResponse } from "../types/api";
 import type {
   LoginRequest,
   LoginResponse,
+  RegisterRequest,
   TokenRefreshResponse,
 } from "../types/auth";
 
@@ -50,6 +51,10 @@ class AuthService {
       // Always clear local storage and cookies on logout
       this.clearAuthData();
     }
+  }
+
+  async register(payload: RegisterRequest): Promise<void> {
+    await apiClient.post<ApiResponse<void>>(ENDPOINTS.AUTH.REGISTER, payload);
   }
 
   isAuthenticated(): boolean {

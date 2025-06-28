@@ -12,9 +12,9 @@ import SectionHeader from "../common/SectionHeader";
 import { Table, Button, Space, message, Input } from "antd";
 import BuildingAddOrUpdate from "./BuildingAddOrUpdate ";
 import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
-import { Link } from "react-router-dom";
 import CustomButton from "../common/CustomButton";
 import { toast } from "../common/Toast";
+import { useNavigate } from "react-router-dom";
 
 const BuildingList = () => {
   const [buildings, setBuildings] = useState<BuildingResponse[]>([]);
@@ -25,6 +25,8 @@ const BuildingList = () => {
   const [selectedBuilding, setSelectedBuilding] =
     useState<BuildingResponse | null>(null);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+
+  const navigate = useNavigate();
 
   const fetchBuildings = () => {
     setLoading(true);
@@ -112,14 +114,6 @@ const BuildingList = () => {
       dataIndex: "buildingName",
       key: "buildingName",
       sorter: (a, b) => a.buildingName.localeCompare(b.buildingName),
-      render: (text, record) => (
-        <Link
-          to={`/infrastructure/building/${record.id}`}
-          className="text-blue-600 hover:underline font-medium"
-        >
-          {text}
-        </Link>
-      ),
     },
     {
       title: "Total Floors",
@@ -138,7 +132,10 @@ const BuildingList = () => {
             type="text"
             size="small"
             icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent row click
+              handleEdit(record);
+            }}
             className="text-primary-600 hover:bg-primary-50"
           >
             Edit
@@ -149,7 +146,10 @@ const BuildingList = () => {
             danger
             icon={<DeleteOutlined />}
             className="hover:bg-red-50"
-            onClick={() => handleDeleteClick(record)}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent row click
+              handleDeleteClick(record);
+            }}
           >
             Delete
           </Button>
@@ -194,12 +194,17 @@ const BuildingList = () => {
           scroll={{ x: 50 }}
           bordered
           size="middle"
-          className="shadow-sm"
+          className="shadow-sm cursor-pointer"
           locale={{
             emptyText: searchText
               ? `No buildings found matching "${searchText}"`
               : "No buildings available",
           }}
+          onRow={(record) => ({
+            onClick: () => {
+              navigate(`/infrastructure/building/${record.id}`);
+            },
+          })}
         />
       </div>
 

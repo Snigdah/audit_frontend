@@ -1,7 +1,6 @@
 import { Route, BrowserRouter, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
 import Dashboard from "./pages/dashboard/Dashboard";
-import Stock from "./pages/inventory/Stock";
 import { LoginPage } from "./pages/auth/LoginPage";
 import BuildingsPage from "./pages/infrastructure/BuildingPage";
 import FloorsPage from "./pages/infrastructure/FloorsPage ";
@@ -14,6 +13,8 @@ import DepartmentsPage from "./pages/infrastructure/DepartmentPage";
 import ScrollToTop from "./components/common/ScrollToTop";
 import DepartmentTopPage from "./pages/infrastructure/DepartmentTopPage";
 import { ToastContainer } from "./components/common/Toast";
+import SupervisorPage from "./pages/resource/SupervisorPage";
+import SuperVisorDetails from "./pages/resource/SupervisorDetailsPage";
 
 function App() {
   return (
@@ -31,7 +32,6 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/" />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/inventory/stock" element={<Stock />} />
 
               {/* ======================= Infrastructure ======================== */}
               <Route
@@ -49,6 +49,13 @@ function App() {
               <Route
                 path="/infrastructure/building/:buildingId/floor/:floorId"
                 element={<DepartmentsPage />}
+              />
+
+              {/* ======================= Resource ======================== */}
+              <Route path="/resource/supervisor" element={<SupervisorPage />} />
+              <Route
+                path="/resource/supervisor/:supervisorId"
+                element={<SuperVisorDetails />}
               />
 
               {/* ======================= Settings ======================== */}
