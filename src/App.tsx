@@ -14,6 +14,7 @@ import ScrollToTop from "./components/common/ScrollToTop";
 import DepartmentTopPage from "./pages/infrastructure/DepartmentTopPage";
 import { ToastContainer } from "./components/common/Toast";
 import SupervisorPage from "./pages/resource/SupervisorPage";
+import SuperVisorDetails from "./pages/resource/SupervisorDetailsPage";
 
 function App() {
   return (
@@ -50,8 +51,12 @@ function App() {
                 element={<DepartmentsPage />}
               />
 
-              {/* ======================= Settings ======================== */}
+              {/* ======================= Resource ======================== */}
               <Route path="/resource/supervisor" element={<SupervisorPage />} />
+              <Route
+                path="/resource/supervisor/:supervisorId"
+                element={<SuperVisorDetails />}
+              />
 
               {/* ======================= Settings ======================== */}
               <Route

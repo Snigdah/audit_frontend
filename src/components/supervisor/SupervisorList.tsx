@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Button, Input, Space, Table, message } from "antd";
+import { Input, Space, Table, message } from "antd";
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import SupervisorService from "../../services/SupervisorService";
@@ -8,12 +8,14 @@ import type { SupervisorSimple } from "../../types/supervisor";
 import CustomButton from "../common/CustomButton";
 import { debounce } from "lodash";
 import SupervisorAddModal from "./SupervisorAddModal";
+import { useNavigate } from "react-router-dom";
 
 const SupervisorList = () => {
   const [supervisors, setSupervisors] = useState<SupervisorSimple[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const navigate = useNavigate();
 
   const debouncedSearch = useCallback(
     debounce((searchValue: string) => {
@@ -123,6 +125,11 @@ const SupervisorList = () => {
               ? `No supervisors found matching "${searchText}"`
               : "No supervisors available",
           }}
+          onRow={(record) => ({
+            onClick: () => navigate(`/resource/supervisor/${record.id}`),
+            style: { cursor: "pointer" },
+          })}
+          rowClassName={() => "hover:bg-gray-100"} // Hover effect
         />
       </div>
 
