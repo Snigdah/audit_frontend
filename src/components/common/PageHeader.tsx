@@ -18,9 +18,15 @@ const PageHeader: React.FC<PageHeaderProps> = ({
     <div className="w-full mb-2 pb-6 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 sm:px-6 py-4 rounded-lg shadow-sm">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-[22px] sm:pt-0">
         <div className="flex flex-col space-y-2 w-full">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-800 dark:text-white leading-tight">
-            {title}
-          </h1>
+          <div className="flex items-center gap-4">
+            <div className="w-1 h-8 sm:h-10 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full"></div>
+            <div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 dark:from-white dark:via-gray-100 dark:to-gray-200 bg-clip-text text-transparent leading-tight">
+                {title}
+              </h1>
+              <div className="w-12 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mt-2"></div>
+            </div>
+          </div>
 
           <div className="overflow-x-auto max-w-full whitespace-nowrap scrollbar-hide">
             <Breadcrumb
