@@ -56,5 +56,6 @@ export const ENDPOINTS = {
     FETCH_BY_ID: (id: number) => `${BASE.SUPERVISOR}/${id}`,
     FETCH_ALL: (search?: string) =>
       search ? `${BASE.SUPERVISOR}?search=${search}` : `${BASE.SUPERVISOR}`,
+    UPDATE: (id: number) => `${BASE.SUPERVISOR}/${id}`,
   },
 };

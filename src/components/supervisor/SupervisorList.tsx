@@ -1,6 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
-import { Input, Space, Table, message } from "antd";
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { Input, Space, Table, message, Button } from "antd";
+import {
+  PlusOutlined,
+  SearchOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import SupervisorService from "../../services/SupervisorService";
 import SectionHeader from "../common/SectionHeader";
@@ -8,13 +13,23 @@ import type { SupervisorSimple } from "../../types/supervisor";
 import CustomButton from "../common/CustomButton";
 import { debounce } from "lodash";
 import SupervisorAddModal from "./SupervisorAddModal";
+import SupervisorUpdateModal from "./SupervisorUpdateModal";
+import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import { useNavigate } from "react-router-dom";
+import { toast } from "../common/Toast";
 
 const SupervisorList = () => {
   const [supervisors, setSupervisors] = useState<SupervisorSimple[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
+  const [addModalVisible, setAddModalVisible] = useState(false);
+  const [updateModalVisible, setUpdateModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [selectedSupervisorId, setSelectedSupervisorId] = useState<
+    number | null
+  >(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const debouncedSearch = useCallback(
@@ -49,16 +64,44 @@ const SupervisorList = () => {
   };
 
   const handleAdd = () => {
-    setModalVisible(true);
+    setAddModalVisible(true);
   };
 
   const handleModalClose = () => {
-    setModalVisible(false);
+    setAddModalVisible(false);
+    setUpdateModalVisible(false);
+    setSelectedSupervisorId(null);
   };
 
   const handleModalSuccess = () => {
     handleModalClose();
     fetchSupervisors(searchText);
+  };
+
+  const handleEdit = (record: SupervisorSimple) => {
+    setSelectedSupervisorId(record.id);
+    setUpdateModalVisible(true);
+  };
+
+  const handleDeleteClick = (record: SupervisorSimple) => {
+    setSelectedSupervisorId(record.id);
+    setDeleteModalVisible(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    // if (selectedSupervisorId === null) return;
+    // setDeleteLoading(true);
+    // SupervisorService.deleteSupervisor(selectedSupervisorId)
+    //   .then(() => {
+    //     toast.warning("Supervisor deleted successfully");
+    //     fetchSupervisors(searchText);
+    //     setDeleteModalVisible(false);
+    //   })
+    //   .catch((err) => {
+    //     console.error(err);
+    //     toast.error(err.response?.data?.devMessage || "Failed to delete supervisor");
+    //   })
+    //   .finally(() => setDeleteLoading(false));
   };
 
   const columns: ColumnsType<SupervisorSimple> = [
@@ -80,6 +123,40 @@ const SupervisorList = () => {
       dataIndex: "name",
       key: "name",
       sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      width: 180,
+      render: (_, record) => (
+        <Space size="small">
+          <Button
+            type="text"
+            size="small"
+            icon={<EditOutlined />}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleEdit(record);
+            }}
+            className="text-primary-600 hover:bg-primary-50"
+          >
+            Edit
+          </Button>
+          <Button
+            type="text"
+            size="small"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDeleteClick(record);
+            }}
+            className="hover:bg-red-50"
+          >
+            Delete
+          </Button>
+        </Space>
+      ),
     },
   ];
 
@@ -129,14 +206,31 @@ const SupervisorList = () => {
             onClick: () => navigate(`/resource/supervisor/${record.id}`),
             style: { cursor: "pointer" },
           })}
-          rowClassName={() => "hover:bg-gray-100"} // Hover effect
+          rowClassName={() => "hover:bg-gray-100"}
         />
       </div>
 
       <SupervisorAddModal
-        visible={modalVisible}
+        visible={addModalVisible}
         onCancel={handleModalClose}
         onSuccess={handleModalSuccess}
+      />
+
+      <SupervisorUpdateModal
+        visible={updateModalVisible}
+        onCancel={handleModalClose}
+        onSuccess={handleModalSuccess}
+        supervisorId={selectedSupervisorId}
+      />
+
+      <DeleteConfirmationModal
+        visible={deleteModalVisible}
+        onCancel={() => setDeleteModalVisible(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Supervisor"
+        description="Are you sure you want to delete this supervisor?"
+        confirmText="Delete"
+        loading={deleteLoading}
       />
     </div>
   );
