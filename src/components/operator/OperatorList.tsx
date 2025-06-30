@@ -7,51 +7,51 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
-import SupervisorService from "../../services/SupervisorService";
+import OperatorService from "../../services/OperatorService";
 import SectionHeader from "../common/SectionHeader";
-import type { SupervisorSimple } from "../../types/supervisor";
+import type { OperatorSimple } from "../../types/operator";
 import CustomButton from "../common/CustomButton";
 import { debounce } from "lodash";
-import SupervisorAddModal from "./SupervisorAddModal";
-import SupervisorUpdateModal from "./SupervisorUpdateModal";
+import OperatorAddModal from "./OperatorAddModal";
+import OperatorUpdateModal from "./OperatorUpdateModal";
 import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import { useNavigate } from "react-router-dom";
 import { toast } from "../common/Toast";
 
-const SupervisorList = () => {
-  const [supervisors, setSupervisors] = useState<SupervisorSimple[]>([]);
+const OperatorList = () => {
+  const [operators, setOperators] = useState<OperatorSimple[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [updateModalVisible, setUpdateModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [selectedSupervisorId, setSelectedSupervisorId] = useState<
-    number | null
-  >(null);
+  const [selectedOperatorId, setSelectedOperatorId] = useState<number | null>(
+    null
+  );
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const debouncedSearch = useCallback(
     debounce((searchValue: string) => {
-      fetchSupervisors(searchValue);
+      fetchOperators(searchValue);
     }, 500),
     []
   );
 
-  const fetchSupervisors = (search?: string) => {
+  const fetchOperators = (search?: string) => {
     setLoading(true);
-    SupervisorService.getAllSupervisors(search)
-      .then((data) => setSupervisors(data))
+    OperatorService.getAllOperators(search)
+      .then((data) => setOperators(data))
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch supervisors");
+        message.error("Failed to fetch operators");
       })
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    fetchSupervisors();
+    fetchOperators();
     return () => {
       debouncedSearch.cancel();
     };
@@ -70,41 +70,41 @@ const SupervisorList = () => {
   const handleModalClose = () => {
     setAddModalVisible(false);
     setUpdateModalVisible(false);
-    setSelectedSupervisorId(null);
+    setSelectedOperatorId(null);
   };
 
   const handleModalSuccess = () => {
     handleModalClose();
-    fetchSupervisors(searchText);
+    fetchOperators(searchText);
   };
 
-  const handleEdit = (record: SupervisorSimple) => {
-    setSelectedSupervisorId(record.id);
+  const handleEdit = (record: OperatorSimple) => {
+    setSelectedOperatorId(record.id);
     setUpdateModalVisible(true);
   };
 
-  const handleDeleteClick = (record: SupervisorSimple) => {
-    setSelectedSupervisorId(record.id);
+  const handleDeleteClick = (record: OperatorSimple) => {
+    setSelectedOperatorId(record.id);
     setDeleteModalVisible(true);
   };
 
   const handleDeleteConfirm = () => {
-    // if (selectedSupervisorId === null) return;
+    // if (selectedOperatorId === null) return;
     // setDeleteLoading(true);
-    // SupervisorService.deleteSupervisor(selectedSupervisorId)
+    // OperatorService.deleteOperator(selectedOperatorId)
     //   .then(() => {
-    //     toast.warning("Supervisor deleted successfully");
-    //     fetchSupervisors(searchText);
+    //     toast.warning("Operator deleted successfully");
+    //     fetchOperators(searchText);
     //     setDeleteModalVisible(false);
     //   })
     //   .catch((err) => {
     //     console.error(err);
-    //     toast.error(err.response?.data?.devMessage || "Failed to delete supervisor");
+    //     toast.error(err.response?.data?.devMessage || "Failed to delete operator");
     //   })
     //   .finally(() => setDeleteLoading(false));
   };
 
-  const columns: ColumnsType<SupervisorSimple> = [
+  const columns: ColumnsType<OperatorSimple> = [
     {
       title: "ID",
       dataIndex: "id",
@@ -119,7 +119,7 @@ const SupervisorList = () => {
       sorter: (a, b) => a.employeeId.localeCompare(b.employeeId),
     },
     {
-      title: "Supervisor Name",
+      title: "Operator Name",
       dataIndex: "name",
       key: "name",
       sorter: (a, b) => a.name.localeCompare(b.name),
@@ -164,11 +164,11 @@ const SupervisorList = () => {
     <div className="p-4 bg-white rounded-lg shadow-sm">
       <div className="flex flex-col space-y-6">
         <SectionHeader
-          title="Supervisor Management"
+          title="Operator Management"
           rightContent={
             <Space>
               <Input
-                placeholder="Search supervisors..."
+                placeholder="Search operators..."
                 prefix={<SearchOutlined className="text-gray-400" />}
                 onChange={handleSearchChange}
                 value={searchText}
@@ -176,14 +176,14 @@ const SupervisorList = () => {
                 className="w-64"
               />
               <CustomButton onClick={handleAdd} icon={<PlusOutlined />}>
-                Add Supervisor
+                Add Operator
               </CustomButton>
             </Space>
           }
         />
 
         <Table
-          dataSource={supervisors}
+          dataSource={operators}
           columns={columns}
           rowKey="id"
           loading={loading}
@@ -192,43 +192,43 @@ const SupervisorList = () => {
             pageSizeOptions: ["10", "20", "50"],
             showQuickJumper: true,
             showSizeChanger: true,
-            showTotal: (total) => `Total ${total} supervisors`,
+            showTotal: (total) => `Total ${total} operators`,
           }}
           bordered
           size="middle"
           scroll={{ x: 400 }}
           locale={{
             emptyText: searchText
-              ? `No supervisors found matching "${searchText}"`
-              : "No supervisors available",
+              ? `No operators found matching "${searchText}"`
+              : "No operators available",
           }}
           onRow={(record) => ({
-            onClick: () => navigate(`/resource/supervisor/${record.id}`),
+            onClick: () => navigate(`/resource/operator/${record.id}`),
             style: { cursor: "pointer" },
           })}
           rowClassName={() => "hover:bg-gray-100"}
         />
       </div>
 
-      <SupervisorAddModal
+      <OperatorAddModal
         visible={addModalVisible}
         onCancel={handleModalClose}
         onSuccess={handleModalSuccess}
       />
 
-      <SupervisorUpdateModal
+      <OperatorUpdateModal
         visible={updateModalVisible}
         onCancel={handleModalClose}
         onSuccess={handleModalSuccess}
-        supervisorId={selectedSupervisorId}
+        operatorId={selectedOperatorId}
       />
 
       <DeleteConfirmationModal
         visible={deleteModalVisible}
         onCancel={() => setDeleteModalVisible(false)}
         onConfirm={handleDeleteConfirm}
-        title="Delete Supervisor"
-        description="Are you sure you want to delete this supervisor?"
+        title="Delete Operator"
+        description="Are you sure you want to delete this operator?"
         confirmText="Delete"
         loading={deleteLoading}
       />
@@ -236,4 +236,4 @@ const SupervisorList = () => {
   );
 };
 
-export default SupervisorList;
+export default OperatorList;

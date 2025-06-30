@@ -15,6 +15,8 @@ import DepartmentTopPage from "./pages/infrastructure/DepartmentTopPage";
 import { ToastContainer } from "./components/common/Toast";
 import SupervisorPage from "./pages/resource/SupervisorPage";
 import SuperVisorDetails from "./pages/resource/SupervisorDetailsPage";
+import OperatorPage from "./pages/resource/OperatorPage";
+import OperatorDetailsPage from "./pages/resource/OperatorDetailsPage";
 
 function App() {
   return (
@@ -56,6 +58,12 @@ function App() {
               <Route
                 path="/resource/supervisor/:supervisorId"
                 element={<SuperVisorDetails />}
+              />
+
+              <Route path="/resource/operator" element={<OperatorPage />} />
+              <Route
+                path="/resource/operator/:operatorId"
+                element={<OperatorDetailsPage />}
               />
 
               {/* ======================= Settings ======================== */}

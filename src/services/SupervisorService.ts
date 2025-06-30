@@ -1,7 +1,11 @@
 import apiClient from "../api/axios";
 import { ENDPOINTS } from "../api/endpoints";
 import type { ApiResponse } from "../types/api";
-import type { SupervisorDetail, SupervisorSimple } from "../types/supervisor";
+import type {
+  SupervisorDetail,
+  SupervisorSimple,
+  UpdateSupervisorRequest,
+} from "../types/supervisor";
 
 class SupervisorService {
   async getSupervisorById(id: number): Promise<SupervisorDetail> {
@@ -16,6 +20,17 @@ class SupervisorService {
       ENDPOINTS.SUPERVISOR.FETCH_ALL(search)
     );
     return response.data.data;
+  }
+
+  async updateSupervisor(
+    id: number,
+    request: UpdateSupervisorRequest
+  ): Promise<ApiResponse<void>> {
+    const response = await apiClient.put<ApiResponse<void>>(
+      ENDPOINTS.SUPERVISOR.UPDATE(id),
+      request
+    );
+    return response.data;
   }
 }
 

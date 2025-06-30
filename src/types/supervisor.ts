@@ -14,3 +14,9 @@ export interface SupervisorSimple {
   employeeId: string;
   name: string;
 }
+
+export interface UpdateSupervisorRequest {
+  employeeId: string;
+  designationId: number;
+  supervisorName: string;
+}
