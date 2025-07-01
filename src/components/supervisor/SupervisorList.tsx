@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Input, Space, Table, message, Button } from "antd";
+import { Input, Space, Table, message, Button, Tooltip } from "antd";
 import {
   PlusOutlined,
   SearchOutlined,
@@ -106,60 +106,101 @@ const SupervisorList = () => {
 
   const columns: ColumnsType<SupervisorSimple> = [
     {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      sorter: (a, b) => a.id - b.id,
-      width: 100,
-    },
-    {
-      title: "Employee ID",
+      title: (
+        <div className="flex items-center gap-2 font-semibold text-gray-700">
+          <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+          Employee ID
+        </div>
+      ),
       dataIndex: "employeeId",
       key: "employeeId",
       sorter: (a, b) => a.employeeId.localeCompare(b.employeeId),
+      width: 140,
+      render: (employeeId: string) => (
+        <div className="flex items-center gap-2">
+          <div className="px-2.5 py-1 bg-gradient-to-r from-blue-100 to-blue-200 rounded-lg border border-blue-300">
+            <span className="font-mono text-blue-700 text-sm font-semibold">
+              #{employeeId}
+            </span>
+          </div>
+        </div>
+      ),
     },
     {
-      title: "Supervisor Name",
+      title: (
+        <div className="flex items-center gap-2 font-semibold text-gray-700">
+          <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
+          Supervisor Name
+        </div>
+      ),
       dataIndex: "name",
       key: "name",
       sorter: (a, b) => a.name.localeCompare(b.name),
+      render: (name: string) => (
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-sm">
+            <svg
+              className="w-5 h-5 text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013-3.006z" />
+            </svg>
+          </div>
+          <div>
+            <div className="font-semibold text-gray-900 text-sm">{name}</div>
+            <div className="text-xs text-gray-500">Supervisor</div>
+          </div>
+        </div>
+      ),
     },
     {
-      title: "Actions",
+      title: (
+        <div className="flex items-center gap-2 font-semibold text-gray-700">
+          <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+          Actions
+        </div>
+      ),
       key: "actions",
-      width: 180,
+      width: 200,
       render: (_, record) => (
-        <Space size="small">
-          <Button
-            type="text"
-            size="small"
-            icon={<EditOutlined />}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleEdit(record);
-            }}
-            className="text-primary-600 hover:bg-primary-50"
-          >
-            Edit
-          </Button>
-          <Button
-            type="text"
-            size="small"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDeleteClick(record);
-            }}
-            className="hover:bg-red-50"
-          >
-            Delete
-          </Button>
+        <Space size="small" className="flex justify-end">
+          <Tooltip title="Edit Supervisor" placement="top">
+            <Button
+              type="text"
+              size="middle"
+              icon={
+                <EditOutlined className="text-blue-600 hover:text-blue-700 transition-colors" />
+              }
+              onClick={(e) => {
+                e.stopPropagation();
+                handleEdit(record);
+              }}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-blue-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 shadow-sm hover:shadow-md"
+            >
+              <span className="text-blue-700 font-medium text-sm">Edit</span>
+            </Button>
+          </Tooltip>
+          <Tooltip title="Delete Supervisor" placement="top">
+            <Button
+              type="text"
+              size="middle"
+              icon={
+                <DeleteOutlined className="text-red-600 hover:text-red-700 transition-colors" />
+              }
+              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-red-200 hover:border-red-300 hover:bg-red-50 transition-all duration-200 shadow-sm hover:shadow-md"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteClick(record);
+              }}
+            >
+              <span className="text-red-700 font-medium text-sm">Delete</span>
+            </Button>
+          </Tooltip>
         </Space>
       ),
     },
   ];
-
   return (
     <div className="p-4 bg-white rounded-lg shadow-sm">
       <div className="flex flex-col space-y-6">

@@ -17,6 +17,7 @@ import SupervisorPage from "./pages/resource/SupervisorPage";
 import SuperVisorDetails from "./pages/resource/SupervisorDetailsPage";
 import OperatorPage from "./pages/resource/OperatorPage";
 import OperatorDetailsPage from "./pages/resource/OperatorDetailsPage";
+import EquipmentTopPage from "./pages/infrastructure/EquipmentTopPage";
 
 function App() {
   return (
@@ -43,6 +44,10 @@ function App() {
               <Route
                 path="/infrastructure/department"
                 element={<DepartmentTopPage />}
+              />
+              <Route
+                path="/infrastructure/equipment"
+                element={<EquipmentTopPage />}
               />
               <Route
                 path="/infrastructure/building/:buildingId"

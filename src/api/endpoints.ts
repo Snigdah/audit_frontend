@@ -7,6 +7,7 @@ const BASE = {
   DESIGNATION: "designation",
   SUPERVISOR: "supervisor",
   OPERATOR: "operator",
+  EQUIPMENT: "equipment",
 };
 
 export const ENDPOINTS = {
@@ -64,5 +65,13 @@ export const ENDPOINTS = {
     FETCH_ALL: (search?: string) =>
       search ? `${BASE.OPERATOR}?search=${search}` : `${BASE.OPERATOR}`,
     UPDATE: (id: number) => `${BASE.OPERATOR}/${id}`,
+  },
+  EQUIPMENT: {
+    FETCH_BY_ID: (id: number) => `${BASE.EQUIPMENT}/${id}`,
+    FETCH_ALL: (search?: string) =>
+      search ? `${BASE.EQUIPMENT}?search=${search}` : `${BASE.EQUIPMENT}`,
+    CREATE: () => `${BASE.EQUIPMENT}`,
+    UPDATE: (id: number) => `${BASE.EQUIPMENT}/${id}`,
+    DELETE: (id: number) => `${BASE.EQUIPMENT}/${id}`,
   },
 };

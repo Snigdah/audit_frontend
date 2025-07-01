@@ -5,7 +5,7 @@ const DepartmentTopPage = () => {
   return (
     <div className="min-h-screen">
       <PageHeader
-        title="Building"
+        title="Department"
         breadcrumbs={[{ label: "Infrastructure" }, { label: "Department" }]}
       />
 
