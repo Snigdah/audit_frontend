@@ -193,7 +193,7 @@ const EquipmentTopList = () => {
           className="shadow-sm cursor-pointer"
           onRow={(record) => ({
             onClick: () => {
-              navigate(`/resource/equipment/${record.id}`);
+              navigate(`/infrastructure/equipment/${record.id}`);
             },
           })}
         />
