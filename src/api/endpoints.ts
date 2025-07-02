@@ -43,6 +43,17 @@ export const ENDPOINTS = {
     UPDATE: (id: number) => `${BASE.DEPARTMENT}/${id}`,
     DELETE: (id: number) => `${BASE.DEPARTMENT}/${id}`,
     DROPDOWN: `${BASE.DEPARTMENT}/dropdown`,
+
+    ASSIGN_SUPERVISOR: `${BASE.DEPARTMENT}/assign-supervisor`,
+    REMOVE_SUPERVISOR: `${BASE.DEPARTMENT}/remove-supervisor`,
+    GET_SUPERVISORS: (departmentId: number) =>
+      `${BASE.DEPARTMENT}/${departmentId}/supervisors`,
+
+    ASSIGN_EQUIPMENT: `${BASE.DEPARTMENT}/assign-equipment`,
+    REMOVE_EQUIPMENT: (equipmentId: number) =>
+      `${BASE.DEPARTMENT}/remove-equipment/${equipmentId}`,
+    GET_EQUIPMENTS: (departmentId: number) =>
+      `${BASE.DEPARTMENT}/${departmentId}/equipments`,
   },
   PASSWORD_POLICY: {
     CREATE: `${BASE.PASSWORD_POLICY}`,
