@@ -2,6 +2,7 @@
 import { useParams } from "react-router-dom";
 import PageHeader from "../../components/common/PageHeader";
 import EquipmentDetails from "../../components/equipment/EquipmentDetails";
+import EquipmentOperator from "../../components/equipment/EquipmentOperator";
 
 const EquipmentDetailsPage = () => {
   const { equipmentId } = useParams();
@@ -18,6 +19,9 @@ const EquipmentDetailsPage = () => {
       />
       <div className="pb-2">
         {equipmentId && <EquipmentDetails equipmentId={equipmentId} />}
+      </div>
+      <div className="pb-2">
+        {equipmentId && <EquipmentOperator equipmentId={equipmentId} />}
       </div>
     </div>
   );

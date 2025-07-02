@@ -1,7 +1,12 @@
 import apiClient from "../api/axios";
 import { ENDPOINTS } from "../api/endpoints";
 import type { ApiResponse } from "../types/api";
-import type { EquipmentRequest, EquipmentResponse } from "../types/equipment";
+import type {
+  EquipmentOperatorRequest,
+  EquipmentRequest,
+  EquipmentResponse,
+} from "../types/equipment";
+import type { OperatorSimple } from "../types/operator";
 
 class EquipmentService {
   async createEquipment(request: EquipmentRequest): Promise<ApiResponse<void>> {
@@ -42,6 +47,38 @@ class EquipmentService {
       ENDPOINTS.EQUIPMENT.DELETE(id)
     );
     return response.data;
+  }
+
+  // ✅ Assign Operator
+  async assignOperator(
+    request: EquipmentOperatorRequest
+  ): Promise<ApiResponse<void>> {
+    const response = await apiClient.post<ApiResponse<void>>(
+      ENDPOINTS.EQUIPMENT.ASSIGN_OPERATOR(),
+      request
+    );
+    return response.data;
+  }
+
+  // ✅ Remove Operator
+  async removeOperator(
+    request: EquipmentOperatorRequest
+  ): Promise<ApiResponse<void>> {
+    const response = await apiClient.post<ApiResponse<void>>(
+      ENDPOINTS.EQUIPMENT.REMOVE_OPERATOR(),
+      request
+    );
+    return response.data;
+  }
+
+  // ✅ Fetch Operators by Equipment
+  async getOperatorsByEquipment(
+    equipmentId: number
+  ): Promise<OperatorSimple[]> {
+    const response = await apiClient.get<ApiResponse<OperatorSimple[]>>(
+      ENDPOINTS.EQUIPMENT.FETCH_OPERATORS(equipmentId)
+    );
+    return response.data.data;
   }
 }
 

@@ -73,5 +73,8 @@ export const ENDPOINTS = {
     CREATE: () => `${BASE.EQUIPMENT}`,
     UPDATE: (id: number) => `${BASE.EQUIPMENT}/${id}`,
     DELETE: (id: number) => `${BASE.EQUIPMENT}/${id}`,
+    ASSIGN_OPERATOR: () => `${BASE.EQUIPMENT}/assign-operator`,
+    REMOVE_OPERATOR: () => `${BASE.EQUIPMENT}/remove-operator`,
+    FETCH_OPERATORS: (id: number) => `${BASE.EQUIPMENT}/${id}/operators`,
   },
 };

@@ -11,3 +11,8 @@ export interface EquipmentResponse {
   equipmentName: string;
   lastModifiedTime?: string; // Optional as per your backend design
 }
+
+export interface EquipmentOperatorRequest {
+  equipmentId: number;
+  operatorId: number;
+}
