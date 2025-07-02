@@ -115,7 +115,7 @@ const OperatorList = () => {
       dataIndex: "employeeId",
       key: "employeeId",
       sorter: (a, b) => a.employeeId.localeCompare(b.employeeId),
-      width: 140,
+      width: 160,
       render: (employeeId: string) => (
         <div className="flex items-center gap-2">
           <div className="px-2.5 py-1 bg-gradient-to-r from-cyan-100 to-cyan-200 rounded-lg border border-cyan-300">
@@ -137,8 +137,8 @@ const OperatorList = () => {
       key: "name",
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (name: string) => (
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-sm">
+        <div className="flex items-center gap-3 min-w-[120px] whitespace-nowrap">
+          <div className="w-10 h-10 flex-shrink-0 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-sm">
             <svg
               className="w-5 h-5 text-white"
               fill="currentColor"
@@ -147,13 +147,16 @@ const OperatorList = () => {
               <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <div>
-            <div className="font-semibold text-gray-900 text-sm">{name}</div>
+          <div className="overflow-hidden text-ellipsis">
+            <div className="font-semibold text-gray-900 text-sm truncate max-w-[140px]">
+              {name}
+            </div>
             <div className="text-xs text-gray-500">Operator</div>
           </div>
         </div>
       ),
     },
+
     {
       title: (
         <div className="flex items-center gap-2 font-semibold text-gray-700">
