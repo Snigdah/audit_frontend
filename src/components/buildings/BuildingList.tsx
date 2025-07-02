@@ -76,7 +76,6 @@ const BuildingList = () => {
         setDeleteModalVisible(false);
       })
       .catch((error: any) => {
-        setDeleteModalVisible(false);
         toast.error(
           error.response?.data?.devMessage || "Failed to delete building"
         );

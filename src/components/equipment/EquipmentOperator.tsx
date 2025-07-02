@@ -108,39 +108,78 @@ const EquipmentOperator = ({ equipmentId }: Props) => {
 
   const columns: ColumnsType<OperatorSimple> = [
     {
-      title: "Operator ID",
-      dataIndex: "id",
-      key: "id",
-      width: 100,
-    },
-    {
-      title: "Employee ID",
+      title: (
+        <div className="flex items-center gap-2 font-semibold text-gray-700">
+          <span className="w-2 h-2 bg-cyan-500 rounded-full"></span>
+          Employee ID
+        </div>
+      ),
       dataIndex: "employeeId",
       key: "employeeId",
+      sorter: (a, b) => a.employeeId.localeCompare(b.employeeId),
+      width: 140,
+      render: (employeeId: string) => (
+        <div className="flex items-center gap-2">
+          <div className="px-2.5 py-1 bg-gradient-to-r from-cyan-100 to-cyan-200 rounded-lg border border-cyan-300">
+            <span className="font-mono text-cyan-700 text-sm font-semibold">
+              #{employeeId}
+            </span>
+          </div>
+        </div>
+      ),
     },
     {
-      title: "Operator Name",
+      title: (
+        <div className="flex items-center gap-2 font-semibold text-gray-700">
+          <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
+          Operator Name
+        </div>
+      ),
       dataIndex: "name",
       key: "name",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+      render: (name: string) => (
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-sm">
+            <svg
+              className="w-5 h-5 text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <div className="font-semibold text-gray-900 text-sm">{name}</div>
+            <div className="text-xs text-gray-500">Operator</div>
+          </div>
+        </div>
+      ),
     },
     {
-      title: "Actions",
+      title: (
+        <div className="flex items-center gap-2 font-semibold text-gray-700">
+          <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+          Actions
+        </div>
+      ),
       key: "actions",
       width: 150,
       render: (_, record) => (
-        <Space size="small">
-          <Tooltip title="Remove Operator">
+        <Space size="small" className="flex justify-end">
+          <Tooltip title="Remove Operator" placement="top">
             <Button
               type="text"
               icon={
-                <DeleteOutlined className="text-red-600 hover:text-red-700" />
+                <DeleteOutlined className="text-red-600 hover:text-red-700 transition-colors" />
               }
+              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-red-200 hover:border-red-300 hover:bg-red-50 transition-all duration-200 shadow-sm hover:shadow-md"
               onClick={(e) => {
                 e.stopPropagation();
                 handleDeleteClick(record.id);
               }}
             >
-              <span className="text-red-700">Remove</span>
+              <span className="text-red-700 font-medium text-sm">Remove</span>
             </Button>
           </Tooltip>
         </Space>
@@ -152,7 +191,7 @@ const EquipmentOperator = ({ equipmentId }: Props) => {
     <div className="p-4 bg-white rounded-lg shadow-sm">
       <div className="flex flex-col space-y-6">
         <SectionHeader
-          title="Equipment Operator Management"
+          title="Operator Management"
           rightContent={
             <Space>
               <Input
