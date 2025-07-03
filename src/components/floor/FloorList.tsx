@@ -13,7 +13,7 @@ import SectionHeader from "../common/SectionHeader";
 import FloorAddOrUpdate from "./FloorAddOrUpdate";
 import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import CustomButton from "../common/CustomButton";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const FloorList = ({ buildingId }: { buildingId: string }) => {
   const [floors, setFloors] = useState<FloorResponse[]>([]);
@@ -25,6 +25,7 @@ const FloorList = ({ buildingId }: { buildingId: string }) => {
     null
   );
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const navigate = useNavigate();
 
   const fetchFloors = () => {
     setLoading(true);
@@ -102,7 +103,7 @@ const FloorList = ({ buildingId }: { buildingId: string }) => {
       key: "floorName",
       sorter: (a, b) => a.floorName.localeCompare(b.floorName),
       render: (text: string, record: FloorResponse) => (
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-3 min-w-[120px] whitespace-nowrap">
           <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0">
             <svg
               className="w-5 h-5 text-white"
@@ -117,12 +118,7 @@ const FloorList = ({ buildingId }: { buildingId: string }) => {
             </svg>
           </div>
           <div className="min-w-0">
-            <Link
-              to={`/infrastructure/building/${record.buildingId}/floor/${record.id}`}
-              className="font-semibold text-gray-900 text-sm hover:text-blue-600 hover:underline transition-colors truncate block"
-            >
-              {text}
-            </Link>
+            <div className="font-semibold text-gray-900 text-sm">{text}</div>
             <div className="text-xs text-gray-500 truncate">Floor</div>
           </div>
         </div>
@@ -247,12 +243,20 @@ const FloorList = ({ buildingId }: { buildingId: string }) => {
           }}
           bordered
           size="middle"
+          className="shadow-sm cursor-pointer"
           scroll={{ x: 400 }}
           locale={{
             emptyText: searchText
               ? `No floors found matching "${searchText}"`
               : "No floors available",
           }}
+          onRow={(record) => ({
+            onClick: () => {
+              navigate(
+                `/infrastructure/building/${record.buildingId}/floor/${record.id}`
+              );
+            },
+          })}
         />
       </div>
 

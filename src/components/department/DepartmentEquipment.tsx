@@ -1,100 +1,112 @@
-import { useEffect, useState } from "react";
-import type { EquipmentResponse } from "../../types/equipment";
-import EquipmentService from "../../services/EquipmentService";
-import type { ColumnsType } from "antd/es/table";
-import { Tooltip } from "antd";
+import { useEffect, useState, useCallback } from "react";
+import { Space, Table, Button, Tooltip, message, Input } from "antd";
 import {
   PlusOutlined,
-  EditOutlined,
   DeleteOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
+import type { ColumnsType } from "antd/es/table";
+import DepartmentService from "../../services/DepartmentService";
 import SectionHeader from "../common/SectionHeader";
-import { Table, Button, Space, message, Input } from "antd";
-import EquipmentAddOrUpdate from "./EquipmentAddOrUpdate";
-import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import CustomButton from "../common/CustomButton";
 import { toast } from "../common/Toast";
-import { useNavigate } from "react-router-dom";
+import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
+import { debounce } from "lodash";
 
-const EquipmentTopList = () => {
-  const [equipment, setEquipment] = useState<EquipmentResponse[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [searchText, setSearchText] = useState<string>("");
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
-  const [selectedEquipment, setSelectedEquipment] =
-    useState<EquipmentResponse | null>(null);
-  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+import type { EquipmentResponse } from "../../types/equipment";
+import DepartmentEquipmentAddModal from "./DepartmentEquipmentAddModal ";
 
-  const navigate = useNavigate();
+interface Props {
+  departmentId: string;
+}
 
-  const fetchEquipment = () => {
+const DepartmentEquipment = ({ departmentId }: Props) => {
+  const [equipments, setEquipments] = useState<EquipmentResponse[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [addModalVisible, setAddModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [selectedEquipmentId, setSelectedEquipmentId] = useState<number | null>(
+    null
+  );
+  const [searchText, setSearchText] = useState("");
+
+  const fetchEquipments = (search?: string) => {
     setLoading(true);
-    EquipmentService.getAllEquipments()
-      .then((res) => setEquipment(res))
+    DepartmentService.getEquipmentsByDepartment(Number(departmentId))
+      .then((data) => {
+        if (search) {
+          const filtered = data.filter(
+            (equipment) =>
+              equipment.equipmentName
+                .toLowerCase()
+                .includes(search.toLowerCase()) ||
+              equipment.equipmentNumber
+                .toLowerCase()
+                .includes(search.toLowerCase())
+          );
+          setEquipments(filtered);
+        } else {
+          setEquipments(data);
+        }
+      })
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch equipment");
+        message.error("Failed to fetch equipments");
       })
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    fetchEquipment();
-  }, []);
+    fetchEquipments();
+  }, [departmentId]);
+
+  const debouncedSearch = useCallback(
+    debounce((value: string) => {
+      fetchEquipments(value);
+    }, 500),
+    []
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchText(value);
+    debouncedSearch(value);
+  };
 
   const handleAdd = () => {
-    setSelectedEquipment(null);
-    setModalVisible(true);
-  };
-
-  const handleEdit = (record: EquipmentResponse) => {
-    setSelectedEquipment(record);
-    setModalVisible(true);
-  };
-
-  const handleDeleteClick = (record: EquipmentResponse) => {
-    setSelectedEquipment(record);
-    setDeleteModalVisible(true);
-  };
-
-  const handleDeleteConfirm = () => {
-    if (!selectedEquipment) return;
-
-    setDeleteLoading(true);
-    EquipmentService.deleteEquipment(selectedEquipment.id)
-      .then(() => {
-        toast.warning(
-          `Equipment "${selectedEquipment.equipmentName}" deleted successfully`
-        );
-        fetchEquipment();
-        setDeleteModalVisible(false);
-      })
-      .catch((error: any) => {
-        toast.error(
-          error.response?.data?.devMessage || "Failed to delete equipment"
-        );
-      })
-      .finally(() => setDeleteLoading(false));
+    setAddModalVisible(true);
   };
 
   const handleModalClose = () => {
-    setModalVisible(false);
-    setSelectedEquipment(null);
+    setAddModalVisible(false);
+    setSelectedEquipmentId(null);
   };
 
   const handleModalSuccess = () => {
     handleModalClose();
-    fetchEquipment();
+    fetchEquipments();
   };
 
-  const filteredEquipment = equipment.filter(
-    (item) =>
-      item.equipmentName.toLowerCase().includes(searchText.toLowerCase()) ||
-      item.equipmentNumber.toLowerCase().includes(searchText.toLowerCase()) ||
-      item.id.toString().includes(searchText)
-  );
+  const handleDeleteClick = (equipmentId: number) => {
+    setSelectedEquipmentId(equipmentId);
+    setDeleteModalVisible(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedEquipmentId) return;
+
+    try {
+      await DepartmentService.removeEquipment(selectedEquipmentId);
+      toast.warning("Equipment removed successfully");
+      fetchEquipments(searchText);
+      setDeleteModalVisible(false);
+    } catch (err: any) {
+      console.error(err);
+      toast.error(
+        err.response?.data?.devMessage || "Failed to remove equipment"
+      );
+    }
+  };
 
   const columns: ColumnsType<EquipmentResponse> = [
     {
@@ -158,46 +170,24 @@ const EquipmentTopList = () => {
       ),
     },
     {
-      title: (
-        <div className="flex items-center gap-2 font-semibold text-gray-700">
-          <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-          Actions
-        </div>
-      ),
+      title: "Actions",
       key: "actions",
-      width: 200,
+      width: 150,
       render: (_, record) => (
         <Space size="small" className="flex justify-end">
-          <Tooltip title="Edit Equipment" placement="top">
+          <Tooltip title="Remove Equipment" placement="top">
             <Button
               type="text"
-              size="middle"
-              icon={
-                <EditOutlined className="text-blue-600 hover:text-blue-700 transition-colors" />
-              }
-              onClick={(e) => {
-                e.stopPropagation();
-                handleEdit(record);
-              }}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-blue-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 shadow-sm hover:shadow-md"
-            >
-              <span className="text-blue-700 font-medium text-sm">Edit</span>
-            </Button>
-          </Tooltip>
-          <Tooltip title="Delete Equipment" placement="top">
-            <Button
-              type="text"
-              size="middle"
               icon={
                 <DeleteOutlined className="text-red-600 hover:text-red-700 transition-colors" />
               }
+              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-red-200 hover:border-red-300 hover:bg-red-50 transition-all duration-200 shadow-sm hover:shadow-md"
               onClick={(e) => {
                 e.stopPropagation();
-                handleDeleteClick(record);
+                handleDeleteClick(record.id);
               }}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-red-200 hover:border-red-300 hover:bg-red-50 transition-all duration-200 shadow-sm hover:shadow-md"
             >
-              <span className="text-red-700 font-medium text-sm">Delete</span>
+              <span className="text-red-700 font-medium text-sm">Remove</span>
             </Button>
           </Tooltip>
         </Space>
@@ -213,21 +203,22 @@ const EquipmentTopList = () => {
           rightContent={
             <Space>
               <Input
-                placeholder="Search equipment..."
+                placeholder="Search equipments..."
                 prefix={<SearchOutlined className="text-gray-400" />}
-                onChange={(e) => setSearchText(e.target.value)}
+                onChange={handleSearchChange}
                 allowClear
                 className="w-64"
+                value={searchText}
               />
               <CustomButton onClick={handleAdd} icon={<PlusOutlined />}>
-                Add Equipment
+                Assign Equipment
               </CustomButton>
             </Space>
           }
         />
 
         <Table
-          dataSource={filteredEquipment}
+          dataSource={equipments}
           columns={columns}
           rowKey="id"
           loading={loading}
@@ -236,38 +227,36 @@ const EquipmentTopList = () => {
             pageSizeOptions: ["10", "20", "50"],
             showQuickJumper: true,
             showSizeChanger: true,
-            showTotal: (total) => `Total ${total} equipment`,
+            showTotal: (total) => `Total ${total} equipments`,
           }}
-          scroll={{ x: 50 }}
           bordered
           size="middle"
-          className="shadow-sm cursor-pointer"
-          onRow={(record) => ({
-            onClick: () => {
-              navigate(`/infrastructure/equipment/${record.id}`);
-            },
-          })}
+          scroll={{ x: 400 }}
+          locale={{
+            emptyText: searchText
+              ? `No equipments found matching "${searchText}"`
+              : "No equipments assigned to this department",
+          }}
         />
       </div>
 
-      <EquipmentAddOrUpdate
-        visible={modalVisible}
-        editingData={selectedEquipment}
+      <DepartmentEquipmentAddModal
+        visible={addModalVisible}
         onCancel={handleModalClose}
         onSuccess={handleModalSuccess}
+        departmentId={Number(departmentId)}
       />
 
       <DeleteConfirmationModal
         visible={deleteModalVisible}
         onCancel={() => setDeleteModalVisible(false)}
         onConfirm={handleDeleteConfirm}
-        title="Delete Equipment"
-        description={`Are you sure you want to delete "${selectedEquipment?.equipmentName}"?`}
-        confirmText="Delete"
-        loading={deleteLoading}
+        title="Remove Equipment"
+        description="Are you sure you want to remove this equipment from the department?"
+        confirmText="Remove"
       />
     </div>
   );
 };
 
-export default EquipmentTopList;
+export default DepartmentEquipment;

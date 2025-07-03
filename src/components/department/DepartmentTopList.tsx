@@ -6,11 +6,13 @@ import DepartmentService from "../../services/DepartmentService";
 import SectionHeader from "../common/SectionHeader";
 import type { Department } from "../../types/department";
 import { debounce } from "lodash";
+import { useNavigate } from "react-router-dom";
 
 const DepartmentTopList = () => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const navigate = useNavigate();
 
   // Debounced search function
   const debouncedSearch = useCallback(
@@ -131,11 +133,17 @@ const DepartmentTopList = () => {
           bordered
           size="middle"
           scroll={{ x: 400 }}
+          className="shadow-sm cursor-pointer"
           locale={{
             emptyText: searchText
               ? `No departments found matching "${searchText}"`
               : "No departments available",
           }}
+          onRow={(record) => ({
+            onClick: () => {
+              navigate(`/infrastructure/department/${record.id}`);
+            },
+          })}
         />
       </div>
     </div>
