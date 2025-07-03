@@ -15,6 +15,7 @@ import { debounce } from "lodash";
 
 import type { EquipmentResponse } from "../../types/equipment";
 import DepartmentEquipmentAddModal from "./DepartmentEquipmentAddModal ";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   departmentId: string;
@@ -29,6 +30,7 @@ const DepartmentEquipment = ({ departmentId }: Props) => {
     null
   );
   const [searchText, setSearchText] = useState("");
+  const navigate = useNavigate();
 
   const fetchEquipments = (search?: string) => {
     setLoading(true);
@@ -229,6 +231,7 @@ const DepartmentEquipment = ({ departmentId }: Props) => {
             showSizeChanger: true,
             showTotal: (total) => `Total ${total} equipments`,
           }}
+          className="shadow-sm cursor-pointer"
           bordered
           size="middle"
           scroll={{ x: 400 }}
@@ -237,6 +240,11 @@ const DepartmentEquipment = ({ departmentId }: Props) => {
               ? `No equipments found matching "${searchText}"`
               : "No equipments assigned to this department",
           }}
+          onRow={(record) => ({
+            onClick: () => {
+              navigate(`/infrastructure/equipment/${record.id}`);
+            },
+          })}
         />
       </div>
 

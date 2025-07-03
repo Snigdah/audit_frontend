@@ -6,62 +6,61 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
-import DepartmentService from "../../services/DepartmentService";
+import SupervisorService from "../../services/SupervisorService";
+import OperatorService from "../../services/OperatorService";
 import SectionHeader from "../common/SectionHeader";
 import CustomButton from "../common/CustomButton";
 import { toast } from "../common/Toast";
 import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import { debounce } from "lodash";
-
-import type { SupervisorSimple } from "../../types/supervisor";
-import DepartmentSupervisorAddModal from "./DepartmentSupervisorAddModal ";
+import type { OperatorSimple } from "../../types/operator";
+import SupervisorOperatorAddModal from "./SupervisorOperatorAddModal";
 import { useNavigate } from "react-router-dom";
 
 interface Props {
-  departmentId: string;
+  supervisorId: string;
 }
 
-const DepartmentSupervisor = ({ departmentId }: Props) => {
-  const [supervisors, setSupervisors] = useState<SupervisorSimple[]>([]);
+const SupervisorOperator = ({ supervisorId }: Props) => {
+  const [operators, setOperators] = useState<OperatorSimple[]>([]);
   const [loading, setLoading] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [selectedSupervisorId, setSelectedSupervisorId] = useState<
-    number | null
-  >(null);
+  const [selectedOperatorId, setSelectedOperatorId] = useState<number | null>(
+    null
+  );
   const [searchText, setSearchText] = useState("");
-
   const navigate = useNavigate();
 
-  const fetchSupervisors = (search?: string) => {
+  const fetchOperators = (search?: string) => {
     setLoading(true);
-    DepartmentService.getSupervisorsByDepartment(Number(departmentId))
+    SupervisorService.getOperatorsBySupervisor(Number(supervisorId))
       .then((data) => {
         if (search) {
           const filtered = data.filter(
-            (supervisor) =>
-              supervisor.name.toLowerCase().includes(search.toLowerCase()) ||
-              supervisor.employeeId.toLowerCase().includes(search.toLowerCase())
+            (operator) =>
+              operator.name.toLowerCase().includes(search.toLowerCase()) ||
+              operator.employeeId.toLowerCase().includes(search.toLowerCase())
           );
-          setSupervisors(filtered);
+          setOperators(filtered);
         } else {
-          setSupervisors(data);
+          setOperators(data);
         }
       })
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch supervisors");
+        message.error("Failed to fetch operators");
       })
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    fetchSupervisors();
-  }, [departmentId]);
+    fetchOperators();
+  }, [supervisorId]);
 
   const debouncedSearch = useCallback(
     debounce((value: string) => {
-      fetchSupervisors(value);
+      fetchOperators(value);
     }, 500),
     []
   );
@@ -78,54 +77,49 @@ const DepartmentSupervisor = ({ departmentId }: Props) => {
 
   const handleModalClose = () => {
     setAddModalVisible(false);
-    setSelectedSupervisorId(null);
+    setSelectedOperatorId(null);
   };
 
   const handleModalSuccess = () => {
     handleModalClose();
-    fetchSupervisors();
+    fetchOperators();
   };
 
-  const handleDeleteClick = (supervisorId: number) => {
-    setSelectedSupervisorId(supervisorId);
+  const handleDeleteClick = (operatorId: number) => {
+    setSelectedOperatorId(operatorId);
     setDeleteModalVisible(true);
   };
 
   const handleDeleteConfirm = async () => {
-    if (!selectedSupervisorId) return;
+    if (!selectedOperatorId) return;
 
     try {
-      await DepartmentService.removeSupervisor({
-        departmentId: Number(departmentId),
-        supervisorId: selectedSupervisorId,
+      await SupervisorService.removeOperator({
+        supervisorId: Number(supervisorId),
+        operatorId: selectedOperatorId,
       });
-      toast.warning("Supervisor removed successfully");
-      fetchSupervisors(searchText);
+      toast.warning("Operator removed successfully");
+      fetchOperators(searchText);
       setDeleteModalVisible(false);
     } catch (err: any) {
       console.error(err);
       toast.error(
-        err.response?.data?.devMessage || "Failed to remove supervisor"
+        err.response?.data?.devMessage || "Failed to remove operator"
       );
     }
   };
 
-  const columns: ColumnsType<SupervisorSimple> = [
+  const columns: ColumnsType<OperatorSimple> = [
     {
-      title: (
-        <div className="flex items-center gap-2 font-semibold text-gray-700">
-          <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-          Employee ID
-        </div>
-      ),
+      title: "Employee ID",
       dataIndex: "employeeId",
       key: "employeeId",
       sorter: (a, b) => a.employeeId.localeCompare(b.employeeId),
-      width: 140,
+      width: 160,
       render: (employeeId: string) => (
         <div className="flex items-center gap-2">
-          <div className="px-2.5 py-1 bg-gradient-to-r from-blue-100 to-blue-200 rounded-lg border border-blue-300">
-            <span className="font-mono text-blue-700 text-sm font-semibold">
+          <div className="px-2.5 py-1 bg-gradient-to-r from-cyan-100 to-cyan-200 rounded-lg border border-cyan-300">
+            <span className="font-mono text-cyan-700 text-sm font-semibold">
               #{employeeId}
             </span>
           </div>
@@ -133,29 +127,24 @@ const DepartmentSupervisor = ({ departmentId }: Props) => {
       ),
     },
     {
-      title: (
-        <div className="flex items-center gap-2 font-semibold text-gray-700">
-          <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
-          Supervisor Name
-        </div>
-      ),
+      title: "Operator Name",
       dataIndex: "name",
       key: "name",
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (name: string) => (
-        <div className="flex items-center gap-3 min-w-[120px] whitespace-nowrap">
-          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-sm">
+        <div className="flex items-center gap-3  min-w-[120px] whitespace-nowrap">
+          <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-sm">
             <svg
               className="w-5 h-5 text-white"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
-              <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013-3.006z" />
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div>
             <div className="font-semibold text-gray-900 text-sm">{name}</div>
-            <div className="text-xs text-gray-500">Supervisor</div>
+            <div className="text-xs text-gray-500">Operator</div>
           </div>
         </div>
       ),
@@ -166,7 +155,7 @@ const DepartmentSupervisor = ({ departmentId }: Props) => {
       width: 150,
       render: (_, record) => (
         <Space size="small" className="flex justify-end">
-          <Tooltip title="Remove Supervisor" placement="top">
+          <Tooltip title="Remove Operator" placement="top">
             <Button
               type="text"
               icon={
@@ -190,11 +179,11 @@ const DepartmentSupervisor = ({ departmentId }: Props) => {
     <div className="p-4 bg-white rounded-lg shadow-sm">
       <div className="flex flex-col space-y-6">
         <SectionHeader
-          title="Supervisor Management"
+          title="Operator Management"
           rightContent={
             <Space>
               <Input
-                placeholder="Search supervisors..."
+                placeholder="Search operators..."
                 prefix={<SearchOutlined className="text-gray-400" />}
                 onChange={handleSearchChange}
                 allowClear
@@ -202,14 +191,14 @@ const DepartmentSupervisor = ({ departmentId }: Props) => {
                 value={searchText}
               />
               <CustomButton onClick={handleAdd} icon={<PlusOutlined />}>
-                Assign Supervisor
+                Assign Operator
               </CustomButton>
             </Space>
           }
         />
 
         <Table
-          dataSource={supervisors}
+          dataSource={operators}
           columns={columns}
           rowKey="id"
           loading={loading}
@@ -218,40 +207,40 @@ const DepartmentSupervisor = ({ departmentId }: Props) => {
             pageSizeOptions: ["10", "20", "50"],
             showQuickJumper: true,
             showSizeChanger: true,
-            showTotal: (total) => `Total ${total} supervisors`,
+            showTotal: (total) => `Total ${total} operators`,
           }}
           bordered
           size="middle"
           scroll={{ x: 400 }}
           locale={{
             emptyText: searchText
-              ? `No supervisors found matching "${searchText}"`
-              : "No supervisors assigned to this department",
+              ? `No operators found matching "${searchText}"`
+              : "No operators assigned to this supervisor",
           }}
           onRow={(record) => ({
-            onClick: () => navigate(`/resource/supervisor/${record.id}`),
+            onClick: () => navigate(`/resource/operator/${record.id}`),
             style: { cursor: "pointer" },
           })}
         />
       </div>
 
-      <DepartmentSupervisorAddModal
+      <SupervisorOperatorAddModal
         visible={addModalVisible}
         onCancel={handleModalClose}
         onSuccess={handleModalSuccess}
-        departmentId={Number(departmentId)}
+        supervisorId={Number(supervisorId)}
       />
 
       <DeleteConfirmationModal
         visible={deleteModalVisible}
         onCancel={() => setDeleteModalVisible(false)}
         onConfirm={handleDeleteConfirm}
-        title="Remove Supervisor"
-        description="Are you sure you want to remove this supervisor from the department?"
+        title="Remove Operator"
+        description="Are you sure you want to remove this operator from the supervisor?"
         confirmText="Remove"
       />
     </div>
   );
 };
 
-export default DepartmentSupervisor;
+export default SupervisorOperator;

@@ -70,6 +70,11 @@ export const ENDPOINTS = {
     FETCH_ALL: (search?: string) =>
       search ? `${BASE.SUPERVISOR}?search=${search}` : `${BASE.SUPERVISOR}`,
     UPDATE: (id: number) => `${BASE.SUPERVISOR}/${id}`,
+
+    ASSIGN_OPERATOR: `${BASE.SUPERVISOR}/assign-operator`,
+    REMOVE_OPERATOR: `${BASE.SUPERVISOR}/remove-operator`,
+    GET_OPERATORS: (supervisorId: number) =>
+      `${BASE.SUPERVISOR}/${supervisorId}/operators`,
   },
   OPERATOR: {
     FETCH_BY_ID: (id: number) => `${BASE.OPERATOR}/${id}`,
