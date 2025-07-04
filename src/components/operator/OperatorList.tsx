@@ -89,19 +89,21 @@ const OperatorList = () => {
   };
 
   const handleDeleteConfirm = () => {
-    // if (selectedOperatorId === null) return;
-    // setDeleteLoading(true);
-    // OperatorService.deleteOperator(selectedOperatorId)
-    //   .then(() => {
-    //     toast.warning("Operator deleted successfully");
-    //     fetchOperators(searchText);
-    //     setDeleteModalVisible(false);
-    //   })
-    //   .catch((err) => {
-    //     console.error(err);
-    //     toast.error(err.response?.data?.devMessage || "Failed to delete operator");
-    //   })
-    //   .finally(() => setDeleteLoading(false));
+    if (selectedOperatorId === null) return;
+    setDeleteLoading(true);
+    OperatorService.deleteOperator(selectedOperatorId)
+      .then(() => {
+        toast.warning("Operator deleted successfully");
+        fetchOperators(searchText);
+        setDeleteModalVisible(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error(
+          err.response?.data?.devMessage || "Failed to delete operator"
+        );
+      })
+      .finally(() => setDeleteLoading(false));
   };
 
   const columns: ColumnsType<OperatorSimple> = [
@@ -211,6 +213,17 @@ const OperatorList = () => {
       <div className="flex flex-col space-y-6">
         <SectionHeader
           title="Operator Management"
+          icon={
+            <div className="w-10 h-10 flex-shrink-0 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-sm">
+              <svg
+                className="w-5 h-5 text-white"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          }
           rightContent={
             <Space>
               <Input

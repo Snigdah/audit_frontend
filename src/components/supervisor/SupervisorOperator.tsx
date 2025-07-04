@@ -111,7 +111,12 @@ const SupervisorOperator = ({ supervisorId }: Props) => {
 
   const columns: ColumnsType<OperatorSimple> = [
     {
-      title: "Employee ID",
+      title: (
+        <div className="flex items-center gap-2 font-semibold text-gray-700">
+          <span className="w-2 h-2 bg-cyan-500 rounded-full"></span>
+          Employee ID
+        </div>
+      ),
       dataIndex: "employeeId",
       key: "employeeId",
       sorter: (a, b) => a.employeeId.localeCompare(b.employeeId),
@@ -127,7 +132,12 @@ const SupervisorOperator = ({ supervisorId }: Props) => {
       ),
     },
     {
-      title: "Operator Name",
+      title: (
+        <div className="flex items-center gap-2 font-semibold text-gray-700">
+          <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
+          Operator Name
+        </div>
+      ),
       dataIndex: "name",
       key: "name",
       sorter: (a, b) => a.name.localeCompare(b.name),
@@ -150,7 +160,12 @@ const SupervisorOperator = ({ supervisorId }: Props) => {
       ),
     },
     {
-      title: "Actions",
+      title: (
+        <div className="flex items-center gap-2 font-semibold text-gray-700">
+          <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+          Actions
+        </div>
+      ),
       key: "actions",
       width: 150,
       render: (_, record) => (

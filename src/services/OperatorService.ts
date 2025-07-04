@@ -32,6 +32,13 @@ class OperatorService {
     );
     return response.data;
   }
+
+  async deleteOperator(id: number): Promise<ApiResponse<void>> {
+    const response = await apiClient.delete<ApiResponse<void>>(
+      ENDPOINTS.OPERATOR.DELETE(id)
+    );
+    return response.data;
+  }
 }
 
 export default new OperatorService();

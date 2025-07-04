@@ -105,7 +105,7 @@ const BuildingList = () => {
     {
       title: (
         <div className="flex items-center gap-2 font-semibold text-gray-700">
-          <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+          <span className="w-2 h-2 bg-purple-600 rounded-full"></span>
           Building Name
         </div>
       ),
@@ -215,6 +215,17 @@ const BuildingList = () => {
       <div className="flex flex-col space-y-6">
         <SectionHeader
           title="Building Management"
+          icon={
+            <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-sm">
+              <svg
+                className="w-5 h-5 text-white"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+              </svg>
+            </div>
+          }
           rightContent={
             <Space>
               <Input

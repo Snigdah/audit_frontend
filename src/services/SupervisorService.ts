@@ -35,6 +35,13 @@ class SupervisorService {
     return response.data;
   }
 
+  async deleteSupervisor(id: number): Promise<ApiResponse<void>> {
+    const response = await apiClient.delete<ApiResponse<void>>(
+      ENDPOINTS.SUPERVISOR.DELETE(id)
+    );
+    return response.data;
+  }
+
   // ✅ Assign Operator
   async assignOperator(
     request: SupervisorOperatorRequest

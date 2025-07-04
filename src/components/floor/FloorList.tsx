@@ -212,6 +212,21 @@ const FloorList = ({ buildingId }: { buildingId: string }) => {
       <div className="flex flex-col space-y-6">
         <SectionHeader
           title="Floor Management"
+          icon={
+            <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0">
+              <svg
+                className="w-5 h-5 text-white"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+          }
           rightContent={
             <Space>
               <Input

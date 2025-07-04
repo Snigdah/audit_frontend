@@ -14,6 +14,7 @@ import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import type { OperatorSimple } from "../../types/operator";
 import EquipmentOperatorAddModal from "./EquipmentOperatorAddModal";
 import { debounce } from "lodash";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   equipmentId: string;
@@ -28,6 +29,7 @@ const EquipmentOperator = ({ equipmentId }: Props) => {
     null
   );
   const [searchText, setSearchText] = useState("");
+  const navigate = useNavigate();
 
   const fetchOperators = (search?: string) => {
     setLoading(true);
@@ -192,6 +194,17 @@ const EquipmentOperator = ({ equipmentId }: Props) => {
       <div className="flex flex-col space-y-6">
         <SectionHeader
           title="Operator Management"
+          icon={
+            <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-sm">
+              <svg
+                className="w-5 h-5 text-white"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          }
           rightContent={
             <Space>
               <Input
@@ -229,6 +242,11 @@ const EquipmentOperator = ({ equipmentId }: Props) => {
               ? `No operators found matching "${searchText}"`
               : "No operators assigned to this equipment",
           }}
+          onRow={(record) => ({
+            onClick: () => navigate(`/resource/operator/${record.id}`),
+            style: { cursor: "pointer" },
+          })}
+          rowClassName={() => "hover:bg-gray-100"}
         />
       </div>
 
