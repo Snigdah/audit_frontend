@@ -1,20 +1,30 @@
 import { useEffect, useState, useCallback } from "react";
-import { Input, Space, Table, message } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { Button, Input, Space, Table, Tooltip, message } from "antd";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
+import { debounce } from "lodash";
+import { useNavigate } from "react-router-dom";
 import DepartmentService from "../../services/DepartmentService";
 import SectionHeader from "../common/SectionHeader";
 import type { Department } from "../../types/department";
-import { debounce } from "lodash";
-import { useNavigate } from "react-router-dom";
+import DepartmentAddOrUpdate from "./DepartmentAddOrUpdate";
+import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 
 const DepartmentTopList = () => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [selectedDepartment, setSelectedDepartment] =
+    useState<Department | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Debounced search function
   const debouncedSearch = useCallback(
     debounce((searchValue: string) => {
       fetchDepartments(searchValue);
@@ -44,6 +54,44 @@ const DepartmentTopList = () => {
     const value = e.target.value;
     setSearchText(value);
     debouncedSearch(value);
+  };
+
+  const handleEdit = (record: Department) => {
+    setSelectedDepartment(record);
+    setModalVisible(true);
+  };
+
+  const handleDeleteClick = (record: Department) => {
+    setSelectedDepartment(record);
+    setDeleteModalVisible(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (!selectedDepartment) return;
+    setDeleteLoading(true);
+    DepartmentService.deleteDepartment(selectedDepartment.id)
+      .then(() => {
+        message.success(
+          `Department "${selectedDepartment.name}" deleted successfully`
+        );
+        fetchDepartments();
+        setDeleteModalVisible(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        message.error("Failed to delete department");
+      })
+      .finally(() => setDeleteLoading(false));
+  };
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+    setSelectedDepartment(null);
+  };
+
+  const handleModalSuccess = () => {
+    handleModalClose();
+    fetchDepartments();
   };
 
   const departmentColumns: ColumnsType<Department> = [
@@ -77,7 +125,7 @@ const DepartmentTopList = () => {
       key: "name",
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (name: string) => (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-[120px] whitespace-nowrap">
           <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-sm">
             <svg
               className="w-5 h-5 text-white"
@@ -97,6 +145,36 @@ const DepartmentTopList = () => {
             <div className="text-xs text-gray-500">Department</div>
           </div>
         </div>
+      ),
+    },
+    {
+      title: (
+        <div className="flex items-center gap-2 font-semibold text-gray-700">
+          <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+          Actions
+        </div>
+      ),
+      key: "actions",
+      width: 200,
+      render: (_, record) => (
+        <Space size="small" className="flex justify-end">
+          <Tooltip title="Delete Department" placement="top">
+            <Button
+              type="text"
+              size="middle"
+              icon={
+                <DeleteOutlined className="text-red-600 hover:text-red-700 transition-colors" />
+              }
+              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-red-200 hover:border-red-300 hover:bg-red-50 transition-all duration-200 shadow-sm hover:shadow-md"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteClick(record);
+              }}
+            >
+              <span className="text-red-700 font-medium text-sm">Delete</span>
+            </Button>
+          </Tooltip>
+        </Space>
       ),
     },
   ];
@@ -162,6 +240,16 @@ const DepartmentTopList = () => {
           })}
         />
       </div>
+
+      <DeleteConfirmationModal
+        visible={deleteModalVisible}
+        onCancel={() => setDeleteModalVisible(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Department"
+        description={`Are you sure you want to delete "${selectedDepartment?.name}"?`}
+        confirmText="Delete"
+        loading={deleteLoading}
+      />
     </div>
   );
 };
