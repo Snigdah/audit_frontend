@@ -20,3 +20,8 @@ export interface UpdateSupervisorRequest {
   designationId: number;
   supervisorName: string;
 }
+
+export interface SupervisorOperatorRequest {
+  supervisorId: number;
+  operatorId: number;
+}

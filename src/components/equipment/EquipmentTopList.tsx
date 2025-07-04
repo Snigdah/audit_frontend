@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import type { BuildingResponse } from "../../types/building";
-import BuildingService from "../../services/BuildingService";
+import type { EquipmentResponse } from "../../types/equipment";
+import EquipmentService from "../../services/EquipmentService";
 import type { ColumnsType } from "antd/es/table";
 import { Tooltip } from "antd";
 import {
@@ -11,121 +11,118 @@ import {
 } from "@ant-design/icons";
 import SectionHeader from "../common/SectionHeader";
 import { Table, Button, Space, message, Input } from "antd";
-import BuildingAddOrUpdate from "./BuildingAddOrUpdate ";
+import EquipmentAddOrUpdate from "./EquipmentAddOrUpdate";
 import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import CustomButton from "../common/CustomButton";
 import { toast } from "../common/Toast";
 import { useNavigate } from "react-router-dom";
 
-const BuildingList = () => {
-  const [buildings, setBuildings] = useState<BuildingResponse[]>([]);
+const EquipmentTopList = () => {
+  const [equipment, setEquipment] = useState<EquipmentResponse[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
-  const [selectedBuilding, setSelectedBuilding] =
-    useState<BuildingResponse | null>(null);
+  const [selectedEquipment, setSelectedEquipment] =
+    useState<EquipmentResponse | null>(null);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
-  const fetchBuildings = () => {
+  const fetchEquipment = () => {
     setLoading(true);
-    BuildingService.getAllBuildings()
-      .then((res) => {
-        setBuildings(res);
-      })
+    EquipmentService.getAllEquipments()
+      .then((res) => setEquipment(res))
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch buildings");
+        message.error("Failed to fetch equipment");
       })
-      .finally(() => {
-        setLoading(false);
-      });
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    fetchBuildings();
+    fetchEquipment();
   }, []);
 
   const handleAdd = () => {
-    setSelectedBuilding(null);
+    setSelectedEquipment(null);
     setModalVisible(true);
   };
 
-  const handleEdit = (record: BuildingResponse) => {
-    setSelectedBuilding(record);
+  const handleEdit = (record: EquipmentResponse) => {
+    setSelectedEquipment(record);
     setModalVisible(true);
   };
 
-  const handleDeleteClick = (record: BuildingResponse) => {
-    setSelectedBuilding(record);
+  const handleDeleteClick = (record: EquipmentResponse) => {
+    setSelectedEquipment(record);
     setDeleteModalVisible(true);
   };
 
   const handleDeleteConfirm = () => {
-    if (!selectedBuilding) return;
+    if (!selectedEquipment) return;
 
     setDeleteLoading(true);
-    BuildingService.deleteBuilding(selectedBuilding.id)
+    EquipmentService.deleteEquipment(selectedEquipment.id)
       .then(() => {
         toast.warning(
-          `Building "${selectedBuilding.buildingName}" deleted successfully`
+          `Equipment "${selectedEquipment.equipmentName}" deleted successfully`
         );
-        fetchBuildings();
+        fetchEquipment();
         setDeleteModalVisible(false);
       })
       .catch((error: any) => {
         toast.error(
-          error.response?.data?.devMessage || "Failed to delete building"
+          error.response?.data?.devMessage || "Failed to delete equipment"
         );
       })
-      .finally(() => {
-        setDeleteLoading(false);
-      });
+      .finally(() => setDeleteLoading(false));
   };
 
   const handleModalClose = () => {
     setModalVisible(false);
-    setSelectedBuilding(null);
+    setSelectedEquipment(null);
   };
 
   const handleModalSuccess = () => {
     handleModalClose();
-    fetchBuildings();
+    fetchEquipment();
   };
 
-  const filteredBuildings = buildings.filter(
-    (building) =>
-      building.buildingName.toLowerCase().includes(searchText.toLowerCase()) ||
-      building.id.toString().includes(searchText)
+  const filteredEquipment = equipment.filter(
+    (item) =>
+      item.equipmentName.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.equipmentNumber.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.id.toString().includes(searchText)
   );
 
-  const columns: ColumnsType<BuildingResponse> = [
+  const columns: ColumnsType<EquipmentResponse> = [
     {
       title: (
         <div className="flex items-center gap-2 font-semibold text-gray-700">
-          <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-          Building Name
+          <span className="w-2 h-2 bg-slate-500 rounded-full"></span>
+          Equipment Number
         </div>
       ),
-      dataIndex: "buildingName",
-      key: "buildingName",
-      sorter: (a, b) => a.buildingName.localeCompare(b.buildingName),
-      render: (name: string) => (
-        <div className="flex items-center gap-3 min-w-[120px] whitespace-nowrap">
-          <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-sm">
-            <svg
-              className="w-5 h-5 text-white"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-            </svg>
-          </div>
-          <div>
-            <div className="font-semibold text-gray-900 text-sm">{name}</div>
-            <div className="text-xs text-gray-500">Property</div>
+      dataIndex: "equipmentNumber",
+      key: "equipmentNumber",
+      sorter: (a, b) => a.equipmentNumber.localeCompare(b.equipmentNumber),
+      width: 180,
+      render: (equipmentNumber: string) => (
+        <div className="flex items-center gap-2">
+          <div className="px-3 py-1.5 bg-gradient-to-r from-slate-100 to-slate-200 rounded-full border border-slate-300">
+            <div className="flex items-center gap-1">
+              <svg
+                className="w-4 h-4 text-slate-600"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+              </svg>
+              <span className="font-mono text-slate-700 text-sm font-semibold">
+                {equipmentNumber}
+              </span>
+            </div>
           </div>
         </div>
       ),
@@ -133,30 +130,29 @@ const BuildingList = () => {
     {
       title: (
         <div className="flex items-center gap-2 font-semibold text-gray-700">
-          <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
-          Total Floors
+          <span className="w-2 h-2 bg-sky-500 rounded-full"></span>
+          Equipment Name
         </div>
       ),
-      dataIndex: "totalFloor",
-      key: "totalFloor",
-      sorter: (a, b) => a.totalFloor - b.totalFloor,
-      width: 160,
-      render: (floors: number) => (
-        <div className="flex items-center gap-2">
-          <div className="px-3 py-1.5 bg-gradient-to-r from-orange-100 to-orange-200 rounded-full border border-orange-300">
-            <div className="flex items-center gap-1">
-              <svg
-                className="w-4 h-4 text-orange-600"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
-              </svg>
-              <span className="font-semibold text-orange-700 text-sm">
-                {floors}
-              </span>
-              <span className="text-xs text-orange-600">floors</span>
+      dataIndex: "equipmentName",
+      key: "equipmentName",
+      sorter: (a, b) => a.equipmentName.localeCompare(b.equipmentName),
+      render: (equipmentName: string) => (
+        <div className="flex items-center gap-3 min-w-[120px] whitespace-nowrap">
+          <div className="w-10 h-10 bg-gradient-to-br from-sky-500 to-blue-600 rounded-xl flex items-center justify-center shadow-sm">
+            <svg
+              className="w-5 h-5 text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+            </svg>
+          </div>
+          <div>
+            <div className="font-semibold text-gray-900 text-sm">
+              {equipmentName}
             </div>
+            <div className="text-xs text-gray-500">Equipment</div>
           </div>
         </div>
       ),
@@ -172,7 +168,7 @@ const BuildingList = () => {
       width: 200,
       render: (_, record) => (
         <Space size="small" className="flex justify-end">
-          <Tooltip title="Edit Building" placement="top">
+          <Tooltip title="Edit Equipment" placement="top">
             <Button
               type="text"
               size="middle"
@@ -188,19 +184,18 @@ const BuildingList = () => {
               <span className="text-blue-700 font-medium text-sm">Edit</span>
             </Button>
           </Tooltip>
-
-          <Tooltip title="Delete Building" placement="top">
+          <Tooltip title="Delete Equipment" placement="top">
             <Button
               type="text"
               size="middle"
               icon={
                 <DeleteOutlined className="text-red-600 hover:text-red-700 transition-colors" />
               }
-              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-red-200 hover:border-red-300 hover:bg-red-50 transition-all duration-200 shadow-sm hover:shadow-md"
               onClick={(e) => {
                 e.stopPropagation();
                 handleDeleteClick(record);
               }}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-red-200 hover:border-red-300 hover:bg-red-50 transition-all duration-200 shadow-sm hover:shadow-md"
             >
               <span className="text-red-700 font-medium text-sm">Delete</span>
             </Button>
@@ -214,25 +209,25 @@ const BuildingList = () => {
     <div className="p-4 bg-white rounded-lg shadow-sm">
       <div className="flex flex-col space-y-6">
         <SectionHeader
-          title="Building Management"
+          title="Equipment Management"
           rightContent={
             <Space>
               <Input
-                placeholder="Search buildings..."
+                placeholder="Search equipment..."
                 prefix={<SearchOutlined className="text-gray-400" />}
                 onChange={(e) => setSearchText(e.target.value)}
                 allowClear
                 className="w-64"
               />
               <CustomButton onClick={handleAdd} icon={<PlusOutlined />}>
-                Add Building
+                Add Equipment
               </CustomButton>
             </Space>
           }
         />
 
         <Table
-          dataSource={filteredBuildings}
+          dataSource={filteredEquipment}
           columns={columns}
           rowKey="id"
           loading={loading}
@@ -241,28 +236,23 @@ const BuildingList = () => {
             pageSizeOptions: ["10", "20", "50"],
             showQuickJumper: true,
             showSizeChanger: true,
-            showTotal: (total) => `Total ${total} buildings`,
+            showTotal: (total) => `Total ${total} equipment`,
           }}
           scroll={{ x: 50 }}
           bordered
           size="middle"
           className="shadow-sm cursor-pointer"
-          locale={{
-            emptyText: searchText
-              ? `No buildings found matching "${searchText}"`
-              : "No buildings available",
-          }}
           onRow={(record) => ({
             onClick: () => {
-              navigate(`/infrastructure/building/${record.id}`);
+              navigate(`/infrastructure/equipment/${record.id}`);
             },
           })}
         />
       </div>
 
-      <BuildingAddOrUpdate
+      <EquipmentAddOrUpdate
         visible={modalVisible}
-        editingData={selectedBuilding}
+        editingData={selectedEquipment}
         onCancel={handleModalClose}
         onSuccess={handleModalSuccess}
       />
@@ -271,8 +261,8 @@ const BuildingList = () => {
         visible={deleteModalVisible}
         onCancel={() => setDeleteModalVisible(false)}
         onConfirm={handleDeleteConfirm}
-        title="Delete Building"
-        description={`Are you sure you want to delete "${selectedBuilding?.buildingName}"?`}
+        title="Delete Equipment"
+        description={`Are you sure you want to delete "${selectedEquipment?.equipmentName}"?`}
         confirmText="Delete"
         loading={deleteLoading}
       />
@@ -280,4 +270,4 @@ const BuildingList = () => {
   );
 };
 
-export default BuildingList;
+export default EquipmentTopList;

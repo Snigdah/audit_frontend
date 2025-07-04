@@ -18,6 +18,16 @@ export interface DepartmentFormData {
   floorId: number;
 }
 
+export interface DepartmentEquipmentRequest {
+  departmentId: number;
+  equipmentId: number;
+}
+
+export interface DepartmentSupervisorRequest {
+  departmentId: number;
+  supervisorId: number;
+}
+
 // For handling in component/service layer
 export class DepartmentModel {
   deptName: string;

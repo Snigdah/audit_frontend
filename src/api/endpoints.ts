@@ -7,6 +7,7 @@ const BASE = {
   DESIGNATION: "designation",
   SUPERVISOR: "supervisor",
   OPERATOR: "operator",
+  EQUIPMENT: "equipment",
 };
 
 export const ENDPOINTS = {
@@ -42,6 +43,17 @@ export const ENDPOINTS = {
     UPDATE: (id: number) => `${BASE.DEPARTMENT}/${id}`,
     DELETE: (id: number) => `${BASE.DEPARTMENT}/${id}`,
     DROPDOWN: `${BASE.DEPARTMENT}/dropdown`,
+
+    ASSIGN_SUPERVISOR: `${BASE.DEPARTMENT}/assign-supervisor`,
+    REMOVE_SUPERVISOR: `${BASE.DEPARTMENT}/remove-supervisor`,
+    GET_SUPERVISORS: (departmentId: number) =>
+      `${BASE.DEPARTMENT}/${departmentId}/supervisors`,
+
+    ASSIGN_EQUIPMENT: `${BASE.DEPARTMENT}/assign-equipment`,
+    REMOVE_EQUIPMENT: (equipmentId: number) =>
+      `${BASE.DEPARTMENT}/remove-equipment/${equipmentId}`,
+    GET_EQUIPMENTS: (departmentId: number) =>
+      `${BASE.DEPARTMENT}/${departmentId}/equipments`,
   },
   PASSWORD_POLICY: {
     CREATE: `${BASE.PASSWORD_POLICY}`,
@@ -58,11 +70,27 @@ export const ENDPOINTS = {
     FETCH_ALL: (search?: string) =>
       search ? `${BASE.SUPERVISOR}?search=${search}` : `${BASE.SUPERVISOR}`,
     UPDATE: (id: number) => `${BASE.SUPERVISOR}/${id}`,
+
+    ASSIGN_OPERATOR: `${BASE.SUPERVISOR}/assign-operator`,
+    REMOVE_OPERATOR: `${BASE.SUPERVISOR}/remove-operator`,
+    GET_OPERATORS: (supervisorId: number) =>
+      `${BASE.SUPERVISOR}/${supervisorId}/operators`,
   },
   OPERATOR: {
     FETCH_BY_ID: (id: number) => `${BASE.OPERATOR}/${id}`,
     FETCH_ALL: (search?: string) =>
       search ? `${BASE.OPERATOR}?search=${search}` : `${BASE.OPERATOR}`,
     UPDATE: (id: number) => `${BASE.OPERATOR}/${id}`,
+  },
+  EQUIPMENT: {
+    FETCH_BY_ID: (id: number) => `${BASE.EQUIPMENT}/${id}`,
+    FETCH_ALL: (search?: string) =>
+      search ? `${BASE.EQUIPMENT}?search=${search}` : `${BASE.EQUIPMENT}`,
+    CREATE: () => `${BASE.EQUIPMENT}`,
+    UPDATE: (id: number) => `${BASE.EQUIPMENT}/${id}`,
+    DELETE: (id: number) => `${BASE.EQUIPMENT}/${id}`,
+    ASSIGN_OPERATOR: () => `${BASE.EQUIPMENT}/assign-operator`,
+    REMOVE_OPERATOR: () => `${BASE.EQUIPMENT}/remove-operator`,
+    FETCH_OPERATORS: (id: number) => `${BASE.EQUIPMENT}/${id}/operators`,
   },
 };

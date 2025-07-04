@@ -7,7 +7,7 @@ interface Props {
   onConfirm: () => void;
   title: string;
   description: string;
-  confirmText?: string;
+  confirmText?: string; // ✅ Default is "Delete", can be changed to "Remove" easily
   cancelText?: string;
   loading?: boolean;
 }
@@ -18,7 +18,7 @@ const DeleteConfirmationModal = ({
   onConfirm,
   title,
   description,
-  confirmText = "Delete",
+  confirmText = "Delete", // ✅ Default is still "Delete"
   cancelText = "Cancel",
   loading = false,
 }: Props) => {

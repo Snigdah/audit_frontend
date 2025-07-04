@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Button, Input, Space, Table, message } from "antd";
+import { Button, Input, Space, Table, message, Tooltip } from "antd";
 import { PlusOutlined, EditOutlined, SearchOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import DesignationService from "../../services/DesignationService";
@@ -70,35 +70,65 @@ const DesignationList = () => {
     fetchDesignations(searchText); // Refresh with current search
   };
 
-  const columns: ColumnsType<Designation> = [
+  const designationColumns: ColumnsType<Designation> = [
     {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      sorter: (a, b) => a.id - b.id,
-      width: 100,
-    },
-    {
-      title: "Designation Name",
+      title: (
+        <div className="flex items-center gap-2 font-semibold text-gray-700">
+          <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
+          Designation Name
+        </div>
+      ),
       dataIndex: "name",
       key: "name",
       sorter: (a, b) => a.name.localeCompare(b.name),
+      render: (name: string) => (
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-sm">
+            <svg
+              className="w-5 h-5 text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z"
+                clipRule="evenodd"
+              />
+              <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z" />
+            </svg>
+          </div>
+          <div>
+            <div className="font-semibold text-gray-900 text-sm">{name}</div>
+            <div className="text-xs text-gray-500">Position</div>
+          </div>
+        </div>
+      ),
     },
     {
-      title: "Actions",
+      title: (
+        <div className="flex items-center gap-2 font-semibold text-gray-700">
+          <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+          Actions
+        </div>
+      ),
       key: "actions",
-      width: 120,
+      width: 140,
       render: (_, record) => (
-        <Space size="small">
-          <Button
-            type="text"
-            size="small"
-            icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
-          >
-            Edit
-          </Button>
-        </Space>
+        <div className="flex justify-end">
+          <Tooltip title="Edit Designation" placement="top">
+            <Button
+              type="text"
+              size="middle"
+              icon={
+                <EditOutlined className="text-blue-600 hover:text-blue-700 transition-colors" />
+              }
+              onClick={() => handleEdit(record)}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-blue-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 shadow-sm hover:shadow-md"
+            >
+              <span className="text-blue-700 font-medium text-sm">Edit</span>
+            </Button>
+          </Tooltip>
+        </div>
       ),
     },
   ];
@@ -128,7 +158,7 @@ const DesignationList = () => {
 
         <Table
           dataSource={designations}
-          columns={columns}
+          columns={designationColumns}
           rowKey="id"
           loading={loading}
           pagination={{
