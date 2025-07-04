@@ -1,11 +1,13 @@
 import apiClient from "../api/axios";
 import { ENDPOINTS } from "../api/endpoints";
 import type { ApiResponse } from "../types/api";
+import type { EquipmentResponse } from "../types/equipment";
 import type {
   OperatorDetail,
   OperatorSimple,
   UpdateOperatorRequest,
 } from "../types/operator";
+import type { SupervisorSimple } from "../types/supervisor";
 
 class OperatorService {
   async getOperatorById(id: number): Promise<OperatorDetail> {
@@ -38,6 +40,26 @@ class OperatorService {
       ENDPOINTS.OPERATOR.DELETE(id)
     );
     return response.data;
+  }
+
+  // Get Supervisors by Operator ID
+  async getSupervisorsByOperatorId(
+    operatorId: number
+  ): Promise<SupervisorSimple[]> {
+    const response = await apiClient.get<ApiResponse<SupervisorSimple[]>>(
+      ENDPOINTS.OPERATOR.GET_SUPERVISORS(operatorId)
+    );
+    return response.data.data;
+  }
+
+  // Get Equipments by Operator ID
+  async getEquipmentsByOperatorId(
+    operatorId: number
+  ): Promise<EquipmentResponse[]> {
+    const response = await apiClient.get<ApiResponse<EquipmentResponse[]>>(
+      ENDPOINTS.OPERATOR.GET_EQUIPMENTS(operatorId)
+    );
+    return response.data.data;
   }
 }
 

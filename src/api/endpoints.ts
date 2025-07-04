@@ -76,6 +76,8 @@ export const ENDPOINTS = {
     REMOVE_OPERATOR: `${BASE.SUPERVISOR}/remove-operator`,
     GET_OPERATORS: (supervisorId: number) =>
       `${BASE.SUPERVISOR}/${supervisorId}/operators`,
+    GET_DEPARTMENTS: (supervisorId: number) =>
+      `${BASE.SUPERVISOR}/${supervisorId}/departments`,
   },
   OPERATOR: {
     FETCH_BY_ID: (id: number) => `${BASE.OPERATOR}/${id}`,
@@ -83,6 +85,10 @@ export const ENDPOINTS = {
       search ? `${BASE.OPERATOR}?search=${search}` : `${BASE.OPERATOR}`,
     UPDATE: (id: number) => `${BASE.OPERATOR}/${id}`,
     DELETE: (id: number) => `${BASE.OPERATOR}/${id}`,
+    GET_SUPERVISORS: (operatorId: number) =>
+      `${BASE.OPERATOR}/${operatorId}/supervisors`,
+    GET_EQUIPMENTS: (operatorId: number) =>
+      `${BASE.OPERATOR}/${operatorId}/equipments`,
   },
   EQUIPMENT: {
     FETCH_BY_ID: (id: number) => `${BASE.EQUIPMENT}/${id}`,

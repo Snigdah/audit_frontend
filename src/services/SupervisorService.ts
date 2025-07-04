@@ -1,6 +1,7 @@
 import apiClient from "../api/axios";
 import { ENDPOINTS } from "../api/endpoints";
 import type { ApiResponse } from "../types/api";
+import type { Department } from "../types/department";
 import type { OperatorSimple } from "../types/operator";
 import type {
   SupervisorDetail,
@@ -70,6 +71,15 @@ class SupervisorService {
   ): Promise<OperatorSimple[]> {
     const response = await apiClient.get<ApiResponse<OperatorSimple[]>>(
       ENDPOINTS.SUPERVISOR.GET_OPERATORS(supervisorId)
+    );
+    return response.data.data;
+  }
+
+  async getDepartmentsBySupervisor(
+    supervisorId: number
+  ): Promise<Department[]> {
+    const response = await apiClient.get<ApiResponse<Department[]>>(
+      ENDPOINTS.SUPERVISOR.GET_DEPARTMENTS(supervisorId)
     );
     return response.data.data;
   }

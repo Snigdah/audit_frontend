@@ -1,6 +1,8 @@
 import { useParams } from "react-router-dom";
 import PageHeader from "../../components/common/PageHeader";
 import OperatorInfo from "../../components/operator/OperatorInfo";
+import OperatorSupervisor from "../../components/operator/OperatorSupervisor";
+import OperatorEquipment from "../../components/operator/OperatorEquipment";
 
 const OperatorDetailsPage = () => {
   const { operatorId } = useParams();
@@ -16,6 +18,12 @@ const OperatorDetailsPage = () => {
       />
       <div className="pb-2">
         {operatorId && <OperatorInfo operatorId={operatorId} />}
+      </div>
+      <div className="pb-2">
+        {operatorId && <OperatorSupervisor operatorId={operatorId} />}
+      </div>
+      <div className="pb-2">
+        {operatorId && <OperatorEquipment operatorId={operatorId} />}
       </div>
     </div>
   );
