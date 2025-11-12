@@ -1,5 +1,6 @@
 const BASE = {
   AUTH: "audit",
+  PROFILE: "profile",
   BUILDING: "building",
   FLOOR: "floor",
   DEPARTMENT: "department",
@@ -92,5 +93,10 @@ export const ENDPOINTS = {
     ASSIGN_OPERATOR: () => `${BASE.EQUIPMENT}/assign-operator`,
     REMOVE_OPERATOR: () => `${BASE.EQUIPMENT}/remove-operator`,
     FETCH_OPERATORS: (id: number) => `${BASE.EQUIPMENT}/${id}/operators`,
+  },
+  PROFILE: {
+    FETCH_FULL: `${BASE.PROFILE}/details`,
+    FETCH_BASIC: `${BASE.PROFILE}/basic`,
+    FETCH_DEPARTMENT: `${BASE.PROFILE}/departments`,
   },
 };

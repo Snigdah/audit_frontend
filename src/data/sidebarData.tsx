@@ -5,6 +5,7 @@ import {
   FaUserTie,
   FaCity,
   FaIdBadge,
+  FaBell,
 } from "react-icons/fa";
 import { AiFillHome } from "react-icons/ai";
 import {
@@ -18,8 +19,8 @@ import type { SidebarItem } from "../types/sidebar";
 import { GiMechanicalArm } from "react-icons/gi";
 import { HiEye } from "react-icons/hi";
 import { BiBuildingHouse } from "react-icons/bi";
-import { FaUnlockKeyhole } from "react-icons/fa6";
 import { IoMdHelpCircle } from "react-icons/io";
+import { FaUnlockKeyhole, FaUser } from "react-icons/fa6"; 
 
 const sidebarData: SidebarItem[] = [
   {
@@ -71,6 +72,24 @@ const sidebarData: SidebarItem[] = [
         title: "Viewer",
         path: "/resource/viewer",
         icon: <HiEye className="text-purple-500" />, // Eye icon for read-only viewer
+      },
+    ],
+  },
+  {
+    title: "User",
+    path: "/user",
+    icon: <FaUser className="text-xl" />,
+    cName: "nav-text group",
+    subMenu: [
+      {
+        title: "My Profile",
+        path: "/user/profile",
+        icon: <FaIdBadge className="text-blue-500" />,
+      },
+      {
+        title: "Notifications",
+        path: "/user/notifications",
+        icon: <FaBell className="text-yellow-500" />,
       },
     ],
   },
