@@ -13,7 +13,7 @@ import ProfileService from "../../services/ProfileService";
 import { toast } from "../common/Toast";
 import SectionHeader from "../common/SectionHeader";
 import CustomButton from "../common/CustomButton";
-import ChangePasswordModal from "./ChangePasswordModal"; // Adjust the import path as needed
+import ChangePasswordModal from "./ChangePasswordModal";
 
 const ProfileInfo = () => {
   const [profile, setProfile] = useState<any>(null);
