@@ -27,3 +27,9 @@ export interface RegisterRequest {
   designation: number;
   role: string;
 }
+
+export interface ChangePassword{
+  employeeId: string;
+  oldPassword: string;
+  newPassword: string;
+}

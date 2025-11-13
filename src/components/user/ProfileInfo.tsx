@@ -1,14 +1,24 @@
 import { useEffect, useState } from "react";
 import { Spin, Card, Row, Col, Tag, Divider, Space } from "antd";
-import { UserOutlined, IdcardOutlined, LockOutlined, ApartmentOutlined, SafetyOutlined, CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import { 
+  UserOutlined, 
+  IdcardOutlined, 
+  LockOutlined, 
+  ApartmentOutlined, 
+  SafetyOutlined, 
+  CheckCircleOutlined, 
+  CloseCircleOutlined 
+} from "@ant-design/icons";
 import ProfileService from "../../services/ProfileService";
 import { toast } from "../common/Toast";
 import SectionHeader from "../common/SectionHeader";
 import CustomButton from "../common/CustomButton";
+import ChangePasswordModal from "./ChangePasswordModal"; // Adjust the import path as needed
 
 const ProfileInfo = () => {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [changePasswordModalVisible, setChangePasswordModalVisible] = useState(false);
 
   const fetchProfile = async () => {
     setLoading(true);
@@ -25,6 +35,19 @@ const ProfileInfo = () => {
   useEffect(() => {
     fetchProfile();
   }, []);
+
+  const handleChangePassword = () => {
+    setChangePasswordModalVisible(true);
+  };
+
+  const handleChangePasswordCancel = () => {
+    setChangePasswordModalVisible(false);
+  };
+
+  const handleChangePasswordSuccess = () => {
+    setChangePasswordModalVisible(false);
+    toast.success("Password changed successfully");
+  };
 
   if (loading)
     return (
@@ -45,12 +68,14 @@ const ProfileInfo = () => {
       <SectionHeader
         title="Profile Information"
         rightContent={
-        <Space>
-             
-              <CustomButton  icon={<LockOutlined />}>
-                Change Password
-              </CustomButton>
-            </Space>
+          <Space>
+            <CustomButton 
+              onClick={handleChangePassword}  
+              icon={<LockOutlined />}
+            >
+              Change Password
+            </CustomButton>
+          </Space>
         }
       />
 
@@ -173,6 +198,13 @@ const ProfileInfo = () => {
           </Col>
         )}
       </Row>
+
+      {/* Change Password Modal */}
+      <ChangePasswordModal
+        visible={changePasswordModalVisible}
+        onCancel={handleChangePasswordCancel}
+        onSuccess={handleChangePasswordSuccess}
+      />
     </div>
   );
 };

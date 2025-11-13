@@ -3,6 +3,7 @@ import { ENDPOINTS } from "../api/endpoints";
 import { TOKEN_KEY, USER_ID_KEY, USER_ROLE_KEY } from "../constants/config";
 import type { ApiResponse } from "../types/api";
 import type {
+  ChangePassword,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
@@ -55,6 +56,10 @@ class AuthService {
 
   async register(payload: RegisterRequest): Promise<void> {
     await apiClient.post<ApiResponse<void>>(ENDPOINTS.AUTH.REGISTER, payload);
+  }
+
+  async changePassword(payload: ChangePassword): Promise<void>{
+    await apiClient.put<ApiResponse<void>>(ENDPOINTS.AUTH.CHANGE_PASSWORD, payload);
   }
 
   isAuthenticated(): boolean {

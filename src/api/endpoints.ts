@@ -17,6 +17,7 @@ export const ENDPOINTS = {
     REFRESH_TOKEN: `${BASE.AUTH}/refreshtoken`,
     LOGOUT: `${BASE.AUTH}/logout`,
     REGISTER: `${BASE.AUTH}/register`,
+    CHANGE_PASSWORD: `${BASE.AUTH}/change-password`,
   },
   BUILDING: {
     CREATE: `${BASE.BUILDING}`,
