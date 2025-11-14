@@ -14,6 +14,7 @@ import DepartmentAddOrUpdate from "./DepartmentAddOrUpdate";
 import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import CustomButton from "../common/CustomButton";
 import { debounce } from "lodash";
+import { toast } from "../common/Toast";
 
 const DepartmentList = ({ floorId }: { floorId: string }) => {
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -72,8 +73,9 @@ const DepartmentList = ({ floorId }: { floorId: string }) => {
         setDeleteModalVisible(false);
       })
       .catch((err) => {
-        console.error(err);
-        message.error("Failed to delete department");
+        toast.error(
+        err.response?.data?.devMessage || "Failed to delete department"
+      );
       })
       .finally(() => setDeleteLoading(false));
   };

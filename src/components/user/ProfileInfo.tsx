@@ -4,7 +4,6 @@ import {
   UserOutlined, 
   IdcardOutlined, 
   LockOutlined, 
-  ApartmentOutlined, 
   SafetyOutlined, 
   CheckCircleOutlined, 
   CloseCircleOutlined 
@@ -169,34 +168,6 @@ const ProfileInfo = () => {
             </div>
           </Card>
         </Col>
-
-        {/* Departments Card */}
-        {profile.departments && profile.departments.length > 0 && (
-          <Col xs={24}>
-            <Card
-              title={
-                <div className="flex items-center gap-2">
-                  <ApartmentOutlined className="text-green-600" />
-                  <span>Departments</span>
-                </div>
-              }
-              bordered
-              className="shadow-sm"
-            >
-              <div className="flex flex-wrap gap-2">
-                {profile.departments.map((dept: any, index: number) => (
-                  <div
-                    key={index}
-                    className="inline-flex items-center gap-2 px-3 py-2 bg-green-50 border border-green-200 rounded-lg"
-                  >
-                    <ApartmentOutlined className="text-green-600 text-xs" />
-                    <span className="text-sm font-medium text-gray-700">{dept.name}</span>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </Col>
-        )}
       </Row>
 
       {/* Change Password Modal */}

@@ -2,14 +2,14 @@ import { useEffect, useState, useCallback } from "react";
 import { Input, Space, Table, message } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
-import DepartmentService from "../../services/DepartmentService";
+import ProfileService from "../../services/ProfileService";
 import SectionHeader from "../common/SectionHeader";
-import type { Department } from "../../types/department";
+import type { DepartmentInfo } from "../../types/profile";
 import { debounce } from "lodash";
 import { useNavigate } from "react-router-dom";
 
-const DepartmentTopList = () => {
-  const [departments, setDepartments] = useState<Department[]>([]);
+const MyDepartment = () => {
+  const [departments, setDepartments] = useState<DepartmentInfo[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
@@ -24,8 +24,19 @@ const DepartmentTopList = () => {
 
   const fetchDepartments = (search?: string) => {
     setLoading(true);
-    DepartmentService.getDepartments(search)
-      .then((data) => setDepartments(data))
+    ProfileService.getDepartments()
+      .then((data) => {
+        // Filter departments based on search text
+        if (search) {
+          const filteredData = data.filter(dept => 
+            dept.name.toLowerCase().includes(search.toLowerCase()) ||
+            dept.id.toString().includes(search)
+          );
+          setDepartments(filteredData);
+        } else {
+          setDepartments(data);
+        }
+      })
       .catch((err) => {
         console.error(err);
         message.error("Failed to fetch departments");
@@ -46,7 +57,7 @@ const DepartmentTopList = () => {
     debouncedSearch(value);
   };
 
-  const departmentColumns: ColumnsType<Department> = [
+  const departmentColumns: ColumnsType<DepartmentInfo> = [
     {
       title: (
         <div className="flex items-center gap-2 font-semibold text-gray-700">
@@ -121,7 +132,7 @@ const DepartmentTopList = () => {
     <div className="p-4 bg-white rounded-lg shadow-sm">
       <div className="flex flex-col space-y-6">
         <SectionHeader
-          title="Department Management"
+          title="My Departments"
           rightContent={
             <Input
               placeholder="Search departments..."
@@ -166,4 +177,4 @@ const DepartmentTopList = () => {
   );
 };
 
-export default DepartmentTopList;
+export default MyDepartment;
