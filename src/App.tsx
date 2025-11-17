@@ -21,6 +21,7 @@ import EquipmentTopPage from "./pages/infrastructure/EquipmentTopPage";
 import EquipmentDetailsPage from "./pages/infrastructure/EquipmentDetailsPage";
 import DepartmentDetailsPage from "./pages/infrastructure/DepartmentDetailsPage";
 import ProfilePage from "./pages/user/ProfilePage";
+import Notifications from "./components/notification/Notifications";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
       <ScrollToTop />
       <AuthProvider>
         <ToastContainer />
+        <Notifications />
         <Layout>
           <Routes>
             {/* Public routes */}
