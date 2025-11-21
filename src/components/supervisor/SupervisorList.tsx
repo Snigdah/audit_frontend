@@ -17,6 +17,7 @@ import SupervisorUpdateModal from "./SupervisorUpdateModal";
 import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import { useNavigate } from "react-router-dom";
 import { toast } from "../common/Toast";
+import AuthService from "../../services/AuthService";
 
 const SupervisorList = () => {
   const [supervisors, setSupervisors] = useState<SupervisorSimple[]>([]);
@@ -89,19 +90,23 @@ const SupervisorList = () => {
   };
 
   const handleDeleteConfirm = () => {
-    // if (selectedSupervisorId === null) return;
-    // setDeleteLoading(true);
-    // SupervisorService.deleteSupervisor(selectedSupervisorId)
-    //   .then(() => {
-    //     toast.warning("Supervisor deleted successfully");
-    //     fetchSupervisors(searchText);
-    //     setDeleteModalVisible(false);
-    //   })
-    //   .catch((err) => {
-    //     console.error(err);
-    //     toast.error(err.response?.data?.devMessage || "Failed to delete supervisor");
-    //   })
-    //   .finally(() => setDeleteLoading(false));
+    if (selectedSupervisorId === null) return;
+
+    setDeleteLoading(true);
+    AuthService.deletUser({
+      id: selectedSupervisorId,
+      role: "SUPERVISOR",
+    })
+      .then(() => {
+        toast.warning("Supervisor deleted successfully");
+        fetchSupervisors(searchText);
+        setDeleteModalVisible(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error(err.response?.data?.devMessage || "Failed to delete supervisor");
+      })
+      .finally(() => setDeleteLoading(false));
   };
 
   const columns: ColumnsType<SupervisorSimple> = [

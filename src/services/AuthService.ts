@@ -4,6 +4,7 @@ import { TOKEN_KEY, USER_ID_KEY, USER_ROLE_KEY } from "../constants/config";
 import type { ApiResponse } from "../types/api";
 import type {
   ChangePassword,
+  DeleteUser,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
@@ -52,6 +53,13 @@ class AuthService {
       // Always clear local storage and cookies on logout
       this.clearAuthData();
     }
+  }
+
+  async deletUser(payload: DeleteUser): Promise<void>{
+    await apiClient.delete<ApiResponse<void>>(
+      ENDPOINTS.AUTH.DELETE_USER,
+      {data: payload}
+    )
   }
 
   async register(payload: RegisterRequest): Promise<void> {

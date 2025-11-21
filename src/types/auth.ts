@@ -33,3 +33,8 @@ export interface ChangePassword{
   oldPassword: string;
   newPassword: string;
 }
+
+export interface DeleteUser{
+  id: number;
+  role: string;
+}

@@ -17,6 +17,7 @@ import OperatorUpdateModal from "./OperatorUpdateModal";
 import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import { useNavigate } from "react-router-dom";
 import { toast } from "../common/Toast";
+import AuthService from "../../services/AuthService";
 
 const OperatorList = () => {
   const [operators, setOperators] = useState<OperatorSimple[]>([]);
@@ -89,19 +90,23 @@ const OperatorList = () => {
   };
 
   const handleDeleteConfirm = () => {
-    // if (selectedOperatorId === null) return;
-    // setDeleteLoading(true);
-    // OperatorService.deleteOperator(selectedOperatorId)
-    //   .then(() => {
-    //     toast.warning("Operator deleted successfully");
-    //     fetchOperators(searchText);
-    //     setDeleteModalVisible(false);
-    //   })
-    //   .catch((err) => {
-    //     console.error(err);
-    //     toast.error(err.response?.data?.devMessage || "Failed to delete operator");
-    //   })
-    //   .finally(() => setDeleteLoading(false));
+    if (selectedOperatorId === null) return;
+
+    setDeleteLoading(true);
+    AuthService.deletUser({
+      id: selectedOperatorId,
+      role: "OPERATOR",
+    })
+      .then(() => {
+        toast.warning("Operator deleted successfully");
+        fetchOperators(searchText);
+        setDeleteModalVisible(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error(err.response?.data?.devMessage || "Failed to delete operator");
+      })
+      .finally(() => setDeleteLoading(false));
   };
 
   const columns: ColumnsType<OperatorSimple> = [
