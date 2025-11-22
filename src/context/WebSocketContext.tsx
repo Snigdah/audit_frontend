@@ -1,56 +1,49 @@
-// src/context/WebSocketContext.tsx
 import { createContext, useContext, useEffect, type ReactNode } from "react";
 import { Client } from "@stomp/stompjs";
 import { useAuth } from "./AuthContext";
 import { useNotification } from "./NotificationContext";
 
-interface WebSocketContextType {
-  isConnected?: boolean;
-}
+export const WebSocketContext = createContext({});
 
-const WebSocketContext = createContext<WebSocketContextType | null>(null);
-
-interface WebSocketProviderProps {
-  children: ReactNode;
-}
-
-// Named export for the provider
-export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
+export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
   const { authState } = useAuth();
   const { addNotification } = useNotification();
 
   useEffect(() => {
+    // Only connect when user is authenticated
     if (!authState.isAuthenticated || !authState.employeeId) return;
 
     const client = new Client({
       brokerURL: "ws://localhost:8080/ws",
       reconnectDelay: 5000,
-
       connectHeaders: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
       },
     });
 
     client.onConnect = () => {
-      console.log("WS Connected");
-
-       client.subscribe("/user/queue/notifications", (msg) => {
-          try {
-            const notif = JSON.parse(msg.body);
-            addNotification(notif);
-          } catch (error) {
-            console.error("Failed to parse notification:", error);
-          }
+      client.subscribe("/user/queue/notifications", (msg) => {
+        try {
+          const notifDTO = JSON.parse(msg.body);
+          addNotification(notifDTO);
+        } catch (err) {
+          console.error("Failed to parse WebSocket message:", err);
         }
-      );
+      });
     };
 
+    // Start WebSocket
     client.activate();
 
+    // Cleanup (MUST NOT be async)
     return () => {
-      client.deactivate();
+      try {
+        client.deactivate(); // safe to call without await
+      } catch (e) {
+        console.error("WebSocket cleanup error", e);
+      }
     };
-  }, [authState.isAuthenticated, addNotification]);
+  }, [authState.isAuthenticated]); // clean dependency
 
   return (
     <WebSocketContext.Provider value={{}}>
@@ -59,14 +52,4 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
   );
 };
 
-// Named export for the hook
-export const useWebSocket = (): WebSocketContextType => {
-  const context = useContext(WebSocketContext);
-  if (!context) {
-    throw new Error('useWebSocket must be used within a WebSocketProvider');
-  }
-  return context;
-};
-
-// Default export (optional, for better HMR)
-export default WebSocketProvider;
+export const useWebSocket = () => useContext(WebSocketContext);

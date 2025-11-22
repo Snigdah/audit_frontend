@@ -12,5 +12,5 @@ export interface NotificationDTO {
 export interface NotificationResponse {
   notifications: NotificationDTO[];
   employeeId: string;
-  unseenCount: number;
+  unreadCount: number;
 }
