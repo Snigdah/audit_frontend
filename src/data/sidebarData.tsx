@@ -85,13 +85,14 @@ const sidebarData: SidebarItem[] = [
         title: "My Profile",
         path: "/user/profile",
         icon: <FaIdBadge className="text-blue-500" />,
-      },
-      {
-        title: "Notifications",
-        path: "/user/notifications",
-        icon: <FaBell className="text-yellow-500" />,
-      },
+      }
     ],
+  },
+   {
+    title: "Notifications",
+    path: "/user/notifications",
+     icon: <FaBell className="text-xl" />,
+    cName: "nav-text",
   },
   {
     title: "Settings",
@@ -129,24 +130,6 @@ const sidebarData: SidebarItem[] = [
         icon: <FaUserShield />,
       },
     ],
-  },
-  {
-    title: "Reports",
-    path: "/reports",
-    icon: <FaChartBar className="text-xl" />,
-    cName: "nav-text",
-  },
-  {
-    title: "Messages",
-    path: "/messages",
-    icon: <FaEnvelopeOpenText className="text-xl" />,
-    cName: "nav-text",
-  },
-  {
-    title: "Support",
-    path: "/support",
-    icon: <IoMdHelpCircle className="text-xl" />,
-    cName: "nav-text",
   },
 ];
 

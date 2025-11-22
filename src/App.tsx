@@ -22,89 +22,103 @@ import EquipmentDetailsPage from "./pages/infrastructure/EquipmentDetailsPage";
 import DepartmentDetailsPage from "./pages/infrastructure/DepartmentDetailsPage";
 import ProfilePage from "./pages/user/ProfilePage";
 
+// ADD THESE
+import { WebSocketProvider } from "./context/WebSocketContext";
+import { NotificationProvider } from "./context/NotificationContext";
+import NotificationsPage from "./pages/notification/NotificationsPage";
+
 function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
       <AuthProvider>
-        <ToastContainer />
-        <Layout>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/unauthorized" element={<Unauthorized />} />
+        <NotificationProvider>
+          <WebSocketProvider>
+            <ToastContainer />
+            <Layout>
+              <Routes>
+                {/* Public routes */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/unauthorized" element={<Unauthorized />} />
 
-            {/* Routes for all authenticated users */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/" />
-              <Route path="/dashboard" element={<Dashboard />} />
+                {/* Authenticated user routes */}
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/" />
+                  <Route path="/dashboard" element={<Dashboard />} />
 
-              {/* ======================= Infrastructure ======================== */}
-              <Route
-                path="/infrastructure/building"
-                element={<BuildingsPage />}
-              />
-              <Route
-                path="/infrastructure/department"
-                element={<DepartmentTopPage />}
-              />
-              <Route
-                path="/infrastructure/department/:departmentId"
-                element={<DepartmentDetailsPage />}
-              />
-              <Route
-                path="/infrastructure/equipment"
-                element={<EquipmentTopPage />}
-              />
-              <Route
-                path="/infrastructure/equipment/:equipmentId"
-                element={<EquipmentDetailsPage />}
-              />
-              <Route
-                path="/infrastructure/building/:buildingId"
-                element={<FloorsPage />}
-              />
-              <Route
-                path="/infrastructure/building/:buildingId/floor/:floorId"
-                element={<DepartmentsPage />}
-              />
+                  {/* ======================= Infrastructure ======================== */}
+                  <Route
+                    path="/infrastructure/building"
+                    element={<BuildingsPage />}
+                  />
+                  <Route
+                    path="/infrastructure/department"
+                    element={<DepartmentTopPage />}
+                  />
+                  <Route
+                    path="/infrastructure/department/:departmentId"
+                    element={<DepartmentDetailsPage />}
+                  />
+                  <Route
+                    path="/infrastructure/equipment"
+                    element={<EquipmentTopPage />}
+                  />
+                  <Route
+                    path="/infrastructure/equipment/:equipmentId"
+                    element={<EquipmentDetailsPage />}
+                  />
+                  <Route
+                    path="/infrastructure/building/:buildingId"
+                    element={<FloorsPage />}
+                  />
+                  <Route
+                    path="/infrastructure/building/:buildingId/floor/:floorId"
+                    element={<DepartmentsPage />}
+                  />
 
-              {/* ======================= Resource ======================== */}
-              <Route path="/resource/supervisor" element={<SupervisorPage />} />
-              <Route
-                path="/resource/supervisor/:supervisorId"
-                element={<SuperVisorDetails />}
-              />
+                  {/* ======================= Resource ======================== */}
+                  <Route
+                    path="/resource/supervisor"
+                    element={<SupervisorPage />}
+                  />
+                  <Route
+                    path="/resource/supervisor/:supervisorId"
+                    element={<SuperVisorDetails />}
+                  />
 
-              <Route path="/resource/operator" element={<OperatorPage />} />
-              <Route
-                path="/resource/operator/:operatorId"
-                element={<OperatorDetailsPage />}
-              />
+                  <Route path="/resource/operator" element={<OperatorPage />} />
+                  <Route
+                    path="/resource/operator/:operatorId"
+                    element={<OperatorDetailsPage />}
+                  />
 
-              {/* ======================= Settings ======================== */}
-              <Route
-                path="/user/profile"
-                element={<ProfilePage />}
-              />
+                  <Route
+                     path="/user/notifications"
+                     element={<NotificationsPage />}
+                  />
 
-              {/* ======================= Settings ======================== */}
-              <Route
-                path="/system/password-policy"
-                element={<PasswordPolicyPage />}
-              />
+                  {/* ======================= Settings ======================== */}
+                  <Route path="/user/profile" element={<ProfilePage />} />
 
-              <Route path="/system/designation" element={<DesignationPage />} />
+                  <Route
+                    path="/system/password-policy"
+                    element={<PasswordPolicyPage />}
+                  />
 
-              {/* Routes that require specific roles */}
-              <Route element={<ProtectedRoute allowedRoles={["MANAGER"]} />}>
-                {/* <Route path="/infrastructure/floor" element={<FloorsPage />} /> */}
-              </Route>
+                  <Route
+                    path="/system/designation"
+                    element={<DesignationPage />}
+                  />
 
-              {/* Add more routes as needed */}
-            </Route>
-          </Routes>
-        </Layout>
+                  {/* Routes that require specific roles */}
+                  <Route element={<ProtectedRoute allowedRoles={["MANAGER"]} />}>
+                    {/* Future MANAGER-only routes */}
+                  </Route>
+                </Route>
+              </Routes>
+            </Layout>
+          </WebSocketProvider>
+        </NotificationProvider>
       </AuthProvider>
     </BrowserRouter>
   );

@@ -10,6 +10,7 @@ import {
 import sidebarData from "../data/sidebarData";
 import type { SidebarItem, SubMenuItem, Role } from "../types/sidebar";
 import { useAuth } from "../context/AuthContext";
+import { useNotification } from "../context/NotificationContext";
 
 interface SidebarProps {
   onCollapseChange?: (collapsed: boolean) => void;
@@ -21,6 +22,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const { authState, logout } = useAuth();
+  const { unreadCount } = useNotification();
   const location = useLocation();
 
   useEffect(() => {
@@ -189,6 +191,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
                 // Skip items with submenu if the user doesn't have access to any submenu item
                 if (item.subMenu && !hasAccessibleSubmenu) return null;
 
+                const isNotificationItem = item.path === "/user/notifications";
+
                 return (
                   <li key={index}>
                     <div
@@ -196,6 +200,52 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
                       onClick={(e) => handleSubMenuClick(e, item)}
                     >
                       <Link
+                        to={item.subMenu ? "#" : item.path}
+                        className={`flex items-center justify-between text-gray-300 hover:text-white px-6 py-3 rounded-md hover:bg-gray-800 transition-all relative ${
+                          collapsed ? "justify-center px-3" : ""
+                        }`}
+                        onClick={() => {
+                          if (!item.subMenu && isMobile) {
+                            setSidebar(false);
+                          }
+                        }}
+                      >
+                        <div
+                          className={`flex items-center ${
+                            collapsed ? "justify-center" : ""
+                          }`}
+                        >
+                          <span className={collapsed ? "" : "mr-3"}>
+                            {item.icon}
+                          </span>
+                          {!collapsed && <span>{item.title}</span>}
+                        </div>
+
+                        {/* 🔔 NOTIFICATION BADGE - IN MAIN MENU */}
+                        {isNotificationItem && unreadCount > 0 && (
+                          <span className={`
+                            bg-red-600 text-white text-xs rounded-full flex items-center justify-center px-[10px]
+                            ${collapsed 
+                              ? "absolute -top-1 -right-1 h-4 w-4 text-[10px]" 
+                              : "h-5 w-5 ml-2"
+                            }
+                          `}>
+                            {unreadCount > 9 ? "9+" : unreadCount}
+                          </span>
+                        )}
+
+                        {/* Submenu arrow (only show if not notification and has submenu) */}
+                        {!isNotificationItem && item.subMenu && !collapsed && (
+                          <span>
+                            {openSubMenu === item.title ? (
+                              <MdKeyboardArrowDown className="text-lg" />
+                            ) : (
+                              <MdKeyboardArrowRight className="text-lg" />
+                            )}
+                          </span>
+                        )}
+                      </Link>
+                      {/* <Link
                         to={item.subMenu ? "#" : item.path}
                         className={`flex items-center justify-between text-gray-300 hover:text-white px-6 py-3 rounded-md hover:bg-gray-800 transition-all ${
                           collapsed ? "justify-center px-3" : ""
@@ -225,7 +275,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
                             )}
                           </span>
                         )}
-                      </Link>
+                      </Link> */}
                     </div>
                     {item.subMenu && renderSubMenu(item.subMenu, item.title)}
                   </li>

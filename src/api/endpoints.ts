@@ -9,6 +9,7 @@ const BASE = {
   SUPERVISOR: "supervisor",
   OPERATOR: "operator",
   EQUIPMENT: "equipment",
+  NOTIFICATION: "notification"
 };
 
 export const ENDPOINTS = {
@@ -100,5 +101,8 @@ export const ENDPOINTS = {
     FETCH_FULL: `${BASE.PROFILE}/details`,
     FETCH_BASIC: `${BASE.PROFILE}/basic`,
     FETCH_DEPARTMENT: `${BASE.PROFILE}/departments`,
+  },
+  NOTIFICATION: {
+    FETCH_ALL: `${BASE.NOTIFICATION}`,
   },
 };
