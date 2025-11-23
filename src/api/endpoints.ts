@@ -104,5 +104,6 @@ export const ENDPOINTS = {
   },
   NOTIFICATION: {
     FETCH_ALL: `${BASE.NOTIFICATION}`,
+    UPDATE: (id: number)=> `${BASE.NOTIFICATION}/${id}`
   },
 };

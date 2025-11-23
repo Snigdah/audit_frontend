@@ -1,4 +1,11 @@
-import { createContext, useContext, useState, useEffect, type ReactNode, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+  useCallback,
+} from "react";
 import NotificationService from "../services/NotificationService";
 import { useAuth } from "./AuthContext";
 import type { NotificationDTO, NotificationResponse } from "../types/notification";
@@ -19,7 +26,7 @@ interface NotificationContextType {
   unreadCount: number;
   loadNotifications: () => Promise<void>;
   addNotification: (notif: NotificationDTO) => void;
-  markAsRead: (id: number) => void;
+  toggleNotificationRead: (id: number) => void;
   markAllRead: () => void;
 }
 
@@ -30,7 +37,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const { authState } = useAuth();
 
-  // Transform DTO → Internal type
+  // Transform DTO → Internal
   const transform = (notif: NotificationDTO): Notification => ({
     userNotificationId: notif.notificationId,
     type: notif.type,
@@ -42,11 +49,13 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     createdAt: notif.createdAt || new Date().toISOString(),
   });
 
-  // Load initial notifications from REST API
-  const loadNotifications = useCallback(async (): Promise<void> => {
+  // Load initial notifications
+  const loadNotifications = useCallback(async () => {
     if (!authState.isAuthenticated) return;
 
-    const response: NotificationResponse = await NotificationService.getAllNotifications();
+    const response: NotificationResponse =
+      await NotificationService.getAllNotifications();
+
     setNotifications(response.notifications.map(transform));
     setUnreadCount(response.unreadCount);
   }, [authState.isAuthenticated]);
@@ -60,30 +69,62 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [authState.isAuthenticated, loadNotifications]);
 
-  // Add real-time notification from WebSocket
-  const addNotification = (notifDTO: NotificationDTO): void => {
+  // Real-time add
+  const addNotification = (notifDTO: NotificationDTO) => {
     const notif = transform(notifDTO);
 
-    setNotifications(prev => {
-      // Prevent duplicate
-      const exists = prev.some(n => n.userNotificationId === notif.userNotificationId);
+    setNotifications((prev) => {
+      const exists = prev.some(
+        (n) => n.userNotificationId === notif.userNotificationId
+      );
       if (exists) return prev;
 
       return [notif, ...prev];
     });
 
-    setUnreadCount(prev => prev + 1);
+    setUnreadCount((prev) => prev + 1);
   };
 
-  const markAsRead = (id: number): void => {
-    setNotifications(prev =>
-      prev.map(n => (n.userNotificationId === id ? { ...n, isRead: true } : n))
+  // 🔥 Toggle Read/Unread + API call
+  const toggleNotificationRead = async (id: number) => {
+    const target = notifications.find((n) => n.userNotificationId === id);
+    if (!target) return;
+
+    const wasRead = target.isRead;
+
+    // Optimistic update
+    setNotifications((prev) =>
+      prev.map((n) =>
+        n.userNotificationId === id ? { ...n, isRead: !n.isRead } : n
+      )
     );
-    setUnreadCount(prev => Math.max(prev - 1, 0));
+
+    setUnreadCount((prev) =>
+      wasRead ? prev + 1 : Math.max(prev - 1, 0)
+    );
+
+    try {
+      await NotificationService.updateNotification(id);
+    } catch (error) {
+      console.error("Failed to update notification:", error);
+
+      // Rollback on failure
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n.userNotificationId === id ? { ...n, isRead: wasRead } : n
+        )
+      );
+
+      setUnreadCount((prev) =>
+        wasRead ? Math.max(prev - 1, 0) : prev + 1
+      );
+    }
   };
 
-  const markAllRead = (): void => {
-    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+  const markAllRead = () => {
+    setNotifications((prev) =>
+      prev.map((n) => ({ ...n, isRead: true }))
+    );
     setUnreadCount(0);
   };
 
@@ -94,7 +135,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
         unreadCount,
         loadNotifications,
         addNotification,
-        markAsRead,
+        toggleNotificationRead,
         markAllRead,
       }}
     >
@@ -105,6 +146,9 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
 
 export const useNotification = () => {
   const ctx = useContext(NotificationContext);
-  if (!ctx) throw new Error("useNotification must be used inside NotificationProvider");
+  if (!ctx)
+    throw new Error(
+      "useNotification must be used inside NotificationProvider"
+    );
   return ctx;
 };

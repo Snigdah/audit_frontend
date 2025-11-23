@@ -1,13 +1,11 @@
-import { useEffect } from "react";
 import { useNotification } from "../../context/NotificationContext";
 
-const NotificationsPage = ()=>{
-    const { notifications, markAsRead, markAllRead, loadNotifications  } = useNotification();
-
-     // Load notifications when component mounts
-    // useEffect(() => {
-    //     loadNotifications();
-    // }, [loadNotifications]);
+const NotificationsPage = () => {
+  const {
+    notifications,
+    toggleNotificationRead,
+    markAllRead,
+  } = useNotification();
 
   return (
     <div className="p-6">
@@ -34,14 +32,17 @@ const NotificationsPage = ()=>{
 
             <div className="flex justify-between mt-2 text-sm">
               <button
-                onClick={() => markAsRead(n.userNotificationId)}
+                onClick={() => toggleNotificationRead(n.userNotificationId)}
                 className="text-blue-500"
               >
-                Mark as read
+                {n.isRead ? "Mark as unread" : "Mark as read"}
               </button>
 
               {n.redirectUrl && (
-                <a href={n.redirectUrl} className="text-gray-500 underline">
+                <a
+                  href={n.redirectUrl}
+                  className="text-gray-500 underline"
+                >
                   Open
                 </a>
               )}
@@ -51,6 +52,6 @@ const NotificationsPage = ()=>{
       </div>
     </div>
   );
-}
+};
 
 export default NotificationsPage;

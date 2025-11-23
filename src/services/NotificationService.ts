@@ -11,6 +11,12 @@ class NotificationService{
         );
     return response.data.data;
   }
+
+  // for change status
+  async updateNotification(id: number): Promise<void> {
+    if (!id) throw new Error("Notification ID is required");
+    await apiClient.put<ApiResponse<void>>(ENDPOINTS.NOTIFICATION.UPDATE(id));
+  }
 }
 
 export default new NotificationService();
