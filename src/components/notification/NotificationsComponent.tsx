@@ -10,18 +10,7 @@ const NotificationsComponent = () => {
   } = useNotification();
 
   return (
-    <div className="border rounded p-4 bg-white">
-      <div className="flex justify-between mb-4">
-        <h2 className="text-lg font-semibold">Notifications</h2>
-        <button
-          type="button"
-          onClick={markAllRead}
-          className="px-3 py-1 bg-gray-200 rounded"
-        >
-          Mark all as read
-        </button>
-      </div>
-
+    <div className="p-4 bg-white rounded-lg shadow-sm">
       <div className="space-y-3">
         {notifications.map((n) => (
           <div
