@@ -27,6 +27,7 @@ interface NotificationContextType {
   loadNotifications: () => Promise<void>;
   addNotification: (notif: NotificationDTO) => void;
   toggleNotificationRead: (id: number) => void;
+  deleteNotification: (id: number) => void;
   markAllRead: () => void;
 }
 
@@ -37,7 +38,6 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const { authState } = useAuth();
 
-  // Transform DTO → Internal
   const transform = (notif: NotificationDTO): Notification => ({
     userNotificationId: notif.notificationId,
     type: notif.type,
@@ -49,13 +49,10 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     createdAt: notif.createdAt || new Date().toISOString(),
   });
 
-  // Load initial notifications
   const loadNotifications = useCallback(async () => {
     if (!authState.isAuthenticated) return;
 
-    const response: NotificationResponse =
-      await NotificationService.getAllNotifications();
-
+    const response: NotificationResponse = await NotificationService.getAllNotifications();
     setNotifications(response.notifications.map(transform));
     setUnreadCount(response.unreadCount);
   }, [authState.isAuthenticated]);
@@ -69,62 +66,64 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [authState.isAuthenticated, loadNotifications]);
 
-  // Real-time add
   const addNotification = (notifDTO: NotificationDTO) => {
     const notif = transform(notifDTO);
-
     setNotifications((prev) => {
-      const exists = prev.some(
-        (n) => n.userNotificationId === notif.userNotificationId
-      );
+      const exists = prev.some(n => n.userNotificationId === notif.userNotificationId);
       if (exists) return prev;
-
       return [notif, ...prev];
     });
-
     setUnreadCount((prev) => prev + 1);
   };
 
-  // 🔥 Toggle Read/Unread + API call
   const toggleNotificationRead = async (id: number) => {
-    const target = notifications.find((n) => n.userNotificationId === id);
+    const target = notifications.find(n => n.userNotificationId === id);
     if (!target) return;
-
     const wasRead = target.isRead;
 
-    // Optimistic update
-    setNotifications((prev) =>
-      prev.map((n) =>
+    setNotifications(prev =>
+      prev.map(n =>
         n.userNotificationId === id ? { ...n, isRead: !n.isRead } : n
       )
     );
-
-    setUnreadCount((prev) =>
-      wasRead ? prev + 1 : Math.max(prev - 1, 0)
-    );
+    setUnreadCount(prev => wasRead ? prev + 1 : Math.max(prev - 1, 0));
 
     try {
       await NotificationService.updateNotification(id);
     } catch (error) {
       console.error("Failed to update notification:", error);
-
-      // Rollback on failure
-      setNotifications((prev) =>
-        prev.map((n) =>
+      // rollback
+      setNotifications(prev =>
+        prev.map(n =>
           n.userNotificationId === id ? { ...n, isRead: wasRead } : n
         )
       );
+      setUnreadCount(prev => wasRead ? Math.max(prev - 1, 0) : prev + 1);
+    }
+  };
 
-      setUnreadCount((prev) =>
-        wasRead ? Math.max(prev - 1, 0) : prev + 1
-      );
+  const deleteNotification = async (id: number) => {
+    const exists = notifications.find(n => n.userNotificationId === id);
+    if (!exists) return;
+
+    // Optimistic update
+    setNotifications(prev =>
+      prev.filter(n => n.userNotificationId !== id)
+    );
+    if (!exists.isRead) setUnreadCount(prev => Math.max(prev - 1, 0));
+
+    try {
+      await NotificationService.deleteNotification(id);
+    } catch (error) {
+      console.error("Failed to delete notification:", error);
+      // Rollback if delete fails
+      setNotifications(prev => [exists, ...prev]);
+      if (!exists.isRead) setUnreadCount(prev => prev + 1);
     }
   };
 
   const markAllRead = () => {
-    setNotifications((prev) =>
-      prev.map((n) => ({ ...n, isRead: true }))
-    );
+    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
     setUnreadCount(0);
   };
 
@@ -136,6 +135,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
         loadNotifications,
         addNotification,
         toggleNotificationRead,
+        deleteNotification,
         markAllRead,
       }}
     >
@@ -146,9 +146,6 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
 
 export const useNotification = () => {
   const ctx = useContext(NotificationContext);
-  if (!ctx)
-    throw new Error(
-      "useNotification must be used inside NotificationProvider"
-    );
+  if (!ctx) throw new Error("useNotification must be used inside NotificationProvider");
   return ctx;
 };

@@ -17,6 +17,13 @@ class NotificationService{
     if (!id) throw new Error("Notification ID is required");
     await apiClient.put<ApiResponse<void>>(ENDPOINTS.NOTIFICATION.UPDATE(id));
   }
+
+  // DELETE Notification
+  async deleteNotification(id: number): Promise<void> {
+    if (!id) throw new Error("Notification ID is required");
+    await apiClient.delete<ApiResponse<void>>(ENDPOINTS.NOTIFICATION.DELETE(id));
+  }
+
 }
 
 export default new NotificationService();

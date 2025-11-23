@@ -1,9 +1,11 @@
+import { formatDistanceToNow } from "date-fns";
 import { useNotification } from "../../context/NotificationContext";
 
 const NotificationsPage = () => {
   const {
     notifications,
     toggleNotificationRead,
+    deleteNotification,
     markAllRead,
   } = useNotification();
 
@@ -23,19 +25,30 @@ const NotificationsPage = () => {
         {notifications.map((n) => (
           <div
             key={n.userNotificationId}
-            className={`border p-4 rounded ${
-              !n.isRead ? "bg-blue-50" : "bg-white"
-            }`}
+            className={`border p-4 rounded ${!n.isRead ? "bg-blue-50" : "bg-white"}`}
           >
-            <div className="font-medium">{n.title}</div>
-            <div className="text-sm text-gray-600">{n.message}</div>
+            <div className="flex justify-between items-center">
+              <div className="font-medium">{n.title}</div>
+              <div className="text-xs text-gray-400">
+                {formatDistanceToNow(new Date(n.createdAt), { addSuffix: true })}
+              </div>
+            </div>
 
-            <div className="flex justify-between mt-2 text-sm">
+            <div className="text-sm text-gray-600 mt-1">{n.message}</div>
+
+            <div className="flex justify-between mt-2 text-sm space-x-2">
               <button
                 onClick={() => toggleNotificationRead(n.userNotificationId)}
                 className="text-blue-500"
               >
                 {n.isRead ? "Mark as unread" : "Mark as read"}
+              </button>
+
+              <button
+                onClick={() => deleteNotification(n.userNotificationId)}
+                className="text-red-500"
+              >
+                Delete
               </button>
 
               {n.redirectUrl && (
