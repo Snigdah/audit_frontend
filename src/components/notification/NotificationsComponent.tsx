@@ -21,25 +21,6 @@ const NotificationsComponent = () => {
 
   return (
     <div className="mx-auto bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-      {/* Header */}
-      {/* <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-sm">
-              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">Notifications</h2>
-              <p className="text-sm text-gray-500">
-                {notifications.filter(n => !n.isRead).length} unread
-              </p>
-            </div>
-          </div>
-        </div>
-      </div> */}
-
       {/* Notifications List */}
       <div className="min-h-[500px] bg-white">
         {notifications.length === 0 ? (
