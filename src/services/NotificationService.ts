@@ -5,10 +5,17 @@ import type { NotificationResponse } from "../types/notification";
 
 class NotificationService{
 
-    async getAllNotifications(): Promise<NotificationResponse> {
-        const response = await apiClient.get<ApiResponse<NotificationResponse>>(
-         ENDPOINTS.NOTIFICATION.FETCH_ALL
-        );
+  async getAllNotifications(cursor?: string | null, size: number = 20): Promise<NotificationResponse> {
+    const response = await apiClient.get<ApiResponse<NotificationResponse>>(
+      ENDPOINTS.NOTIFICATION.FETCH_ALL,
+      {
+        params: {
+          cursor: cursor ?? null,
+          size: size,
+        },
+      }
+    );
+
     return response.data.data;
   }
 

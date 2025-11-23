@@ -6,11 +6,14 @@ export interface NotificationDTO {
   redirectUrl: string;
   metadata: Record<string, any> | null;
   isRead: boolean;
-  createdAt: string | null; // LocalDateTime from Java becomes string in JSON
+  createdAt: string | null;
+  cursor: string | null; 
 }
 
 export interface NotificationResponse {
   notifications: NotificationDTO[];
   employeeId: string;
   unreadCount: number;
+  nextCursor: string | null;
+  hasMore: boolean;
 }

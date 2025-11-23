@@ -5,24 +5,25 @@ const NotificationsComponent = () => {
   const {
     notifications,
     toggleNotificationRead,
-    markAllRead,
-    deleteNotification, 
+    deleteNotification,
+    loadMore,
+    hasMore,
   } = useNotification();
 
   return (
     <div className="p-4 bg-white rounded-lg shadow-sm">
       <div className="space-y-3">
+
         {notifications.map((n) => (
           <div
             key={n.userNotificationId}
-            className={`border p-3 rounded ${
-              !n.isRead ? "bg-blue-50" : "bg-white"
-            }`}
+            className={`border p-3 rounded ${!n.isRead ? "bg-blue-50" : "bg-white"}`}
           >
             <div className="flex justify-between items-center">
               <div className="font-medium">{n.title}</div>
               <div className="text-xs text-gray-400">
-                {formatDistanceToNow(new Date(n.createdAt), { addSuffix: true })}
+                {n.createdAt &&
+                  formatDistanceToNow(new Date(n.createdAt), { addSuffix: true })}
               </div>
             </div>
 
@@ -37,7 +38,7 @@ const NotificationsComponent = () => {
                 {n.isRead ? "Mark as unread" : "Mark as read"}
               </button>
 
-             <button
+              <button
                 onClick={() => deleteNotification(n.userNotificationId)}
                 className="text-red-500"
               >
@@ -45,16 +46,26 @@ const NotificationsComponent = () => {
               </button>
 
               {n.redirectUrl && (
-                <a
-                  href={n.redirectUrl}
-                  className="text-gray-500 underline"
-                >
+                <a href={n.redirectUrl} className="text-gray-500 underline">
                   Open
                 </a>
               )}
             </div>
           </div>
         ))}
+
+        {/* VIEW MORE BUTTON */}
+        {hasMore && (
+          <div className="text-center mt-4">
+            <button
+              onClick={loadMore}
+              className="px-4 py-2 bg-gray-200 rounded text-sm"
+            >
+              View More
+            </button>
+          </div>
+        )}
+
       </div>
     </div>
   );
