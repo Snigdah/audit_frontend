@@ -1,6 +1,8 @@
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
 import { useNotification } from "../../context/NotificationContext";
+import { Link, useNavigate } from "react-router-dom";
+
 
 const NotificationsComponent = () => {
   const {
@@ -12,6 +14,7 @@ const NotificationsComponent = () => {
   } = useNotification();
   
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const navigate = useNavigate();
 
   const handleLoadMore = async () => {
     setIsLoadingMore(true);
@@ -98,15 +101,21 @@ const NotificationsComponent = () => {
                               </button>
                               
                               {n.redirectUrl && (
-                                <a
-                                  href={n.redirectUrl}
+                                <Link
+                                  to={n.redirectUrl}
                                   className="text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors flex items-center space-x-1"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (!n.isRead) {
+                                      toggleNotificationRead(n.userNotificationId as any);
+                                    }
+                                  }}
                                 >
                                   <span>View</span>
                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                   </svg>
-                                </a>
+                                </Link>
                               )}
                             </div>
                           </div>

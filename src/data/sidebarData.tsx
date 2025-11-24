@@ -80,6 +80,7 @@ const sidebarData: SidebarItem[] = [
     path: "/user",
     icon: <FaUser className="text-xl" />,
     cName: "nav-text group",
+    access: ["SUPERVISOR", "OPERATOR"],
     subMenu: [
       {
         title: "My Profile",
@@ -91,14 +92,33 @@ const sidebarData: SidebarItem[] = [
    {
     title: "Notifications",
     path: "/user/notifications",
-     icon: <FaBell className="text-xl" />,
+    icon: <FaBell className="text-xl" />,
     cName: "nav-text",
   },
-  {
-    title: "Settings",
+  // {
+  //   title: "Settings",
+  //   path: "/system",
+  //   icon: <FaCogs className="text-xl" />,
+  //   cName: "nav-text",
+  //   subMenu: [
+  //     {
+  //       title: "Password Policy",
+  //       path: "/system/password-policy",
+  //       icon: <FaUnlockKeyhole className="text-red-500" />,
+  //     },
+  //     {
+  //       title: "Designation",
+  //       path: "/system/designation",
+  //       icon: <FaIdBadge className="text-blue-500" />,
+  //     },
+  //   ],
+  // },
+   {
+    title: "Administration",
     path: "/system",
-    icon: <FaCogs className="text-xl" />,
+    icon: <FaShieldAlt className="text-xl" />,
     cName: "nav-text",
+    access: ["ADMIN"], 
     subMenu: [
       {
         title: "Password Policy",
@@ -112,25 +132,25 @@ const sidebarData: SidebarItem[] = [
       },
     ],
   },
-  {
-    title: "Administration",
-    path: "/admin",
-    icon: <FaShieldAlt className="text-xl" />,
-    cName: "nav-text",
-    access: ["SUPERVISOR"], // Based on your Role enum
-    subMenu: [
-      {
-        title: "System Settings",
-        path: "/admin/settings",
-        icon: <FaCogs />,
-      },
-      {
-        title: "User Management",
-        path: "/admin/users",
-        icon: <FaUserShield />,
-      },
-    ],
-  },
+  // {
+  //   title: "Administration",
+  //   path: "/admin",
+  //   icon: <FaShieldAlt className="text-xl" />,
+  //   cName: "nav-text",
+  //   access: ["SUPERVISOR"], // Based on your Role enum
+  //   subMenu: [
+  //     {
+  //       title: "System Settings",
+  //       path: "/admin/settings",
+  //       icon: <FaCogs />,
+  //     },
+  //     {
+  //       title: "User Management",
+  //       path: "/admin/users",
+  //       icon: <FaUserShield />,
+  //     },
+  //   ],
+  // },
 ];
 
 export default sidebarData;
