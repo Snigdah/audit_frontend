@@ -1,4 +1,3 @@
-// AuthContext.jsx
 import React, {
   createContext,
   useContext,
@@ -6,33 +5,32 @@ import React, {
   useState,
   type ReactNode,
 } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import type { AuthState } from "../types/auth";
 import AuthService from "../services/AuthService";
 import { toast } from "../components/common/Toast";
 
 interface AuthContextProps {
   authState: AuthState;
-  isLoading: boolean; // Add loading state
+  isLoading: boolean;
   login: (employeeId: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  forgotPassword: () => Promise<void>; // admin OTP send
+  verifyOtp: (otp: string) => Promise<void>; // verify OTP and login
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const [isLoading, setIsLoading] = useState(true);
   const [authState, setAuthState] = useState<AuthState>({
     isAuthenticated: false,
     employeeId: null,
     role: null,
   });
 
-  // Initialize auth state from localStorage on component mount
+  // Initialize auth state from localStorage
   useEffect(() => {
     const initializeAuth = async () => {
       try {
@@ -42,27 +40,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
         setAuthState({
           isAuthenticated: !!token,
-          employeeId: employeeId,
-          role: role,
+          employeeId,
+          role,
         });
       } catch (error) {
         console.error("Error initializing auth:", error);
       } finally {
-        setIsLoading(false); // Set loading to false when done
+        setIsLoading(false);
       }
     };
-
     initializeAuth();
   }, []);
 
+  // Normal login
   const login = async (employeeId: string, password: string): Promise<void> => {
     try {
+      setIsLoading(true);
       const screenResolution = `${window.screen.width}x${window.screen.height}`;
-      const response = await AuthService.login({
-        employeeId,
-        password,
-        screenResolution,
-      });
+      const response = await AuthService.login({ employeeId, password, screenResolution });
 
       setAuthState({
         isAuthenticated: true,
@@ -71,36 +66,64 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       });
 
       toast.success("Login successful!");
-
-      // Navigate to the saved location or default to home
-      const origin = "/dashboard";
-      navigate(origin, { replace: true });
+      navigate("/dashboard", { replace: true });
     } catch (error: any) {
-      toast.error(
-        error.response?.data?.devMessage || "Failed to load buildings"
-      );
+      toast.error(error.response?.data?.devMessage || "Login failed");
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  // Logout
   const logout = async (): Promise<void> => {
     try {
       await AuthService.logout();
-    } catch (error) {
-      console.error("Logout error:", error);
     } finally {
-      // Always reset auth state and redirect to login
-      setAuthState({
-        isAuthenticated: false,
-        employeeId: null,
-        role: null,
-      });
+      setAuthState({ isAuthenticated: false, employeeId: null, role: null });
       navigate("/login");
     }
   };
 
+  // Forgot password (admin only)
+  const forgotPassword = async (): Promise<void> => {
+    try {
+      setIsLoading(true);
+      await AuthService.sendAdminOtp(); // new API call
+      toast.success("OTP sent to admin email");
+    } catch (error: any) {
+      toast.error(error.response?.data?.devMessage || "Failed to send OTP");
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Verify OTP and login admin automatically
+  const verifyOtp = async (otp: string): Promise<void> => {
+    try {
+      setIsLoading(true);
+      const response = await AuthService.verifyAdminOtp(otp);
+
+      // Set auth state same as normal login
+      setAuthState({
+        isAuthenticated: true,
+        employeeId: response.employeeId,
+        role: response.role,
+      });
+
+      toast.success("OTP verified, logged in!");
+      navigate("/dashboard", { replace: true });
+    } catch (error: any) {
+      toast.error(error.response?.data?.devMessage || "Invalid OTP");
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ authState, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ authState, isLoading, login, logout, forgotPassword, verifyOtp }}>
       {children}
     </AuthContext.Provider>
   );
@@ -108,8 +131,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
 export const useAuth = (): AuthContextProps => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
   return context;
 };

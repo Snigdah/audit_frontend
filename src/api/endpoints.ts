@@ -15,6 +15,8 @@ const BASE = {
 export const ENDPOINTS = {
   AUTH: {
     LOGIN: `${BASE.AUTH}/login`,
+    ADMIN_FORGOT_PASSWORD: "",
+    ADMIN_VERIFY_OTP: "",
     REFRESH_TOKEN: `${BASE.AUTH}/refreshtoken`,
     LOGOUT: `${BASE.AUTH}/logout`,
     REGISTER: `${BASE.AUTH}/register`,

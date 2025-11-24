@@ -2,7 +2,8 @@ import { useForm } from "react-hook-form";
 import { InputField } from "../../components/common/InputField";
 import { useAuth } from "../../context/AuthContext";
 import { motion } from "framer-motion";
-import { useState } from "react"; // Added import
+import { useState } from "react"; 
+import { Link } from "react-router-dom";
 
 type LoginFormData = {
   employeeId: string;
@@ -113,12 +114,12 @@ export const LoginPage = () => {
               </div>
 
               <div className="text-sm">
-                <a
-                  href="#"
+                <Link
+                  to="/forgot-password"
                   className="font-medium text-gray-800 hover:text-gray-600"
                 >
                   Forgot password?
-                </a>
+                </Link>
               </div>
             </div>
 

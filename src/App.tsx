@@ -26,6 +26,7 @@ import ProfilePage from "./pages/user/ProfilePage";
 import { WebSocketProvider } from "./context/WebSocketContext";
 import { NotificationProvider } from "./context/NotificationContext";
 import NotificationsPage from "./pages/notification/NotificationsPage";
+import { ForgotPasswordPage } from "./pages/auth/ForgotPasswordPage";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
               <Routes>
                 {/* Public routes */}
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/unauthorized" element={<Unauthorized />} />
 
                 {/* Authenticated user routes */}
