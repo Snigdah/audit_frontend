@@ -170,6 +170,7 @@ const EquipmentOperator = ({ equipmentId }: Props) => {
           <Tooltip title="Remove Operator" placement="top">
             <Button
               type="text"
+              size="small"
               icon={
                 <DeleteOutlined className="text-red-600 hover:text-red-700 transition-colors" />
               }

@@ -172,7 +172,7 @@ const FloorList = ({ buildingId }: { buildingId: string }) => {
           <Tooltip title="Edit Floor" placement="top">
             <Button
               type="text"
-              size="middle"
+              size="small"
               icon={
                 <EditOutlined className="text-blue-600 hover:text-blue-700 transition-colors" />
               }
@@ -189,7 +189,7 @@ const FloorList = ({ buildingId }: { buildingId: string }) => {
           <Tooltip title="Delete Floor" placement="top">
             <Button
               type="text"
-              size="middle"
+              size="small"
               icon={
                 <DeleteOutlined className="text-red-600 hover:text-red-700 transition-colors" />
               }
