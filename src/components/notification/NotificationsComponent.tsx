@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useNotification } from "../../context/NotificationContext";
 import { Link, useNavigate } from "react-router-dom";
 
-
 const NotificationsComponent = () => {
   const {
     notifications,
@@ -20,6 +19,23 @@ const NotificationsComponent = () => {
     setIsLoadingMore(true);
     await loadMore();
     setIsLoadingMore(false);
+  };
+
+  const handleNotificationClick = (notification: any) => {
+    // Mark as read if unread
+    if (!notification.isRead) {
+      toggleNotificationRead(notification.userNotificationId);
+    }
+    
+    // Navigate if there's a redirect URL
+    if (notification.redirectUrl) {
+      navigate(notification.redirectUrl);
+    }
+  };
+
+  const handleActionClick = (e: React.MouseEvent, callback: Function) => {
+    e.stopPropagation(); // Prevent triggering the main click handler
+    callback();
   };
 
   return (
@@ -41,11 +57,12 @@ const NotificationsComponent = () => {
             {notifications.map((n) => (
               <div
                 key={n.userNotificationId}
-                className={`transition-all duration-200 hover:bg-blue-50 border-l-4 ${
+                className={`transition-all duration-200 hover:bg-blue-50 border-l-4 cursor-pointer ${
                   !n.isRead 
                     ? "bg-blue-50 border-blue-500" 
                     : "bg-white border-transparent hover:border-blue-200"
                 }`}
+                onClick={() => handleNotificationClick(n)}
               >
                 <div className="px-6 py-4">
                   <div className="flex items-start space-x-4">
@@ -79,11 +96,11 @@ const NotificationsComponent = () => {
                                 formatDistanceToNow(new Date(n.createdAt), { addSuffix: true })}
                             </span>
                             
-                            {/* Action Buttons */}
+                            {/* Action Buttons - Keep original position */}
                             <div className="flex items-center space-x-3">
                               <button
                                 type="button"
-                                onClick={() => toggleNotificationRead(n.userNotificationId)}
+                                onClick={(e) => handleActionClick(e, () => toggleNotificationRead(n.userNotificationId))}
                                 className={`text-xs font-medium transition-colors ${
                                   n.isRead 
                                     ? "text-blue-600 hover:text-blue-800" 
@@ -94,13 +111,13 @@ const NotificationsComponent = () => {
                               </button>
                               
                               <button
-                                onClick={() => deleteNotification(n.userNotificationId)}
+                                onClick={(e) => handleActionClick(e, () => deleteNotification(n.userNotificationId))}
                                 className="text-xs font-medium text-red-600 hover:text-red-800 transition-colors"
                               >
                                 Delete
                               </button>
                               
-                              {n.redirectUrl && (
+                              {/* {n.redirectUrl && (
                                 <Link
                                   to={n.redirectUrl}
                                   className="text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors flex items-center space-x-1"
@@ -116,7 +133,7 @@ const NotificationsComponent = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                   </svg>
                                 </Link>
-                              )}
+                              )} */}
                             </div>
                           </div>
                         </div>
