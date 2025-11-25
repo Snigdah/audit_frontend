@@ -103,7 +103,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const verifyOtp = async (otp: string): Promise<void> => {
     try {
       setIsLoading(true);
-      const response = await AuthService.verifyAdminOtp(otp);
+      const response = await AuthService.verifyAdminOtp({ otp });
 
       // Set auth state same as normal login
       setAuthState({

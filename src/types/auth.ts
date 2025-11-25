@@ -38,3 +38,7 @@ export interface DeleteUser{
   id: number;
   role: string;
 }
+
+export interface AdminOtpVerifyRequest {
+  otp: string;
+}

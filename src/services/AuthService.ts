@@ -3,6 +3,7 @@ import { ENDPOINTS } from "../api/endpoints";
 import { TOKEN_KEY, USER_ID_KEY, USER_ROLE_KEY } from "../constants/config";
 import type { ApiResponse } from "../types/api";
 import type {
+  AdminOtpVerifyRequest,
   ChangePassword,
   DeleteUser,
   LoginRequest,
@@ -30,16 +31,21 @@ class AuthService {
 
   async sendAdminOtp(): Promise<void> {
     // API sends OTP to admin email
-    await apiClient.post(ENDPOINTS.AUTH.ADMIN_FORGOT_PASSWORD);
+    await apiClient.get(ENDPOINTS.AUTH.ADMIN_FORGOT_PASSWORD);
   }
 
-  async verifyAdminOtp(otp: string): Promise<LoginResponse> {
-    // API verifies OTP and returns same response as login
-    const response = await apiClient.post<ApiResponse<LoginResponse>>(ENDPOINTS.AUTH.ADMIN_VERIFY_OTP, { otp });
+  async verifyAdminOtp(request: AdminOtpVerifyRequest): Promise<LoginResponse> {
+    const response = await apiClient.post<ApiResponse<LoginResponse>>(
+      ENDPOINTS.AUTH.ADMIN_VERIFY_OTP,
+      request
+    );
+
     const data = response.data.data;
+
     this.setAccessToken(data.accessToken);
     this.setUserRole(data.role);
     this.setEmployeeId(data.employeeId);
+
     return data;
   }
 
