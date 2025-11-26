@@ -9,7 +9,8 @@ const BASE = {
   SUPERVISOR: "supervisor",
   OPERATOR: "operator",
   EQUIPMENT: "equipment",
-  NOTIFICATION: "notification"
+  NOTIFICATION: "notification",
+  EMAIL: "mail"
 };
 
 export const ENDPOINTS = {
@@ -109,4 +110,9 @@ export const ENDPOINTS = {
     UPDATE: (id: number)=> `${BASE.NOTIFICATION}/${id}`,
     DELETE: (id: number)=> `${BASE.NOTIFICATION}/${id}`,
   },
+  EMAIL: {
+    CONFIGURE_EMAIL: `${BASE.EMAIL}/configure`,
+    GET_EMAIL_CONFIG: `${BASE.EMAIL}/configure`,
+    TEST_EMAIL: `${BASE.EMAIL}/test`,
+  }
 };

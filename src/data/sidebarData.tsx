@@ -126,6 +126,11 @@ const sidebarData: SidebarItem[] = [
         icon: <FaUnlockKeyhole className="text-red-500" />,
       },
       {
+        title: "Email Settings",
+        path: "/system/email-settings",
+        icon: <FaEnvelopeOpenText className="text-purple-500" />,
+      },
+      {
         title: "Designation",
         path: "/system/designation",
         icon: <FaIdBadge className="text-blue-500" />,

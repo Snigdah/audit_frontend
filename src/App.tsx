@@ -27,6 +27,7 @@ import { WebSocketProvider } from "./context/WebSocketContext";
 import { NotificationProvider } from "./context/NotificationContext";
 import NotificationsPage from "./pages/notification/NotificationsPage";
 import { ForgotPasswordPage } from "./pages/auth/ForgotPasswordPage";
+import EmailSettingsPage from "./pages/settings/EmailSettingsPage";
 
 function App() {
   return (
@@ -102,15 +103,22 @@ function App() {
                   {/* ======================= Settings ======================== */}
                   <Route path="/user/profile" element={<ProfilePage />} />
 
-                  <Route
-                    path="/system/password-policy"
-                    element={<PasswordPolicyPage />}
-                  />
+                  <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
+                    <Route
+                      path="/system/password-policy"
+                      element={<PasswordPolicyPage />}
+                    />
 
-                  <Route
-                    path="/system/designation"
-                    element={<DesignationPage />}
-                  />
+                    <Route
+                      path="/system/email-settings"
+                      element={<EmailSettingsPage />}
+                    />
+
+                    <Route
+                      path="/system/designation"
+                      element={<DesignationPage />}
+                    />
+                  </Route>
 
                   {/* Routes that require specific roles */}
                   <Route element={<ProtectedRoute allowedRoles={["MANAGER"]} />}>
