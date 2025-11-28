@@ -1,11 +1,13 @@
 import apiClient from "../api/axios";
 import { ENDPOINTS } from "../api/endpoints";
 import type { ApiResponse } from "../types/api";
+import type { EquipmentResponse } from "../types/equipment";
 import type {
   OperatorDetail,
   OperatorSimple,
   UpdateOperatorRequest,
 } from "../types/operator";
+import type { SupervisorSimple } from "../types/supervisor";
 
 class OperatorService {
   async getOperatorById(id: number): Promise<OperatorDetail> {
@@ -32,6 +34,27 @@ class OperatorService {
     );
     return response.data;
   }
+
+  // Fetch Supervisor by Operator
+   async getSupervisorByOperator(
+    operatorId: number
+  ): Promise<SupervisorSimple[]> {
+    const response = await apiClient.get<ApiResponse<SupervisorSimple[]>>(
+      ENDPOINTS.OPERATOR.GET_SUPERVISOR(operatorId)
+    );
+    return response.data.data;
+  }
+
+  // Fetch Equipments by Operator
+   async getEquipmentsByOperator(
+    operatorId: number
+  ): Promise<EquipmentResponse[]> {
+    const response = await apiClient.get<ApiResponse<EquipmentResponse[]>>(
+      ENDPOINTS.OPERATOR.GET_EQUIPMENTS(operatorId)
+    );
+    return response.data.data;
+  }
+
 }
 
 export default new OperatorService();

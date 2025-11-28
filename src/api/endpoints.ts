@@ -89,6 +89,8 @@ export const ENDPOINTS = {
     FETCH_ALL: (search?: string) =>
       search ? `${BASE.OPERATOR}?search=${search}` : `${BASE.OPERATOR}`,
     UPDATE: (id: number) => `${BASE.OPERATOR}/${id}`,
+    GET_SUPERVISOR: (operatorId: number) => `${BASE.OPERATOR}/${operatorId}/supervisors`,
+    GET_EQUIPMENTS: (operatorId: number) => `${BASE.OPERATOR}/${operatorId}/equipments`,
   },
   EQUIPMENT: {
     FETCH_BY_ID: (id: number) => `${BASE.EQUIPMENT}/${id}`,

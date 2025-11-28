@@ -159,7 +159,7 @@ const SupervisorDepartment = ({ supervisorId }: Props) => {
           }}
           bordered
           size="middle"
-          scroll={{ x: 400 }}
+          scroll={{ x: 50 }}
           locale={{
             emptyText: searchText
               ? `No departments found matching "${searchText}"`
