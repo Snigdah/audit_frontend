@@ -82,6 +82,7 @@ export const ENDPOINTS = {
     REMOVE_OPERATOR: `${BASE.SUPERVISOR}/remove-operator`,
     GET_OPERATORS: (supervisorId: number) =>
       `${BASE.SUPERVISOR}/${supervisorId}/operators`,
+    GET_DEPARTMENT: (supervisorId: number) =>  `${BASE.SUPERVISOR}/${supervisorId}/departments`,
   },
   OPERATOR: {
     FETCH_BY_ID: (id: number) => `${BASE.OPERATOR}/${id}`,

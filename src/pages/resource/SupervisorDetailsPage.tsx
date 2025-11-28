@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import PageHeader from "../../components/common/PageHeader";
 import SupervisorInfo from "../../components/supervisor/SupervisorInfo";
 import SupervisorOperator from "../../components/supervisor/SupervisorOperator";
+import SupervisorDepartment from "../../components/supervisor/SupervisorDepartment";
 
 const SuperVisorDetails = () => {
   const { supervisorId } = useParams();
@@ -20,6 +21,9 @@ const SuperVisorDetails = () => {
       </div>
       <div className="pb-2">
         {supervisorId && <SupervisorOperator supervisorId={supervisorId} />}
+      </div>
+      <div className="pb-2">
+        {supervisorId && <SupervisorDepartment supervisorId={supervisorId} />}
       </div>
     </div>
   );
