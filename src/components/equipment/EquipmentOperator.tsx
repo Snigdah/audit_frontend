@@ -14,6 +14,7 @@ import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import type { OperatorSimple } from "../../types/operator";
 import EquipmentOperatorAddModal from "./EquipmentOperatorAddModal";
 import { debounce } from "lodash";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   equipmentId: string;
@@ -28,6 +29,7 @@ const EquipmentOperator = ({ equipmentId }: Props) => {
     null
   );
   const [searchText, setSearchText] = useState("");
+  const navigate = useNavigate();
 
   const fetchOperators = (search?: string) => {
     setLoading(true);
@@ -230,6 +232,10 @@ const EquipmentOperator = ({ equipmentId }: Props) => {
               ? `No operators found matching "${searchText}"`
               : "No operators assigned to this equipment",
           }}
+           onRow={(record) => ({
+            onClick: () => navigate(`/resource/operator/${record.id}`),
+            style: { cursor: "pointer" },
+          })}
         />
       </div>
 
