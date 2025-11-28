@@ -1,18 +1,12 @@
 import { useEffect, useState } from "react";
 import FloorService from "../../services/FloorService";
 import type { FloorResponse } from "../../types/floor";
-import { Card, Descriptions, Skeleton, Tag, Typography, Tooltip } from "antd";
+import { Card, Skeleton, Tag } from "antd";
 import {
   ApartmentOutlined,
-  FieldTimeOutlined,
-  CheckCircleOutlined,
+  NumberOutlined,
+  HomeOutlined,
 } from "@ant-design/icons";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-
-dayjs.extend(relativeTime);
-
-const { Text } = Typography;
 
 const FloorDetails = ({ floorId }: { floorId: string }) => {
   const [floor, setFloor] = useState<FloorResponse | null>(null);
@@ -34,49 +28,75 @@ const FloorDetails = ({ floorId }: { floorId: string }) => {
   }, [floorId]);
 
   if (loading) {
+    return <Skeleton active paragraph={{ rows: 4 }} />;
+  }
+
+  if (!floor) {
     return (
-      <div className="p-4">
-        <Skeleton active paragraph={{ rows: 4 }} />
+      <div className="bg-red-50 border border-red-200 p-3 rounded-md">
+        <p className="text-red-600 text-sm font-medium m-0">Floor not found</p>
       </div>
     );
   }
 
-  if (!floor) {
-    return <div className="p-4 text-red-500">Floor not found</div>;
-  }
-
   return (
-    <div>
-      <Card
-        title={
-          <div className="flex items-center gap-2">
-            <ApartmentOutlined className="text-blue-500" />
-            <span className="text-xl font-semibold">{floor.floorName}</span>
+    <Card className="shadow-sm border border-slate-200" bodyStyle={{ padding: "20px" }}>
+      {/* Header */}
+      <div className="flex items-center gap-3 pb-4 border-b border-slate-200 mb-5">
+        <div className="bg-blue-900 p-2 rounded-md">
+          <ApartmentOutlined className="text-white text-base" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-slate-800 m-0">
+            {floor.floorName}
+          </h3>
+          <p className="text-xs text-slate-500 m-0 mt-0.5">Floor Details</p>
+        </div>
+      </div>
+
+      {/* Info Grid */}
+      <div className="space-y-3">
+        {/* Floor ID */}
+        <div className="flex items-center justify-between py-2.5 px-3 bg-slate-50 rounded-md hover:bg-slate-100 transition">
+          <div className="flex items-center gap-2.5">
+            <NumberOutlined className="text-blue-900 text-sm" />
+            <div>
+              <p className="text-xs text-slate-500 m-0">Floor ID</p>
+              <p className="text-sm font-semibold text-slate-800 m-0">
+                {floor.id}
+              </p>
+            </div>
           </div>
-        }
-        className="shadow-md rounded-lg border-0"
-      >
-        <Descriptions bordered column={1} size="middle">
-          <Descriptions.Item label="Floor ID">
-            <Text strong>{floor.id}</Text>
-          </Descriptions.Item>
+        </div>
 
-          <Descriptions.Item label="Floor Name">
-            <Text>{floor.floorName}</Text>
-          </Descriptions.Item>
+        {/* Floor Level */}
+        <div className="flex items-center justify-between py-2.5 px-3 bg-slate-50 rounded-md hover:bg-slate-100 transition">
+          <div className="flex items-center gap-2.5">
+            <ApartmentOutlined className="text-blue-900 text-sm" />
+            <div>
+              <p className="text-xs text-slate-500 m-0">Floor Level</p>
+              <p className="text-sm font-semibold text-slate-800 m-0">
+                Level {floor.floorLevel}
+              </p>
+            </div>
+          </div>
+          <Tag color="blue" className="text-xs m-0">Level</Tag>
+        </div>
 
-          <Descriptions.Item label="Floor Level">
-            <Tag color="blue" className="text-base">
-              Level {floor.floorLevel}
-            </Tag>
-          </Descriptions.Item>
-
-          <Descriptions.Item label="Building Name">
-            <Text>{floor.buildingName}</Text>
-          </Descriptions.Item>
-        </Descriptions>
-      </Card>
-    </div>
+        {/* Building Name */}
+        <div className="flex items-center justify-between py-2.5 px-3 bg-slate-50 rounded-md hover:bg-slate-100 transition">
+          <div className="flex items-center gap-2.5">
+            <HomeOutlined className="text-blue-900 text-sm" />
+            <div>
+              <p className="text-xs text-slate-500 m-0">Building Name</p>
+              <p className="text-sm font-semibold text-slate-800 m-0">
+                {floor.buildingName}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Card>
   );
 };
 

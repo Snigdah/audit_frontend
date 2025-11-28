@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
-import { Card, Descriptions, Skeleton, Tag, Typography } from "antd";
+import { Card, Skeleton, Tag } from "antd";
 import OperatorService from "../../services/OperatorService";
 import type { OperatorDetail } from "../../types/operator";
 import {
   IdcardOutlined,
   UserOutlined,
-  UserSwitchOutlined,
   TagsOutlined,
+  StarOutlined,
 } from "@ant-design/icons";
-
-const { Text } = Typography;
 
 const OperatorInfo = ({ operatorId }: { operatorId: string }) => {
   const [operator, setOperator] = useState<OperatorDetail | null>(null);
@@ -31,55 +29,96 @@ const OperatorInfo = ({ operatorId }: { operatorId: string }) => {
   }, [operatorId]);
 
   if (loading) {
+    return <Skeleton active paragraph={{ rows: 4 }} />;
+  }
+
+  if (!operator) {
     return (
-      <div className="p-4">
-        <Skeleton active paragraph={{ rows: 4 }} />
+      <div className="bg-red-50 border border-red-200 p-3 rounded-md">
+        <p className="text-red-600 text-sm font-medium m-0">Operator not found</p>
       </div>
     );
   }
 
-  if (!operator) {
-    return <div className="p-4 text-red-500">Operator not found</div>;
-  }
-
   return (
-    <div>
-      <Card
-        title={
-          <div className="flex items-center gap-2">
-            <UserOutlined className="text-green-600" />
-            <span className="text-xl font-semibold">
-              {operator.operatorName}
-            </span>
+    <Card
+      className="shadow-sm border border-slate-200"
+      bodyStyle={{ padding: "20px" }}
+    >
+      {/* Header */}
+      <div className="flex items-center gap-3 pb-4 border-b border-slate-200 mb-5">
+        <div className="bg-blue-900 p-2 rounded-md">
+          <UserOutlined className="text-white text-base" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-slate-800 m-0">
+            {operator.operatorName}
+          </h3>
+          <p className="text-xs text-slate-500 m-0 mt-0.5">Operator Profile</p>
+        </div>
+      </div>
+
+      {/* Info Grid */}
+      <div className="space-y-3">
+        {/* Operator ID */}
+        <div className="flex items-center justify-between py-2.5 px-3 bg-slate-50 rounded-md hover:bg-slate-100 transition-colors">
+          <div className="flex items-center gap-2.5">
+            <IdcardOutlined className="text-blue-900 text-sm" />
+            <div>
+              <p className="text-xs text-slate-500 m-0">Operator ID</p>
+              <p className="text-sm font-semibold text-slate-800 m-0">
+                {operator.operatorId}
+              </p>
+            </div>
           </div>
-        }
-        className="shadow-md rounded-lg border-0"
-      >
-        <Descriptions bordered column={1} size="middle">
-          <Descriptions.Item label="Operator ID">
-            <Text strong>{operator.operatorId}</Text>
-          </Descriptions.Item>
+        </div>
 
-          <Descriptions.Item label="Employee ID">
-            <Tag color="purple" className="text-base">
-              {operator.employeeId}
-            </Tag>
-          </Descriptions.Item>
+        {/* Employee ID */}
+        <div className="flex items-center justify-between py-2.5 px-3 bg-slate-50 rounded-md hover:bg-slate-100 transition-colors">
+          <div className="flex items-center gap-2.5">
+            <UserOutlined className="text-blue-900 text-sm" />
+            <div>
+              <p className="text-xs text-slate-500 m-0">Employee ID</p>
+              <p className="text-sm font-semibold text-slate-800 m-0">
+                {operator.employeeId}
+              </p>
+            </div>
+          </div>
+          <Tag color="blue" className="text-xs m-0">
+            EMP
+          </Tag>
+        </div>
 
-          <Descriptions.Item label="Designation">
-            <Tag color="blue" className="text-base">
-              {operator.designationName}
-            </Tag>
-          </Descriptions.Item>
+        {/* Designation */}
+        <div className="flex items-center justify-between py-2.5 px-3 bg-slate-50 rounded-md hover:bg-slate-100 transition-colors">
+          <div className="flex items-center gap-2.5">
+            <TagsOutlined className="text-blue-900 text-sm" />
+            <div>
+              <p className="text-xs text-slate-500 m-0">Designation</p>
+              <p className="text-sm font-semibold text-slate-800 m-0">
+                {operator.designationName}
+              </p>
+            </div>
+          </div>
+        </div>
 
-          <Descriptions.Item label="Role">
-            <Tag color="cyan" className="text-base font-medium">
-              {operator.role}
-            </Tag>
-          </Descriptions.Item>
-        </Descriptions>
-      </Card>
-    </div>
+        {/* Role */}
+        <div className="flex items-center justify-between py-2.5 px-3 bg-blue-50 rounded-md border border-blue-100">
+          <div className="flex items-center gap-2.5">
+            <StarOutlined className="text-blue-900 text-sm" />
+            <div>
+              <p className="text-xs text-slate-500 m-0">System Role</p>
+              <p className="text-sm font-bold text-blue-900 m-0">
+                {operator.role}
+              </p>
+            </div>
+          </div>
+          <Tag color="blue" className="text-xs font-medium m-0">
+            Active
+          </Tag>
+        </div>
+      </div>
+    </Card>
   );
 };
 

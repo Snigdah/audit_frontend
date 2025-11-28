@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import DepartmentService from "../../services/DepartmentService";
 import type { DepartmentDetail } from "../../types/department";
-import { Card, Descriptions, Skeleton, Tag, Typography } from "antd";
-import { TeamOutlined, AppstoreOutlined } from "@ant-design/icons";
-
-const { Text } = Typography;
+import { Card, Skeleton, Tag } from "antd";
+import {
+  TeamOutlined,
+  IdcardOutlined,
+  AppstoreOutlined,
+} from "@ant-design/icons";
 
 const DepartmentDetails = ({ departmentId }: { departmentId: string }) => {
   const [department, setDepartment] = useState<DepartmentDetail | null>(null);
@@ -27,74 +29,95 @@ const DepartmentDetails = ({ departmentId }: { departmentId: string }) => {
     fetchDepartment();
   }, [departmentId]);
 
-  if (loading) {
+  if (loading) return <Skeleton active paragraph={{ rows: 4 }} />;
+
+  if (!department)
     return (
-      <div className="p-4">
-        <Skeleton active paragraph={{ rows: 4 }} />
+      <div className="bg-red-50 border border-red-200 p-3 rounded-md">
+        <p className="text-red-600 text-sm font-medium m-0">
+          Department not found
+        </p>
       </div>
     );
-  }
-
-  if (!department) {
-    return <div className="p-4 text-red-500">Department not found</div>;
-  }
 
   return (
-    <div>
-      <Card
-        title={
-          <div className="flex items-center gap-2">
-            <TeamOutlined className="text-blue-500" />
-            <span className="text-xl font-semibold">
-              {department.departmentName}
-            </span>
+    <Card className="shadow-sm border border-slate-200" bodyStyle={{ padding: "20px" }}>
+      {/* Header */}
+      <div className="flex items-center gap-3 pb-4 border-b border-slate-200 mb-5">
+        <div className="bg-blue-900 p-2 rounded-md">
+          <TeamOutlined className="text-white text-base" />
+        </div>
+
+        <div>
+          <h3 className="text-lg font-semibold text-slate-800 m-0">
+            {department.departmentName}
+          </h3>
+          <p className="text-xs text-slate-500 m-0 mt-0.5">Department Profile</p>
+        </div>
+      </div>
+
+      {/* Info Section */}
+      <div className="space-y-3">
+
+        {/* Department ID */}
+        <div className="flex items-center justify-between py-2.5 px-3 bg-slate-50 rounded-md hover:bg-slate-100 transition">
+          <div className="flex items-center gap-2.5">
+            <IdcardOutlined className="text-blue-900 text-sm" />
+            <div>
+              <p className="text-xs text-slate-500 m-0">Department ID</p>
+              <p className="text-sm font-semibold text-slate-800 m-0">
+                {department.departmentId}
+              </p>
+            </div>
           </div>
-        }
-        className="shadow-md rounded-lg border-0"
-      >
-        <Descriptions bordered column={1} size="middle">
-          <Descriptions.Item
-            label="Department ID"
-            styles={{ label: { width: "40%" }, content: { width: "60%" } }}
-          >
-            <Text strong>{department.departmentId}</Text>
-          </Descriptions.Item>
+        </div>
 
-          <Descriptions.Item
-            label="Department Name"
-            styles={{ label: { width: "40%" }, content: { width: "60%" } }}
-          >
-            <Tag color="geekblue" className="text-base">
-              {department.departmentName}
-            </Tag>
-          </Descriptions.Item>
+        {/* Department Name */}
+        <div className="flex items-center justify-between py-2.5 px-3 bg-slate-50 rounded-md hover:bg-slate-100 transition">
+          <div className="flex items-center gap-2.5">
+            <TeamOutlined className="text-blue-900 text-sm" />
+            <div>
+              <p className="text-xs text-slate-500 m-0">Department Name</p>
+              <p className="text-sm font-semibold text-slate-800 m-0">
+                {department.departmentName}
+              </p>
+            </div>
+          </div>
+          <Tag color="blue" className="text-xs m-0">
+            DEPT
+          </Tag>
+        </div>
 
-          <Descriptions.Item
-            label="Supervisors"
-            styles={{ label: { width: "40%" }, content: { width: "60%" } }}
-          >
-            <div className="flex items-center gap-2">
-              <TeamOutlined className="text-gray-500" />
-              <Tag color="green" className="text-base">
+        {/* Supervisors */}
+        <div className="flex items-center justify-between py-2.5 px-3 bg-slate-50 rounded-md hover:bg-slate-100 transition">
+          <div className="flex items-center gap-2.5">
+            <TeamOutlined className="text-blue-900 text-sm" />
+            <div>
+              <p className="text-xs text-slate-500 m-0">Supervisors</p>
+              <p className="text-sm font-semibold text-slate-800 m-0">
                 {department.totalSupervisors}
-              </Tag>
+              </p>
             </div>
-          </Descriptions.Item>
+          </div>
+          <Tag color="blue">SUP</Tag>
+        </div>
 
-          <Descriptions.Item
-            label="Total Equipments"
-            styles={{ label: { width: "40%" }, content: { width: "60%" } }}
-          >
-            <div className="flex items-center gap-2">
-              <AppstoreOutlined className="text-gray-500" />
-              <Tag color="purple" className="text-base">
+        {/* Equipments */}
+        <div className="flex items-center justify-between py-2.5 px-3 bg-slate-50 rounded-md hover:bg-slate-100 transition">
+          <div className="flex items-center gap-2.5">
+            <AppstoreOutlined className="text-blue-900 text-sm" />
+            <div>
+              <p className="text-xs text-slate-500 m-0">Total Equipments</p>
+              <p className="text-sm font-semibold text-slate-800 m-0">
                 {department.totalEquipments}
-              </Tag>
+              </p>
             </div>
-          </Descriptions.Item>
-        </Descriptions>
-      </Card>
-    </div>
+          </div>
+          <Tag color="purple">EQ</Tag>
+        </div>
+
+      </div>
+    </Card>
   );
 };
 
