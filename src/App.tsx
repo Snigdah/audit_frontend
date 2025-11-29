@@ -28,6 +28,7 @@ import { NotificationProvider } from "./context/NotificationContext";
 import NotificationsPage from "./pages/notification/NotificationsPage";
 import { ForgotPasswordPage } from "./pages/auth/ForgotPasswordPage";
 import EmailSettingsPage from "./pages/settings/EmailSettingsPage";
+import ViewerPage from "./pages/resource/ViewerPage";
 
 function App() {
   return (
@@ -93,6 +94,11 @@ function App() {
                   <Route
                     path="/resource/operator/:operatorId"
                     element={<OperatorDetailsPage />}
+                  />
+
+                  <Route
+                    path="/resource/viewer"
+                    element={<ViewerPage />}
                   />
 
                   <Route

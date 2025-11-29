@@ -8,6 +8,7 @@ const BASE = {
   DESIGNATION: "designation",
   SUPERVISOR: "supervisor",
   OPERATOR: "operator",
+  VIEWER: "viewer",
   EQUIPMENT: "equipment",
   NOTIFICATION: "notification",
   EMAIL: "mail"
@@ -91,6 +92,10 @@ export const ENDPOINTS = {
     UPDATE: (id: number) => `${BASE.OPERATOR}/${id}`,
     GET_SUPERVISOR: (operatorId: number) => `${BASE.OPERATOR}/${operatorId}/supervisors`,
     GET_EQUIPMENTS: (operatorId: number) => `${BASE.OPERATOR}/${operatorId}/equipments`,
+  },
+  VIEWER: {
+    FETCH_ALL: (search?: string) =>
+      search ? `${BASE.VIEWER}?search=${search}` : `${BASE.VIEWER}`,
   },
   EQUIPMENT: {
     FETCH_BY_ID: (id: number) => `${BASE.EQUIPMENT}/${id}`,
