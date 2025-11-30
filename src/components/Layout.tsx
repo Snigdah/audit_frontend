@@ -1,4 +1,4 @@
-// Layout.tsx with authentication-aware sidebar
+// Layout.tsx with authentication-aware sidebar and footer
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
@@ -37,6 +37,9 @@ const Layout = ({ children }: LayoutProps) => {
 
   // Determine if we should show the sidebar
   const showSidebar = authState.isAuthenticated && !isAuthPage && !isLoading;
+  
+  // Determine if we should show the footer
+  const showFooter = !isAuthPage;
 
   return (
     <div
@@ -55,7 +58,8 @@ const Layout = ({ children }: LayoutProps) => {
           {children}
         </main>
 
-        <Footer />
+        {/* Only render footer if not on auth pages */}
+        {showFooter && <Footer />}
       </div>
     </div>
   );
