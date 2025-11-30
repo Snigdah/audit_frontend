@@ -1,5 +1,4 @@
 import PageHeader from "../../components/common/PageHeader";
-import MyDepartment from "../../components/user/MyDepartment";
 import ProfileInfo from "../../components/user/ProfileInfo";
 
 const ProfilePage =()=>{
@@ -12,9 +11,6 @@ const ProfilePage =()=>{
 
         <div className="pb-2">
             <ProfileInfo />
-        </div>
-        <div className="pb-2">
-            <MyDepartment />
         </div>
     </div>
     )

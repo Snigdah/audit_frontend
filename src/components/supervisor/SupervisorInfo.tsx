@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 const SupervisorInfo = ({ supervisorId }: { supervisorId: string }) => {
   const [supervisor, setSupervisor] = useState<SupervisorDetail | null>(null);
   const [loading, setLoading] = useState(true);
-   const navigate = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSupervisor = async () => {
