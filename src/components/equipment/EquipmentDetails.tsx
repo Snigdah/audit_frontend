@@ -66,9 +66,9 @@ const EquipmentDetails = ({ equipmentId }: { equipmentId: string }) => {
           <div className="flex items-center gap-2.5">
             <NumberOutlined className="text-blue-900 text-sm" />
             <div>
-              <p className="text-xs text-slate-500 m-0">Equipment ID</p>
+              <p className="text-xs text-slate-500 m-0">Equipment Name</p>
               <p className="text-sm font-semibold text-slate-800 m-0">
-                {equipment.id}
+                {equipment.equipmentName}
               </p>
             </div>
           </div>
