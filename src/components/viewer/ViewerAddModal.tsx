@@ -76,8 +76,8 @@ const ViewerAddModal = ({ visible, onCancel, onSuccess }: Props) => {
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <InputField
             name="employeeId"
-            label="Employee ID"
-            placeholder="Enter employee ID"
+            label="Viewer ID"
+            placeholder="Enter viewer ID"
             register={register}
             error={errors.employeeId}
             required
