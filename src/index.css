@@ -6,3 +6,13 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Hide scrollbar for Chrome, Safari, Edge */
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+body {
+  -ms-overflow-style: none; /* IE, Edge */
+  scrollbar-width: none; /* Firefox */
+}

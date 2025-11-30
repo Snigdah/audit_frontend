@@ -22,6 +22,10 @@ const Layout = ({ children }: LayoutProps) => {
     location.pathname === "/register" ||
     location.pathname === "/unauthorized";
 
+  // Detect dashboard page for special coloring
+  const isDashboard = location.pathname === "/dashboard";
+  const login = location.pathname === "/login";
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -35,7 +39,10 @@ const Layout = ({ children }: LayoutProps) => {
   const showSidebar = authState.isAuthenticated && !isAuthPage && !isLoading;
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div
+      className={`flex h-screen transition-colors duration-300 
+      ${isDashboard || login ? "bg-gray-900" : "bg-gray-100"}`}
+    >
       {/* Only render sidebar if authenticated and not on an auth page */}
       {showSidebar && <Sidebar onCollapseChange={setCollapsed} />}
 
