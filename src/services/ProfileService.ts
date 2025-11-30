@@ -29,6 +29,16 @@ class ProfileService {
   }
 
   /**
+   * Fetch basic profile details (name, email, designation, etc.)
+   */
+  async getUserProfile(employeeId : number): Promise<ProfileBasic> {
+    const response = await apiClient.get<ApiResponse<ProfileBasic>>(
+      ENDPOINTS.PROFILE.FETCH_USRER_PROFILE(employeeId)
+    );
+    return response.data.data;
+  }
+
+  /**
    * Fetch only user's departments
    */
   async getDepartments(): Promise<DepartmentInfo[]> {

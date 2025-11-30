@@ -30,7 +30,7 @@ export interface RegisterRequest {
 
 export interface ChangePassword{
   employeeId: string;
-  oldPassword: string;
+  oldPassword?: string;
   newPassword: string;
 }
 

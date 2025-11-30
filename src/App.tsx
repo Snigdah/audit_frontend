@@ -29,6 +29,7 @@ import NotificationsPage from "./pages/notification/NotificationsPage";
 import { ForgotPasswordPage } from "./pages/auth/ForgotPasswordPage";
 import EmailSettingsPage from "./pages/settings/EmailSettingsPage";
 import ViewerPage from "./pages/resource/ViewerPage";
+import UserProfilePage from "./pages/user/UserProfilePage";
 
 function App() {
   return (
@@ -123,6 +124,11 @@ function App() {
                     <Route
                       path="/system/designation"
                       element={<DesignationPage />}
+                    />
+
+                    <Route 
+                      path="/user/profiles" 
+                      element={<UserProfilePage />} 
                     />
                   </Route>
 

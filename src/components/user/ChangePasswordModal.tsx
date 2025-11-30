@@ -6,9 +6,10 @@ import { InputField } from "../common/InputField";
 import CustomButton from "../common/CustomButton";
 import { toast } from "../common/Toast";
 import AuthService from "../../services/AuthService";
+import { useAuth } from "../../context/AuthContext"; // import your context
 
 interface ChangePasswordForm {
-  oldPassword: string;
+  oldPassword?: string; // optional for admin
   newPassword: string;
   confirmPassword: string;
 }
@@ -17,10 +18,15 @@ interface Props {
   visible: boolean;
   onCancel: () => void;
   onSuccess: () => void;
+  employeeId?: string; // optional, for admin mode
 }
 
-const ChangePasswordModal = ({ visible, onCancel, onSuccess }: Props) => {
+const ChangePasswordModal = ({ visible, onCancel, onSuccess, employeeId }: Props) => {
+  const { authState } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isAdminChangingOtherUser = employeeId && authState.role === "ADMIN";
+
   const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<ChangePasswordForm>({
     defaultValues: {
       oldPassword: "",
@@ -39,8 +45,8 @@ const ChangePasswordModal = ({ visible, onCancel, onSuccess }: Props) => {
       return;
     }
 
-    const employeeId = localStorage.getItem("employee_id");
-    if (!employeeId) {
+    const idToUse = employeeId || localStorage.getItem("employee_id");
+    if (!idToUse) {
       toast.error("Something went wrong");
       return;
     }
@@ -48,8 +54,8 @@ const ChangePasswordModal = ({ visible, onCancel, onSuccess }: Props) => {
     setIsSubmitting(true);
     try {
       await AuthService.changePassword({
-        employeeId,
-        oldPassword: data.oldPassword,
+        employeeId: idToUse,
+        oldPassword: isAdminChangingOtherUser ? "" : data.oldPassword,
         newPassword: data.newPassword,
       });
       
@@ -70,16 +76,19 @@ const ChangePasswordModal = ({ visible, onCancel, onSuccess }: Props) => {
     >
       <Spin spinning={isSubmitting}>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-          <InputField
-            name="oldPassword"
-            label="Current Password"
-            placeholder="Enter your current password"
-            type="password"
-            register={register}
-            error={errors.oldPassword}
-            required
-            registerOptions={{ required: "Current password is required" }}
-          />
+          {/* Show Current Password only for normal users */}
+          {!isAdminChangingOtherUser && (
+            <InputField
+              name="oldPassword"
+              label="Current Password"
+              placeholder="Enter your current password"
+              type="password"
+              register={register}
+              error={errors.oldPassword}
+              required
+              registerOptions={{ required: "Current password is required" }}
+            />
+          )}
 
           <InputField
             name="newPassword"
