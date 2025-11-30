@@ -80,7 +80,6 @@ const sidebarData: SidebarItem[] = [
     path: "/user",
     icon: <FaUser className="text-xl" />,
     cName: "nav-text group",
-    access: ["SUPERVISOR", "OPERATOR"],
     subMenu: [
       {
         title: "My Profile",
