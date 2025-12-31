@@ -30,6 +30,11 @@ const SupervisorList = () => {
     number | null
   >(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
 
   const navigate = useNavigate();
 
@@ -40,13 +45,29 @@ const SupervisorList = () => {
     []
   );
 
-  const fetchSupervisors = (search?: string) => {
+  const fetchSupervisors = (
+    search?: string,
+    page: number = currentPage - 1, // Convert to 0-based for API
+    size: number = pageSize
+  ) => {
     setLoading(true);
-    SupervisorService.getAllSupervisors(search)
-      .then((data) => setSupervisors(data))
+    SupervisorService.getAllSupervisors({
+      search,
+      page,
+      size,
+      all: false,
+    })
+      .then((response) => {
+        setSupervisors(response.content);
+        if (response.pagination) {
+          setTotalElements(response.pagination.totalElements);
+        }
+      })
       .catch((err) => {
         console.error(err);
         message.error("Failed to fetch supervisors");
+        setSupervisors([]);
+        setTotalElements(0);
       })
       .finally(() => setLoading(false));
   };
@@ -57,6 +78,14 @@ const SupervisorList = () => {
       debouncedSearch.cancel();
     };
   }, []);
+
+  // Handle table pagination change
+  const handleTableChange = (pagination: any) => {
+    const { current, pageSize } = pagination;
+    setCurrentPage(current);
+    setPageSize(pageSize);
+    fetchSupervisors(searchText, current - 1, pageSize);
+  };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -99,7 +128,7 @@ const SupervisorList = () => {
     })
       .then(() => {
         toast.warning("Supervisor deleted successfully");
-        fetchSupervisors(searchText);
+        fetchSupervisors(searchText, currentPage - 1, pageSize);
         setDeleteModalVisible(false);
       })
       .catch((err) => {
@@ -206,6 +235,7 @@ const SupervisorList = () => {
       ),
     },
   ];
+  
   return (
     <div className="p-4 bg-white rounded-lg shadow-sm">
       <div className="flex flex-col space-y-6">
@@ -234,12 +264,16 @@ const SupervisorList = () => {
           rowKey="id"
           loading={loading}
           pagination={{
-            pageSize: 10,
+            current: currentPage,
+            pageSize: pageSize,
+            total: totalElements,
             pageSizeOptions: ["10", "20", "50"],
             showQuickJumper: true,
             showSizeChanger: true,
-            showTotal: (total) => `Total ${total} supervisors`,
+            showTotal: (total, range) => 
+              `Showing ${range[0]}-${range[1]} of ${total} supervisors`,
           }}
+          onChange={handleTableChange}
           bordered
           size="middle"
           scroll={{ x: 400 }}

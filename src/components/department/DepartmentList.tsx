@@ -15,6 +15,7 @@ import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import CustomButton from "../common/CustomButton";
 import { debounce } from "lodash";
 import { toast } from "../common/Toast";
+import { useNavigate } from "react-router-dom";
 
 const DepartmentList = ({ floorId }: { floorId: string }) => {
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -25,6 +26,7 @@ const DepartmentList = ({ floorId }: { floorId: string }) => {
   const [selectedDepartment, setSelectedDepartment] =
     useState<Department | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const navigate = useNavigate();
 
   // ✅ Correct API call
   const fetchDepartments = () => {
@@ -238,6 +240,11 @@ const DepartmentList = ({ floorId }: { floorId: string }) => {
               ? `No departments found matching "${searchText}"`
               : "No departments available",
           }}
+          onRow={(record) => ({
+            onClick: () => {
+              navigate(`/infrastructure/department/${record.id}`);
+            },
+          })}
         />
       </div>
 

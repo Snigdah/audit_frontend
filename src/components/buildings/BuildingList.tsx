@@ -16,6 +16,7 @@ import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import CustomButton from "../common/CustomButton";
 import { toast } from "../common/Toast";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const BuildingList = () => {
   const [buildings, setBuildings] = useState<BuildingResponse[]>([]);
@@ -28,6 +29,7 @@ const BuildingList = () => {
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
+  const { authState } = useAuth();
 
   const fetchBuildings = () => {
     setLoading(true);
@@ -161,53 +163,53 @@ const BuildingList = () => {
         </div>
       ),
     },
-    {
-      title: (
-        <div className="flex items-center gap-2 font-semibold text-gray-700">
-          <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-          Actions
-        </div>
-      ),
-      key: "actions",
-      width: 200,
-      render: (_, record) => (
-        <Space size="small" className="flex justify-end">
-          <Tooltip title="Edit Building" placement="top">
-            <Button
-              type="text"
-              size="small"
-              icon={
-                <EditOutlined className="text-blue-600 hover:text-blue-700 transition-colors" />
-              }
-              onClick={(e) => {
-                e.stopPropagation();
-                handleEdit(record);
-              }}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-blue-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 shadow-sm hover:shadow-md"
-            >
-              <span className="text-blue-700 font-medium text-sm">Edit</span>
-            </Button>
-          </Tooltip>
+    ...(authState.role === "ADMIN"
+    ? [
+        {
+          title: (
+            <div className="flex items-center gap-2 font-semibold text-gray-700">
+              <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+              Actions
+            </div>
+          ),
+          key: "actions",
+          width: 200,
+          render: (_: any, record: BuildingResponse) => (
+            <Space size="small" className="flex justify-end">
+              <Tooltip title="Edit Building">
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<EditOutlined className="text-blue-600" />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEdit(record);
+                  }}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg border"
+                >
+                  <span className="text-blue-700 font-medium text-sm">Edit</span>
+                </Button>
+              </Tooltip>
 
-          <Tooltip title="Delete Building" placement="top">
-            <Button
-              type="text"
-              size="small"
-              icon={
-                <DeleteOutlined className="text-red-600 hover:text-red-700 transition-colors" />
-              }
-              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-red-200 hover:border-red-300 hover:bg-red-50 transition-all duration-200 shadow-sm hover:shadow-md"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDeleteClick(record);
-              }}
-            >
-              <span className="text-red-700 font-medium text-sm">Delete</span>
-            </Button>
-          </Tooltip>
-        </Space>
-      ),
-    },
+              <Tooltip title="Delete Building">
+                <Button
+                  type="text"
+                  size="small"
+                  icon={<DeleteOutlined className="text-red-600" />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteClick(record);
+                  }}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg border"
+                >
+                  <span className="text-red-700 font-medium text-sm">Delete</span>
+                </Button>
+              </Tooltip>
+            </Space>
+          ),
+        },
+      ]
+    : []),
   ];
 
   return (
@@ -224,9 +226,11 @@ const BuildingList = () => {
                 allowClear
                 className="w-64"
               />
-              <CustomButton onClick={handleAdd} icon={<PlusOutlined />}>
-                Add Building
-              </CustomButton>
+              {authState.role === "ADMIN" && (
+                <CustomButton onClick={handleAdd} icon={<PlusOutlined />}>
+                  Add Building
+                </CustomButton>
+              )}
             </Space>
           }
         />

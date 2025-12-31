@@ -75,8 +75,21 @@ export const ENDPOINTS = {
   },
   SUPERVISOR: {
     FETCH_BY_ID: (id: number) => `${BASE.SUPERVISOR}/${id}`,
-    FETCH_ALL: (search?: string) =>
-      search ? `${BASE.SUPERVISOR}?search=${search}` : `${BASE.SUPERVISOR}`,
+    FETCH_ALL: (params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }) => {
+        const query = new URLSearchParams();
+
+        if (params?.search) query.append("search", params.search);
+        if (params?.page !== undefined) query.append("page", params.page.toString());
+        if (params?.size !== undefined) query.append("size", params.size.toString());
+        if (params?.all !== undefined) query.append("all", String(params.all));
+
+        return `${BASE.SUPERVISOR}?${query.toString()}`;
+      },
     UPDATE: (id: number) => `${BASE.SUPERVISOR}/${id}`,
 
     ASSIGN_OPERATOR: `${BASE.SUPERVISOR}/assign-operator`,

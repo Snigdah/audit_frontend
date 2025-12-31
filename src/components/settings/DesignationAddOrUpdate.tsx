@@ -6,6 +6,7 @@ import { InputField } from "../common/InputField";
 import DesignationService from "../../services/DesignationService";
 import { DesignationModel, type Designation } from "../../types/designation";
 import CustomButton from "../common/CustomButton";
+import { toast } from "../common/Toast";
 
 interface Props {
   visible: boolean;
@@ -47,32 +48,33 @@ const DesignationAddOrUpdate = ({
       : reset({ designationName: "" });
   }, [visible, editingData, setValue, reset]);
 
-  const handleFormSubmit: SubmitHandler<{ designationName: string }> = (
-    data
-  ) => {
+  const handleFormSubmit: SubmitHandler<{ designationName: string }> = async (data) => {
     setIsSubmitting(true);
 
-    const payload = new DesignationModel(
-      data.designationName,
-      isEditMode ? editingData?.id : undefined
-    );
+    try {
+      const payload = new DesignationModel(
+        data.designationName,
+        isEditMode ? editingData?.id : undefined
+      );
 
-    const operation = isEditMode
-      ? DesignationService.updateDesignation(payload)
-      : DesignationService.createDesignation(payload);
+      if (isEditMode) {
+        await DesignationService.updateDesignation(payload);
+        toast.success("Designation updated");
+      } else {
+        await DesignationService.createDesignation(payload);
+        toast.success("Designation created");
+      }
 
-    operation
-      .then(() => {
-        console.log("Designation operation successful");
-        onSuccess();
-      })
-      .catch((error) => {
-        console.error("Designation operation failed:", error);
-      })
-      .finally(() => {
-        setIsSubmitting(false);
-      });
+      onSuccess();
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.devMessage || "Designation operation failed"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
 
   const handleCancel = () => {
     if (isSubmitting) return;

@@ -66,8 +66,6 @@ const BuildingAddOrUpdate = ({
       );
 
       if (isEditMode) {
-        console.log(payload);
-
         await BuildingService.updateBuilding(payload);
         toast.success("Building updated");
       } else {

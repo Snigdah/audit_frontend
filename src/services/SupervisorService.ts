@@ -1,6 +1,6 @@
 import apiClient from "../api/axios";
 import { ENDPOINTS } from "../api/endpoints";
-import type { ApiResponse } from "../types/api";
+import type { ApiResponse, PaginatedData } from "../types/api";
 import type { Department } from "../types/department";
 import type { OperatorSimple } from "../types/operator";
 import type {
@@ -18,10 +18,18 @@ class SupervisorService {
     return response.data.data;
   }
 
-  async getAllSupervisors(search?: string): Promise<SupervisorSimple[]> {
-    const response = await apiClient.get<ApiResponse<SupervisorSimple[]>>(
-      ENDPOINTS.SUPERVISOR.FETCH_ALL(search)
-    );
+   async getAllSupervisors(
+    params?: {
+      search?: string;
+      page?: number;
+      size?: number;
+      all?: boolean;
+    }
+  ): Promise<PaginatedData<SupervisorSimple>> {
+    const response = await apiClient.get<
+      ApiResponse<PaginatedData<SupervisorSimple>>
+    >(ENDPOINTS.SUPERVISOR.FETCH_ALL(params));
+
     return response.data.data;
   }
 
