@@ -1,6 +1,6 @@
 import apiClient from "../api/axios";
 import { ENDPOINTS } from "../api/endpoints";
-import type { ApiResponse } from "../types/api";
+import type { ApiResponse, PaginatedData } from "../types/api";
 import type { EquipmentResponse } from "../types/equipment";
 import type {
   OperatorDetail,
@@ -17,12 +17,20 @@ class OperatorService {
     return response.data.data;
   }
 
-  async getAllOperators(search?: string): Promise<OperatorSimple[]> {
-    const response = await apiClient.get<ApiResponse<OperatorSimple[]>>(
-      ENDPOINTS.OPERATOR.FETCH_ALL(search)
-    );
-    return response.data.data;
-  }
+  async getAllOperators(
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+    ): Promise<PaginatedData<SupervisorSimple>> {
+      const response = await apiClient.get<
+        ApiResponse<PaginatedData<SupervisorSimple>>
+      >(ENDPOINTS.OPERATOR.FETCH_ALL(params));
+  
+      return response.data.data;
+    }
 
   async updateOperator(
     id: number,

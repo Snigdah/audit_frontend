@@ -100,8 +100,21 @@ export const ENDPOINTS = {
   },
   OPERATOR: {
     FETCH_BY_ID: (id: number) => `${BASE.OPERATOR}/${id}`,
-    FETCH_ALL: (search?: string) =>
-      search ? `${BASE.OPERATOR}?search=${search}` : `${BASE.OPERATOR}`,
+    FETCH_ALL: (params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }) => {
+        const query = new URLSearchParams();
+
+        if (params?.search) query.append("search", params.search);
+        if (params?.page !== undefined) query.append("page", params.page.toString());
+        if (params?.size !== undefined) query.append("size", params.size.toString());
+        if (params?.all !== undefined) query.append("all", String(params.all));
+
+        return `${BASE.OPERATOR}?${query.toString()}`;
+      },
     UPDATE: (id: number) => `${BASE.OPERATOR}/${id}`,
     GET_SUPERVISOR: (operatorId: number) => `${BASE.OPERATOR}/${operatorId}/supervisors`,
     GET_EQUIPMENTS: (operatorId: number) => `${BASE.OPERATOR}/${operatorId}/equipments`,

@@ -31,6 +31,11 @@ const OperatorList = () => {
   );
   const [deleteLoading, setDeleteLoading] = useState(false);
 
+    // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
+
   const navigate = useNavigate();
 
   const debouncedSearch = useCallback(
@@ -40,13 +45,29 @@ const OperatorList = () => {
     []
   );
 
-  const fetchOperators = (search?: string) => {
+  const fetchOperators = (
+    search?: string,
+    page: number = currentPage - 1, // Convert to 0-based for API
+    size: number = pageSize
+  ) => {
     setLoading(true);
-    OperatorService.getAllOperators(search)
-      .then((data) => setOperators(data))
+    OperatorService.getAllOperators({
+      search,
+      page,
+      size,
+      all: false,
+    })
+      .then((response) => {
+        setOperators(response.content);
+         if (response.pagination) {
+          setTotalElements(response.pagination.totalElements);
+        }
+      })
       .catch((err) => {
         console.error(err);
         message.error("Failed to fetch operators");
+        setOperators([]);
+        setTotalElements(0);
       })
       .finally(() => setLoading(false));
   };
@@ -57,6 +78,14 @@ const OperatorList = () => {
       debouncedSearch.cancel();
     };
   }, []);
+
+    // Handle table pagination change
+  const handleTableChange = (pagination: any) => {
+    const { current, pageSize } = pagination;
+    setCurrentPage(current);
+    setPageSize(pageSize);
+    fetchOperators(searchText, current - 1, pageSize);
+  };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -243,8 +272,10 @@ const OperatorList = () => {
             pageSizeOptions: ["10", "20", "50"],
             showQuickJumper: true,
             showSizeChanger: true,
-            showTotal: (total) => `Total ${total} operators`,
+            showTotal: (total, range) => 
+              `Showing ${range[0]}-${range[1]} of ${total} supervisors`,
           }}
+          onChange={handleTableChange}
           bordered
           size="middle"
           scroll={{ x: 400 }}
