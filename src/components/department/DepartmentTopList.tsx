@@ -175,7 +175,8 @@ const DepartmentTopList = () => {
             pageSizeOptions: ["10", "20", "50"],
             showQuickJumper: true,
             showSizeChanger: true,
-            showTotal: (total) => `Total ${total} departments`,
+            showTotal: (total, range) => 
+              `Showing ${range[0]}-${range[1]} of ${total} departments`,
           }}
           onChange={handleTableChange}
           bordered

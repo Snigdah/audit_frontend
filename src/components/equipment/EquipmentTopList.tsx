@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { EquipmentResponse } from "../../types/equipment";
 import EquipmentService from "../../services/EquipmentService";
 import type { ColumnsType } from "antd/es/table";
@@ -16,6 +16,7 @@ import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import CustomButton from "../common/CustomButton";
 import { toast } from "../common/Toast";
 import { useNavigate } from "react-router-dom";
+import { debounce } from "lodash";
 
 const EquipmentTopList = () => {
   const [equipment, setEquipment] = useState<EquipmentResponse[]>([]);
@@ -27,22 +28,62 @@ const EquipmentTopList = () => {
     useState<EquipmentResponse | null>(null);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
+    // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
+
   const navigate = useNavigate();
 
-  const fetchEquipment = () => {
+    const debouncedSearch = useCallback(
+      debounce((searchValue: string) => {
+        fetchEquipment(searchValue);
+      }, 500),
+      []
+    );
+
+  const fetchEquipment = (
+    search?: string,
+    page: number = currentPage - 1, // Convert to 0-based for API
+    size: number = pageSize
+  ) => {
     setLoading(true);
-    EquipmentService.getAllEquipments()
-      .then((res) => setEquipment(res))
+    EquipmentService.getAllEquipments({
+      search,
+      page,
+      size,
+      all: false,
+    })
+      .then((response) => {
+        setEquipment(response.content)
+         if (response.pagination) {
+          setTotalElements(response.pagination.totalElements);
+        }
+      })
       .catch((err) => {
         console.error(err);
         message.error("Failed to fetch equipment");
+        setEquipment([]);
+        setTotalElements(0);
       })
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
     fetchEquipment();
+     return () => {
+      debouncedSearch.cancel();
+    };
   }, []);
+
+  
+  // Handle table pagination change
+  const handleTableChange = (pagination: any) => {
+    const { current, pageSize } = pagination;
+    setCurrentPage(current);
+    setPageSize(pageSize);
+    fetchEquipment(searchText, current - 1, pageSize);
+  };
 
   const handleAdd = () => {
     setSelectedEquipment(null);
@@ -236,8 +277,10 @@ const EquipmentTopList = () => {
             pageSizeOptions: ["10", "20", "50"],
             showQuickJumper: true,
             showSizeChanger: true,
-            showTotal: (total) => `Total ${total} equipment`,
+             showTotal: (total, range) => 
+              `Showing ${range[0]}-${range[1]} of ${total} equipment`,
           }}
+          onChange={handleTableChange}
           scroll={{ x: 50 }}
           bordered
           size="middle"

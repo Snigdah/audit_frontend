@@ -1,6 +1,6 @@
 import apiClient from "../api/axios";
 import { ENDPOINTS } from "../api/endpoints";
-import type { ApiResponse } from "../types/api";
+import type { ApiResponse, PaginatedData } from "../types/api";
 import type {
   EquipmentOperatorRequest,
   EquipmentRequest,
@@ -28,12 +28,27 @@ class EquipmentService {
     return response.data;
   }
 
-  async getAllEquipments(search?: string): Promise<EquipmentResponse[]> {
-    const response = await apiClient.get<ApiResponse<EquipmentResponse[]>>(
-      ENDPOINTS.EQUIPMENT.FETCH_ALL(search)
-    );
-    return response.data.data;
-  }
+  async getAllEquipments(
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+    ): Promise<PaginatedData<EquipmentResponse>> {
+      const response = await apiClient.get<
+        ApiResponse<PaginatedData<EquipmentResponse>>
+      >(ENDPOINTS.EQUIPMENT.FETCH_ALL(params));
+  
+      return response.data.data;
+    }
+
+  // async getAllEquipments(search?: string): Promise<EquipmentResponse[]> {
+  //   const response = await apiClient.get<ApiResponse<EquipmentResponse[]>>(
+  //     ENDPOINTS.EQUIPMENT.FETCH_ALL(search)
+  //   );
+  //   return response.data.data;
+  // }
 
   async getEquipmentById(id: number): Promise<EquipmentResponse> {
     const response = await apiClient.get<ApiResponse<EquipmentResponse>>(

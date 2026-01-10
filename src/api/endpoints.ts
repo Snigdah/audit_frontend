@@ -166,8 +166,23 @@ export const ENDPOINTS = {
   },
   EQUIPMENT: {
     FETCH_BY_ID: (id: number) => `${BASE.EQUIPMENT}/${id}`,
-    FETCH_ALL: (search?: string) =>
-      search ? `${BASE.EQUIPMENT}?search=${search}` : `${BASE.EQUIPMENT}`,
+    FETCH_ALL: (params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }) => {
+        const query = new URLSearchParams();
+
+        if (params?.search) query.append("search", params.search);
+        if (params?.page !== undefined) query.append("page", params.page.toString());
+        if (params?.size !== undefined) query.append("size", params.size.toString());
+        if (params?.all !== undefined) query.append("all", String(params.all));
+
+        return `${BASE.EQUIPMENT}?${query.toString()}`;
+      },
+    // FETCH_ALL: (search?: string) =>
+    //   search ? `${BASE.EQUIPMENT}?search=${search}` : `${BASE.EQUIPMENT}`,
     CREATE: () => `${BASE.EQUIPMENT}`,
     UPDATE: (id: number) => `${BASE.EQUIPMENT}/${id}`,
     DELETE: (id: number) => `${BASE.EQUIPMENT}/${id}`,
