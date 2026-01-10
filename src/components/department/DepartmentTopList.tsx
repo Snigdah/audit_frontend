@@ -12,6 +12,12 @@ const DepartmentTopList = () => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
+
+    // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
+
   const navigate = useNavigate();
 
   // Debounced search function
@@ -22,13 +28,29 @@ const DepartmentTopList = () => {
     []
   );
 
-  const fetchDepartments = (search?: string) => {
+  const fetchDepartments = (
+    search?: string,
+    page: number = currentPage - 1, // Convert to 0-based for API
+    size: number = pageSize
+  ) => {
     setLoading(true);
-    DepartmentService.getDepartments(search)
-      .then((data) => setDepartments(data))
+    DepartmentService.getDepartments({
+      search,
+      page,
+      size,
+      all: false,
+    })
+      .then((response) => {
+        setDepartments(response.content)
+        if (response.pagination) {
+          setTotalElements(response.pagination.totalElements);
+        }
+      })
       .catch((err) => {
         console.error(err);
         message.error("Failed to fetch departments");
+        setDepartments([]);
+        setTotalElements(0);
       })
       .finally(() => setLoading(false));
   };
@@ -39,6 +61,15 @@ const DepartmentTopList = () => {
       debouncedSearch.cancel();
     };
   }, []);
+
+    // Handle table pagination change
+  const handleTableChange = (pagination: any) => {
+    const { current, pageSize } = pagination;
+    setCurrentPage(current);
+    setPageSize(pageSize);
+    fetchDepartments(searchText, current - 1, pageSize);
+  };
+
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -146,6 +177,7 @@ const DepartmentTopList = () => {
             showSizeChanger: true,
             showTotal: (total) => `Total ${total} departments`,
           }}
+          onChange={handleTableChange}
           bordered
           size="middle"
           scroll={{ x: 400 }}

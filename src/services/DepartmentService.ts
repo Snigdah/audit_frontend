@@ -1,6 +1,6 @@
 import apiClient from "../api/axios";
 import { ENDPOINTS } from "../api/endpoints";
-import type { ApiResponse } from "../types/api";
+import type { ApiResponse, PaginatedData } from "../types/api";
 import type {
   Department,
   DepartmentDetail,
@@ -12,14 +12,29 @@ import type { EquipmentResponse } from "../types/equipment";
 import type { SupervisorSimple } from "../types/supervisor";
 
 class DepartmentService {
-  async getDepartments(search?: string): Promise<Department[]> {
-    const url = search
-      ? ENDPOINTS.DEPARTMENT.SEARCH(search)
-      : ENDPOINTS.DEPARTMENT.FETCH_ALL;
+  // async getDepartments(search?: string): Promise<Department[]> {
+  //   const url = search
+  //     ? ENDPOINTS.DEPARTMENT.SEARCH(search)
+  //     : ENDPOINTS.DEPARTMENT.FETCH_ALL;
 
-    const response = await apiClient.get<ApiResponse<Department[]>>(url);
-    return response.data.data;
-  }
+  //   const response = await apiClient.get<ApiResponse<Department[]>>(url);
+  //   return response.data.data;
+  // }
+
+  async getDepartments(
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+    ): Promise<PaginatedData<Department>> {
+      const response = await apiClient.get<
+        ApiResponse<PaginatedData<Department>>
+      >(ENDPOINTS.SUPERVISOR.FETCH_ALL(params));
+  
+      return response.data.data;
+    }
 
   async getDepartmentsByFloorId(floorId: number): Promise<Department[]> {
     const url = ENDPOINTS.DEPARTMENT.FETCH_BY_FLOOR_ID(floorId);

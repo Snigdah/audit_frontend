@@ -15,7 +15,7 @@ class BuildingService {
     ): Promise<PaginatedData<BuildingResponse>> {
       const response = await apiClient.get<
         ApiResponse<PaginatedData<BuildingResponse>>
-      >(ENDPOINTS.SUPERVISOR.FETCH_ALL(params));
+      >(ENDPOINTS.BUILDING.FETCH_ALL(params));
   
       return response.data.data;
     }

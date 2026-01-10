@@ -57,7 +57,21 @@ export const ENDPOINTS = {
   },
   DEPARTMENT: {
     CREATE: `${BASE.DEPARTMENT}`,
-    FETCH_ALL: `${BASE.DEPARTMENT}`,
+    FETCH_ALL: (params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }) => {
+        const query = new URLSearchParams();
+
+        if (params?.search) query.append("search", params.search);
+        if (params?.page !== undefined) query.append("page", params.page.toString());
+        if (params?.size !== undefined) query.append("size", params.size.toString());
+        if (params?.all !== undefined) query.append("all", String(params.all));
+
+        return `${BASE.DEPARTMENT}?${query.toString()}`;
+      },
     FETCH_BY_ID: (id: number) => `${BASE.DEPARTMENT}/${id}`,
     FETCH_BY_FLOOR_ID: (floorId: number) =>
       `${BASE.DEPARTMENT}/floor/${floorId}`,
