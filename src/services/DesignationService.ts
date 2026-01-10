@@ -1,17 +1,24 @@
 import apiClient from "../api/axios";
 import { ENDPOINTS } from "../api/endpoints";
-import type { ApiResponse } from "../types/api";
+import type { ApiResponse, PaginatedData } from "../types/api";
 import type { Designation, DesignationModel } from "../types/designation";
 
 class DesignationService {
-  async getDesignations(search?: string): Promise<Designation[]> {
-    const url = search
-      ? ENDPOINTS.DESIGNATION.SEARCH(search)
-      : ENDPOINTS.DESIGNATION.FETCH_ALL;
-
-    const response = await apiClient.get<ApiResponse<Designation[]>>(url);
-    return response.data.data;
-  }
+  
+  async getDesignations(
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+    ): Promise<PaginatedData<Designation>> {
+      const response = await apiClient.get<
+        ApiResponse<PaginatedData<Designation>>
+      >(ENDPOINTS.DESIGNATION.FETCH_ALL(params));
+  
+      return response.data.data;
+    }
 
   async createDesignation(designation: DesignationModel): Promise<void> {
     await apiClient.post<ApiResponse<void>>(ENDPOINTS.DESIGNATION.CREATE, {

@@ -97,7 +97,21 @@ export const ENDPOINTS = {
   },
   DESIGNATION: {
     CREATE: `${BASE.DESIGNATION}`,
-    FETCH_ALL: `${BASE.DESIGNATION}`,
+    FETCH_ALL: (params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }) => {
+        const query = new URLSearchParams();
+
+        if (params?.search) query.append("search", params.search);
+        if (params?.page !== undefined) query.append("page", params.page.toString());
+        if (params?.size !== undefined) query.append("size", params.size.toString());
+        if (params?.all !== undefined) query.append("all", String(params.all));
+
+        return `${BASE.DEPARTMENT}?${query.toString()}`;
+      },
     SEARCH: (query: string) => `${BASE.DESIGNATION}?search=${query}`,
     UPDATE: (id: number) => `${BASE.DESIGNATION}/${id}`,
   },
