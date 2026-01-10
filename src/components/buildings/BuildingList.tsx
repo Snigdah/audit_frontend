@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { BuildingResponse } from "../../types/building";
 import BuildingService from "../../services/BuildingService";
 import type { ColumnsType } from "antd/es/table";
@@ -17,6 +17,7 @@ import CustomButton from "../common/CustomButton";
 import { toast } from "../common/Toast";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { debounce } from "lodash";
 
 const BuildingList = () => {
   const [buildings, setBuildings] = useState<BuildingResponse[]>([]);
@@ -28,18 +29,44 @@ const BuildingList = () => {
     useState<BuildingResponse | null>(null);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
+    // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
+
   const navigate = useNavigate();
   const { authState } = useAuth();
 
-  const fetchBuildings = () => {
+  const debouncedSearch = useCallback(
+    debounce((searchValue: string) => {
+      fetchBuildings(searchValue);
+    }, 500),
+    []
+  );
+
+  const fetchBuildings = (
+    search?: string,
+    page: number = currentPage - 1, // Convert to 0-based for API
+    size: number = pageSize   
+  ) => {
     setLoading(true);
-    BuildingService.getAllBuildings()
-      .then((res) => {
-        setBuildings(res);
+    BuildingService.getAllBuildings({
+      search,
+      page,
+      size,
+      all: false,
+    })
+      .then((response) => {
+        setBuildings(response.content);
+         if (response.pagination) {
+          setTotalElements(response.pagination.totalElements);
+        }
       })
       .catch((err) => {
         console.error(err);
         message.error("Failed to fetch buildings");
+        setBuildings([]);
+        setTotalElements(0);
       })
       .finally(() => {
         setLoading(false);
@@ -48,7 +75,25 @@ const BuildingList = () => {
 
   useEffect(() => {
     fetchBuildings();
+     return () => {
+      debouncedSearch.cancel();
+    };
   }, []);
+
+    // Handle table pagination change
+  const handleTableChange = (pagination: any) => {
+    const { current, pageSize } = pagination;
+    setCurrentPage(current);
+    setPageSize(pageSize);
+    fetchBuildings(searchText, current - 1, pageSize);
+  };
+
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchText(value);
+    debouncedSearch(value);
+  };
 
   const handleAdd = () => {
     setSelectedBuilding(null);
@@ -97,11 +142,11 @@ const BuildingList = () => {
     fetchBuildings();
   };
 
-  const filteredBuildings = buildings.filter(
-    (building) =>
-      building.buildingName.toLowerCase().includes(searchText.toLowerCase()) ||
-      building.id.toString().includes(searchText)
-  );
+  // const filteredBuildings = buildings.filter(
+  //   (building) =>
+  //     building.buildingName.toLowerCase().includes(searchText.toLowerCase()) ||
+  //     building.id.toString().includes(searchText)
+  // );
 
   const columns: ColumnsType<BuildingResponse> = [
     {
@@ -222,7 +267,7 @@ const BuildingList = () => {
               <Input
                 placeholder="Search buildings..."
                 prefix={<SearchOutlined className="text-gray-400" />}
-                onChange={(e) => setSearchText(e.target.value)}
+                onChange={handleSearchChange}
                 allowClear
                 className="w-64"
               />
@@ -236,18 +281,22 @@ const BuildingList = () => {
         />
 
         <Table
-          dataSource={filteredBuildings}
+          dataSource={buildings}
           columns={columns}
           rowKey="id"
           loading={loading}
           pagination={{
-            pageSize: 10,
+            current: currentPage,
+            pageSize: pageSize,
+            total: totalElements,
             pageSizeOptions: ["10", "20", "50"],
             showQuickJumper: true,
             showSizeChanger: true,
-            showTotal: (total) => `Total ${total} buildings`,
+            showTotal: (total, range) => 
+              `Showing ${range[0]}-${range[1]} of ${total} building`,
           }}
           scroll={{ x: 50 }}
+          onChange={handleTableChange}
           bordered
           size="middle"
           className="shadow-sm cursor-pointer"

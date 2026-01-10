@@ -27,7 +27,21 @@ export const ENDPOINTS = {
   },
   BUILDING: {
     CREATE: `${BASE.BUILDING}`,
-    FETCH_ALL: `${BASE.BUILDING}`,
+    FETCH_ALL: (params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }) => {
+        const query = new URLSearchParams();
+
+        if (params?.search) query.append("search", params.search);
+        if (params?.page !== undefined) query.append("page", params.page.toString());
+        if (params?.size !== undefined) query.append("size", params.size.toString());
+        if (params?.all !== undefined) query.append("all", String(params.all));
+
+        return `${BASE.BUILDING}?${query.toString()}`;
+      },
     UPDATE: (id: number) => `${BASE.BUILDING}/${id}`,
     FETCH_BY_ID: (id: number) => `${BASE.BUILDING}/${id}`,
     DELETE_BY_ID: (id: number) => `${BASE.BUILDING}/${id}`,
@@ -120,8 +134,21 @@ export const ENDPOINTS = {
     GET_EQUIPMENTS: (operatorId: number) => `${BASE.OPERATOR}/${operatorId}/equipments`,
   },
   VIEWER: {
-    FETCH_ALL: (search?: string) =>
-      search ? `${BASE.VIEWER}?search=${search}` : `${BASE.VIEWER}`,
+    FETCH_ALL: (params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }) => {
+        const query = new URLSearchParams();
+
+        if (params?.search) query.append("search", params.search);
+        if (params?.page !== undefined) query.append("page", params.page.toString());
+        if (params?.size !== undefined) query.append("size", params.size.toString());
+        if (params?.all !== undefined) query.append("all", String(params.all));
+
+        return `${BASE.VIEWER}?${query.toString()}`;
+      },
   },
   EQUIPMENT: {
     FETCH_BY_ID: (id: number) => `${BASE.EQUIPMENT}/${id}`,

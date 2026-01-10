@@ -18,7 +18,7 @@ class SupervisorService {
     return response.data.data;
   }
 
-   async getAllSupervisors(
+  async getAllSupervisors(
     params?: {
       search?: string;
       page?: number;

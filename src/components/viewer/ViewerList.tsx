@@ -26,6 +26,11 @@ const ViewerList = () => {
   const [selectedViewerId, setSelectedViewerId] = useState<number | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
+    // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
+
   const navigate = useNavigate();
 
   const debouncedSearch = useCallback(
@@ -35,13 +40,29 @@ const ViewerList = () => {
     []
   );
 
-  const fetchViewers = (search?: string) => {
+  const fetchViewers = (
+    search?: string,
+    page: number = currentPage - 1, // Convert to 0-based for API
+    size: number = pageSize
+  ) => {
     setLoading(true);
-    ViewerService.getAllViewers(search)
-      .then((data) => setViewers(data))
+    ViewerService.getAllViewers({
+      search,
+      page,
+      size,
+      all: false,
+    })
+      .then((response) => {
+        setViewers(response.content)
+        if (response.pagination) {
+          setTotalElements(response.pagination.totalElements);
+        }
+      })
       .catch((err) => {
         console.error(err);
         message.error("Failed to fetch viewers");
+        setViewers([]);
+        setTotalElements(0);
       })
       .finally(() => setLoading(false));
   };
@@ -52,6 +73,14 @@ const ViewerList = () => {
       debouncedSearch.cancel();
     };
   }, []);
+
+    // Handle table pagination change
+  const handleTableChange = (pagination: any) => {
+    const { current, pageSize } = pagination;
+    setCurrentPage(current);
+    setPageSize(pageSize);
+    fetchViewers(searchText, current - 1, pageSize);
+  };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -219,6 +248,7 @@ const ViewerList = () => {
             showSizeChanger: true,
             showTotal: (total) => `Total ${total} viewers`,
           }}
+          onChange={handleTableChange}
           bordered
           size="middle"
           scroll={{ x: 400 }}

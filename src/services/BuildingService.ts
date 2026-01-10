@@ -1,15 +1,24 @@
 import apiClient from "../api/axios";
 import { ENDPOINTS } from "../api/endpoints";
-import type { ApiResponse } from "../types/api";
+import type { ApiResponse, PaginatedData } from "../types/api";
 import type { BuildingModel, BuildingResponse } from "../types/building";
 
 class BuildingService {
-  async getAllBuildings(): Promise<BuildingResponse[]> {
-    const response = await apiClient.get<ApiResponse<BuildingResponse[]>>(
-      ENDPOINTS.BUILDING.FETCH_ALL
-    );
-    return response.data.data;
-  }
+
+  async getAllBuildings(
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+    ): Promise<PaginatedData<BuildingResponse>> {
+      const response = await apiClient.get<
+        ApiResponse<PaginatedData<BuildingResponse>>
+      >(ENDPOINTS.SUPERVISOR.FETCH_ALL(params));
+  
+      return response.data.data;
+    }
 
   async getBuildingById(id: number): Promise<BuildingResponse> {
     const response = await apiClient.get<ApiResponse<BuildingResponse>>(

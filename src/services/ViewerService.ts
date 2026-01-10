@@ -1,14 +1,22 @@
 import apiClient from "../api/axios";
 import { ENDPOINTS } from "../api/endpoints";
-import type { ApiResponse } from "../types/api";
+import type { ApiResponse, PaginatedData } from "../types/api";
 import type { ViewerSimple } from "../types/viewer";
 
 class ViewerService {
-
-    async getAllViewers(search?: string): Promise<ViewerSimple[]> {
-        const response = await apiClient.get<ApiResponse<ViewerSimple[]>>(
-          ENDPOINTS.VIEWER.FETCH_ALL(search)
-        );
+      
+    async getAllViewers(
+        params?: {
+          search?: string;
+          page?: number;
+          size?: number;
+          all?: boolean;
+        }
+      ): Promise<PaginatedData<ViewerSimple>> {
+        const response = await apiClient.get<
+          ApiResponse<PaginatedData<ViewerSimple>>
+        >(ENDPOINTS.VIEWER.FETCH_ALL(params));
+    
         return response.data.data;
       }
 }
