@@ -30,6 +30,7 @@ import { ForgotPasswordPage } from "./pages/auth/ForgotPasswordPage";
 import EmailSettingsPage from "./pages/settings/EmailSettingsPage";
 import ViewerPage from "./pages/resource/ViewerPage";
 import UserProfilePage from "./pages/user/UserProfilePage";
+import TemplatePage from "./pages/templet/TemplatePage";
 
 function App() {
   return (
@@ -106,6 +107,9 @@ function App() {
                      path="/user/notifications"
                      element={<NotificationsPage />}
                   />
+
+                  {/* ======================= Templet ======================== */}
+                  <Route path="/template" element={<TemplatePage />} />
 
                   {/* ======================= Settings ======================== */}
                   <Route path="/user/profile" element={<ProfilePage />} />

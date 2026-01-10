@@ -21,6 +21,8 @@ import { HiEye } from "react-icons/hi";
 import { BiBuildingHouse } from "react-icons/bi";
 import { IoMdHelpCircle } from "react-icons/io";
 import { FaUnlockKeyhole, FaUser } from "react-icons/fa6"; 
+import { FaFileAlt, FaClipboardList } from "react-icons/fa";
+import { MdPostAdd, MdOutlineAssignmentTurnedIn } from "react-icons/md";
 
 const sidebarData: SidebarItem[] = [
   {
@@ -72,6 +74,29 @@ const sidebarData: SidebarItem[] = [
         title: "Viewer",
         path: "/resource/viewer",
         icon: <HiEye className="text-purple-500" />, // Eye icon for read-only viewer
+      },
+    ],
+  },
+  {
+    title: "Template",
+    path: "/template",
+    icon: <FaFileAlt className="text-xl" />,
+    cName: "nav-text group",
+    subMenu: [
+      {
+        title: "Templates",
+        path: "/template",
+        icon: <FaClipboardList className="text-blue-500" />,
+      },
+      {
+        title: "Report Submission",
+        path: "/template/report-submit",
+        icon: <MdOutlineAssignmentTurnedIn className="text-orange-500" />,
+      },
+      {
+        title: "Submitted Reports",
+        path: "/template/reports",
+        icon: <FaChartBar className="text-purple-500" />,
       },
     ],
   },
