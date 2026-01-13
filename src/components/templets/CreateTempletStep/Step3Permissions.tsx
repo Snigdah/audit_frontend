@@ -85,10 +85,18 @@ const Step3Permissions: React.FC<Step3PermissionsProps> = ({
     const newPermissions = localStructure.permissions.map(row => row.map(cell => [...cell]));
     
     selectedCells.forEach(({ row, col }) => {
-      if (newPermissions[row]?.[col]) {
+    if (newPermissions[row]?.[col]) {
+      const isSupervisorOnly = !newPermissions[row][col].includes("operator");
+      if (isSupervisorOnly) {
+        // Toggle back to Operator & Supervisor
+        newPermissions[row][col] = ["admin", "supervisor", "operator"];
+      } else {
+        // Set to Supervisor-Only
         newPermissions[row][col] = ["admin", "supervisor"];
       }
-    });
+    }
+  });
+
 
     setLocalStructure({ ...localStructure, permissions: newPermissions });
     setSelectedCells([]);
