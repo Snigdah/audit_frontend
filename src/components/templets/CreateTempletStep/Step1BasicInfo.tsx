@@ -50,22 +50,10 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({ form, onNext }) => {
           }}
         />
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Description
-          </label>
-          <textarea
-            {...register("description")}
-            placeholder="Describe what this template is used for..."
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <InputField
             name="departmentId"
-            label="Department ID"
+            label="Department"
             type="number"
             placeholder="Enter department ID"
             register={register}
@@ -82,7 +70,7 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({ form, onNext }) => {
 
           <InputField
             name="equipmentId"
-            label="Equipment ID"
+            label="Equipment"
             type="number"
             placeholder="Enter equipment ID"
             register={register}
@@ -95,6 +83,18 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({ form, onNext }) => {
                 message: "Equipment ID must be greater than 0",
               },
             }}
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Description
+          </label>
+          <textarea
+            {...register("description")}
+            placeholder="Describe what this template is used for..."
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
