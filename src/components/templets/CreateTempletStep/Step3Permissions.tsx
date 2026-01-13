@@ -1,5 +1,5 @@
 // ============================================
-// Step3Permissions.tsx - NEW FILE
+// Step3Permissions.tsx
 // ============================================
 import React, { useState } from "react";
 import { Button } from "antd";
@@ -21,13 +21,63 @@ const Step3Permissions: React.FC<Step3PermissionsProps> = ({
   const [selectedCells, setSelectedCells] = useState<Array<{row: number, col: number}>>([]);
   const [localStructure, setLocalStructure] = useState<TemplateStructureRequest>(structure);
 
+  const isCellInMerge = (row: number, col: number): { isMerged: boolean; mainCell?: {row: number, col: number} } => {
+    const mergeCells = localStructure.mergeCells || [];
+    for (const merge of mergeCells) {
+      if (row >= merge.row && row < merge.row + merge.rowspan &&
+          col >= merge.col && col < merge.col + merge.colspan) {
+        return { isMerged: true, mainCell: { row: merge.row, col: merge.col } };
+      }
+    }
+    return { isMerged: false };
+  };
+
   const handleCellClick = (row: number, col: number): void => {
-    const exists = selectedCells.some(c => c.row === row && c.col === col);
+    const mergeInfo = isCellInMerge(row, col);
+    const targetRow = mergeInfo.mainCell?.row ?? row;
+    const targetCol = mergeInfo.mainCell?.col ?? col;
+    
+    if (mergeInfo.isMerged) {
+      const mergeCells = localStructure.mergeCells || [];
+      const merge = mergeCells.find(
+        m => m.row === mergeInfo.mainCell!.row && m.col === mergeInfo.mainCell!.col
+      );
+      
+      if (merge) {
+        const mergeCellsList: Array<{row: number, col: number}> = [];
+        for (let r = merge.row; r < merge.row + merge.rowspan; r++) {
+          for (let c = merge.col; c < merge.col + merge.colspan; c++) {
+            mergeCellsList.push({ row: r, col: c });
+          }
+        }
+        
+        const allSelected = mergeCellsList.every(cell => 
+          selectedCells.some(sc => sc.row === cell.row && sc.col === cell.col)
+        );
+        
+        if (allSelected) {
+          setSelectedCells(selectedCells.filter(sc => 
+            !mergeCellsList.some(mc => mc.row === sc.row && mc.col === sc.col)
+          ));
+        } else {
+          const newSelected = [...selectedCells];
+          mergeCellsList.forEach(cell => {
+            if (!newSelected.some(sc => sc.row === cell.row && sc.col === cell.col)) {
+              newSelected.push(cell);
+            }
+          });
+          setSelectedCells(newSelected);
+        }
+        return;
+      }
+    }
+    
+    const exists = selectedCells.some(c => c.row === targetRow && c.col === targetCol);
     
     if (exists) {
-      setSelectedCells(selectedCells.filter(c => !(c.row === row && c.col === col)));
+      setSelectedCells(selectedCells.filter(c => !(c.row === targetRow && c.col === targetCol)));
     } else {
-      setSelectedCells([...selectedCells, { row, col }]);
+      setSelectedCells([...selectedCells, { row: targetRow, col: targetCol }]);
     }
   };
 
@@ -40,18 +90,7 @@ const Step3Permissions: React.FC<Step3PermissionsProps> = ({
       }
     });
 
-    const updatedStructure = { ...localStructure, permissions: newPermissions };
-    setLocalStructure(updatedStructure);
-    setSelectedCells([]);
-  };
-
-  const setAllOperators = (): void => {
-    const newPermissions = localStructure.permissions.map(row => 
-      row.map(() => ["admin", "supervisor", "operator"])
-    );
-
-    const updatedStructure = { ...localStructure, permissions: newPermissions };
-    setLocalStructure(updatedStructure);
+    setLocalStructure({ ...localStructure, permissions: newPermissions });
     setSelectedCells([]);
   };
 
@@ -59,32 +98,49 @@ const Step3Permissions: React.FC<Step3PermissionsProps> = ({
     onNext(localStructure);
   };
 
+  const getCellDisplay = (row: number, col: number): { display: boolean; value: string } => {
+    const mergeCells = localStructure.mergeCells || [];
+    for (const merge of mergeCells) {
+      if (row >= merge.row && row < merge.row + merge.rowspan &&
+          col >= merge.col && col < merge.col + merge.colspan) {
+        if (row === merge.row && col === merge.col) {
+          return { display: true, value: localStructure.data[row][col] || '(empty)' };
+        }
+        return { display: false, value: '' };
+      }
+    }
+    return { display: true, value: localStructure.data[row][col] || '(empty)' };
+  };
+
+  const getCellSpan = (row: number, col: number): { rowSpan: number; colSpan: number } => {
+    const mergeCells = localStructure.mergeCells || [];
+    const merge = mergeCells.find(m => m.row === row && m.col === col);
+    if (merge) {
+      return { rowSpan: merge.rowspan, colSpan: merge.colspan };
+    }
+    return { rowSpan: 1, colSpan: 1 };
+  };
+
+  const mergeCount = localStructure.mergeCells?.length || 0;
+
   return (
     <div className="p-6">
-      <h2 className="text-xl font-semibold text-gray-800 mb-6">Set Cell Permissions</h2>
+      <h2 className="text-xl font-semibold text-gray-800 mb-4">Set Cell Permissions</h2>
       
-      <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
         <p className="text-sm text-blue-800">
-          <strong>Instructions:</strong> Click on cells to select them, then choose a permission level.
-          By default, all cells are editable by both Operators and Supervisors.
+          Click cells to select them, then click "Set Supervisor-Only" to restrict editing. 
+          By default, all cells can be edited by Operators and Supervisors.
         </p>
       </div>
 
-      {/* Controls */}
-      <div className="mb-4 flex flex-wrap gap-2">
+      <div className="mb-4 flex gap-2">
         <Button 
           onClick={() => setSelectedCells([])}
           disabled={selectedCells.length === 0}
           className="border border-gray-300 hover:bg-gray-50"
         >
-          Clear Selection ({selectedCells.length})
-        </Button>
-        
-        <Button 
-          onClick={setAllOperators}
-          className="bg-green-500 text-white hover:bg-green-600"
-        >
-          Allow All for Operators
+          Clear ({selectedCells.length})
         </Button>
         
         {selectedCells.length > 0 && (
@@ -97,40 +153,48 @@ const Step3Permissions: React.FC<Step3PermissionsProps> = ({
         )}
       </div>
 
-      {/* Permission Legend */}
       <div className="mb-4 flex items-center gap-4 text-sm">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-green-100 border border-green-300"></div>
+          <div className="w-4 h-4 bg-green-50 border-2 border-green-400"></div>
           <span>Operator & Supervisor</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-orange-100 border border-orange-300"></div>
+          <div className="w-4 h-4 bg-orange-50 border-2 border-orange-400"></div>
           <span>Supervisor Only</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-blue-100 border border-blue-300"></div>
+          <div className="w-4 h-4 bg-blue-200 border-2 border-blue-500"></div>
           <span>Selected</span>
         </div>
       </div>
 
-      {/* Permission Grid */}
-      <div className="border border-gray-300 rounded-lg overflow-auto mb-6 max-h-96">
+      <div className="border border-gray-300 rounded-lg overflow-auto mb-6" style={{ maxHeight: '500px' }}>
         <table className="w-full border-collapse">
           <tbody>
             {localStructure.data.map((row, rowIdx) => (
               <tr key={rowIdx}>
                 {row.map((cell, colIdx) => {
+                  const cellDisplay = getCellDisplay(rowIdx, colIdx);
+                  if (!cellDisplay.display) return null;
+
+                  const cellSpan = getCellSpan(rowIdx, colIdx);
                   const isSelected = selectedCells.some(c => c.row === rowIdx && c.col === colIdx);
                   const isSupervisorOnly = !localStructure.permissions[rowIdx]?.[colIdx]?.includes("operator");
 
                   return (
                     <td
                       key={colIdx}
+                      rowSpan={cellSpan.rowSpan}
+                      colSpan={cellSpan.colSpan}
                       onClick={() => handleCellClick(rowIdx, colIdx)}
-                      className={`border p-3 cursor-pointer ${isSelected ? 'bg-blue-100' : isSupervisorOnly ? 'bg-orange-50' : 'bg-white hover:bg-gray-50'}`}
+                      className={`border p-3 cursor-pointer transition-colors ${
+                        isSelected ? 'bg-blue-200 border-blue-500 border-2' : 
+                        isSupervisorOnly ? 'bg-orange-50 border-orange-300' : 
+                        'bg-white hover:bg-gray-50'
+                      }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm truncate">{cell || '(empty)'}</span>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm truncate">{cellDisplay.value}</span>
                         {isSupervisorOnly && <Lock size={14} className="text-orange-500 flex-shrink-0" />}
                       </div>
                     </td>
@@ -142,30 +206,26 @@ const Step3Permissions: React.FC<Step3PermissionsProps> = ({
         </table>
       </div>
 
-      {/* Summary */}
-      <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-        <div className="flex justify-between text-sm">
-          <div>
-            <span className="text-gray-600">Total Cells: </span>
-            <span className="font-medium">{localStructure.data.flat().length}</span>
-          </div>
-          <div>
-            <span className="text-gray-600">Operator Editable: </span>
-            <span className="font-medium text-green-600">
-              {localStructure.permissions.flat().filter(p => p.includes("operator")).length}
-            </span>
-          </div>
-          <div>
-            <span className="text-gray-600">Supervisor Only: </span>
-            <span className="font-medium text-orange-600">
-              {localStructure.permissions.flat().filter(p => !p.includes("operator")).length}
-            </span>
-          </div>
+      <div className="mb-6 p-3 bg-gray-50 border border-gray-200 rounded-lg flex justify-between text-sm">
+        <div>
+          <span className="text-gray-600">Total Cells: </span>
+          <span className="font-medium">{localStructure.data.flat().length}</span>
+        </div>
+        <div>
+          <span className="text-gray-600">Operator Editable: </span>
+          <span className="font-medium text-green-600">
+            {localStructure.permissions.flat().filter(p => p.includes("operator")).length}
+          </span>
+        </div>
+        <div>
+          <span className="text-gray-600">Supervisor Only: </span>
+          <span className="font-medium text-orange-600">
+            {localStructure.permissions.flat().filter(p => !p.includes("operator")).length}
+          </span>
         </div>
       </div>
 
-      {/* Navigation */}
-      <div className="pt-6 border-t border-gray-200 flex justify-between">
+      <div className="pt-4 border-t border-gray-200 flex justify-between">
         <Button
           onClick={onBack}
           className="border border-gray-300 hover:bg-gray-50"
