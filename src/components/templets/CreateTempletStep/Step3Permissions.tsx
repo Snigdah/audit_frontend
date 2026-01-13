@@ -104,12 +104,12 @@ const Step3Permissions: React.FC<Step3PermissionsProps> = ({
       if (row >= merge.row && row < merge.row + merge.rowspan &&
           col >= merge.col && col < merge.col + merge.colspan) {
         if (row === merge.row && col === merge.col) {
-          return { display: true, value: localStructure.data[row][col] || '(empty)' };
+          return { display: true, value: localStructure.data[row][col] || '' };
         }
         return { display: false, value: '' };
       }
     }
-    return { display: true, value: localStructure.data[row][col] || '(empty)' };
+    return { display: true, value: localStructure.data[row][col] || '' };
   };
 
   const getCellSpan = (row: number, col: number): { rowSpan: number; colSpan: number } => {
@@ -120,8 +120,6 @@ const Step3Permissions: React.FC<Step3PermissionsProps> = ({
     }
     return { rowSpan: 1, colSpan: 1 };
   };
-
-  const mergeCount = localStructure.mergeCells?.length || 0;
 
   return (
     <div className="p-6">
@@ -168,8 +166,8 @@ const Step3Permissions: React.FC<Step3PermissionsProps> = ({
         </div>
       </div>
 
-      <div className="border border-gray-300 rounded-lg overflow-auto mb-6" style={{ maxHeight: '500px' }}>
-        <table className="w-full border-collapse">
+      <div className="border-2 border-gray-300 rounded-lg overflow-auto mb-6 shadow-sm" style={{ maxHeight: '550px' }}>
+        <table className="w-full border-collapse min-w-full">
           <tbody>
             {localStructure.data.map((row, rowIdx) => (
               <tr key={rowIdx}>
@@ -187,14 +185,14 @@ const Step3Permissions: React.FC<Step3PermissionsProps> = ({
                       rowSpan={cellSpan.rowSpan}
                       colSpan={cellSpan.colSpan}
                       onClick={() => handleCellClick(rowIdx, colIdx)}
-                      className={`border p-3 cursor-pointer transition-colors ${
-                        isSelected ? 'bg-blue-200 border-blue-500 border-2' : 
+                      className={`border-2 p-4 cursor-pointer transition-colors min-w-[120px] ${
+                        isSelected ? 'bg-blue-200 border-blue-500' : 
                         isSupervisorOnly ? 'bg-orange-50 border-orange-300' : 
-                        'bg-white hover:bg-gray-50'
+                        'bg-white hover:bg-gray-50 border-gray-300'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="text-sm truncate">{cellDisplay.value}</span>
+                        <span className="text-sm font-medium">{cellDisplay.value}</span>
                         {isSupervisorOnly && <Lock size={14} className="text-orange-500 flex-shrink-0" />}
                       </div>
                     </td>

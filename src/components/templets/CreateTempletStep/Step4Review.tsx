@@ -33,7 +33,7 @@ const Step4Review: React.FC<Step4ReviewProps> = ({
         if (row === merge.row && col === merge.col) {
           return { 
             display: true, 
-            value: structure.data[row][col] || '(empty)',
+            value: structure.data[row][col] || '',
             rowSpan: merge.rowspan,
             colSpan: merge.colspan
           };
@@ -43,7 +43,7 @@ const Step4Review: React.FC<Step4ReviewProps> = ({
     }
     return { 
       display: true, 
-      value: structure.data[row][col] || '(empty)',
+      value: structure.data[row][col] || '',
       rowSpan: 1,
       colSpan: 1
     };
@@ -110,8 +110,8 @@ const Step4Review: React.FC<Step4ReviewProps> = ({
           </div>
         </div>
         
-        <div className="border border-gray-200 rounded overflow-auto" style={{ maxHeight: '400px' }}>
-          <table className="w-full border-collapse">
+        <div className="border-2 border-gray-200 rounded-lg overflow-auto shadow-sm" style={{ maxHeight: '450px' }}>
+          <table className="w-full border-collapse min-w-full">
             <tbody>
               {structure.data.map((row, rowIdx) => (
                 <tr key={rowIdx}>
@@ -126,14 +126,14 @@ const Step4Review: React.FC<Step4ReviewProps> = ({
                         key={colIdx}
                         rowSpan={cellInfo.rowSpan}
                         colSpan={cellInfo.colSpan}
-                        className={`border p-3 text-sm ${
-                          isSupervisorOnly ? 'bg-orange-50 border-orange-200' : 'bg-green-50 border-green-200'
+                        className={`border-2 p-4 text-sm font-medium min-w-[120px] ${
+                          isSupervisorOnly ? 'bg-orange-50 border-orange-300' : 'bg-green-50 border-green-300'
                         }`}
                       >
                         <div className="flex items-center justify-between gap-2">
-                          <span className="truncate">{cellInfo.value}</span>
+                          <span>{cellInfo.value}</span>
                           {isSupervisorOnly && (
-                            <Lock size={14} className="text-orange-500 flex-shrink-0" />
+                            <Lock size={14} className="text-orange-600 flex-shrink-0" />
                           )}
                         </div>
                       </td>

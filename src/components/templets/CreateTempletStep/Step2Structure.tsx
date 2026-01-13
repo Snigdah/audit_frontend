@@ -1,7 +1,7 @@
 // ============================================
 // Step2Structure.tsx
 // ============================================
-import React, { useRef, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import { Button } from "antd";
 import { ArrowLeft, ArrowRight, Plus } from "lucide-react";
 import { HotTable } from "@handsontable/react";
@@ -16,14 +16,15 @@ import CustomButton from "../../common/CustomButton";
 registerAllModules();
 
 interface Step2StructureProps {
+  initialStructure?: TemplateStructureRequest | null;
   onBack: () => void;
   onNext: (data: TemplateStructureRequest) => void;
 }
 
-const Step2Structure: React.FC<Step2StructureProps> = ({ onBack, onNext }) => {
+const Step2Structure: React.FC<Step2StructureProps> = ({ initialStructure, onBack, onNext }) => {
   const hotRef = useRef<any>(null);
   
-  const [structure] = useState<TemplateStructureRequest>({
+  const defaultStructure: TemplateStructureRequest = {
     data: [
       ["Field Name", "Value", "Notes", "Status"],
       ["Temperature", "", "", ""],
@@ -34,7 +35,23 @@ const Step2Structure: React.FC<Step2StructureProps> = ({ onBack, onNext }) => {
       Array(4).fill(["admin", "supervisor", "operator"])
     ),
     mergeCells: [],
-  });
+  };
+
+  const structure = initialStructure || defaultStructure;
+
+  useEffect(() => {
+    if (hotRef.current?.hotInstance && initialStructure) {
+      const hot = hotRef.current.hotInstance;
+      hot.loadData(initialStructure.data);
+      if (initialStructure.mergeCells && initialStructure.mergeCells.length > 0) {
+        const mergePlugin = hot.getPlugin("mergeCells");
+        mergePlugin.clearCollections();
+        initialStructure.mergeCells.forEach(merge => {
+          mergePlugin.merge(merge.row, merge.col, merge.row + merge.rowspan - 1, merge.col + merge.colspan - 1);
+        });
+      }
+    }
+  }, [initialStructure]);
 
   const handleNext = (): void => {
     const hot = hotRef.current?.hotInstance;
@@ -51,7 +68,7 @@ const Step2Structure: React.FC<Step2StructureProps> = ({ onBack, onNext }) => {
 
     const newStructure: TemplateStructureRequest = {
       data: tableData,
-      permissions: Array(tableData.length).fill(null).map(() => 
+      permissions: initialStructure?.permissions || Array(tableData.length).fill(null).map(() => 
         Array(tableData[0].length).fill(["admin", "supervisor", "operator"])
       ),
       mergeCells: mergeCells,
@@ -78,13 +95,14 @@ const Step2Structure: React.FC<Step2StructureProps> = ({ onBack, onNext }) => {
     data: structure.data,
     colHeaders: true,
     rowHeaders: true,
-    height: 450,
+    height: 500,
     width: "100%",
     licenseKey: "non-commercial-and-evaluation",
     contextMenu: true,
     manualRowResize: true,
     manualColumnResize: true,
     mergeCells: structure.mergeCells,
+    stretchH: "all" as const,
   };
 
   return (
@@ -106,7 +124,7 @@ const Step2Structure: React.FC<Step2StructureProps> = ({ onBack, onNext }) => {
         </Button>
       </div>
 
-      <div className="border border-gray-300 rounded-lg overflow-auto mb-6">
+      <div className="border-2 border-gray-300 rounded-lg overflow-hidden mb-6 shadow-sm">
         <HotTable ref={hotRef} settings={hotSettings} />
       </div>
 

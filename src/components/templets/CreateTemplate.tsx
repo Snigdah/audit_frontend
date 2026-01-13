@@ -27,7 +27,6 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ onCancel, onSuccess }) 
   const [step, setStep] = useState<number>(1);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // STEP 1 (simple form)
   const form = useForm<TemplateMetaForm>({
     defaultValues: {
       templateName: "",
@@ -37,7 +36,6 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ onCancel, onSuccess }) 
     },
   });
 
-  // STEP 2 (complex structure)
   const [structure, setStructure] = useState<TemplateStructureRequest | null>(null);
 
   const handleFinalSubmit = async (): Promise<void> => {
@@ -61,7 +59,6 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ onCancel, onSuccess }) 
     }
   };
 
-  // Progress steps configuration
   const steps = [
     { number: 1, title: "Basic Info", description: "Enter template details" },
     { number: 2, title: "Design Structure", description: "Design the table structure" },
@@ -72,7 +69,6 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ onCancel, onSuccess }) 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-6xl mx-auto">
-        {/* Header with Back button */}
         <div className="mb-8 flex items-center gap-4">
           <button 
             onClick={onCancel}
@@ -83,11 +79,10 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ onCancel, onSuccess }) 
           </button>
           <div>
             <h1 className="text-2xl font-bold text-gray-800">Create New Template</h1>
-            <p className="text-gray-600 mt-1">Step {step} of 3: {steps[step-1]?.description}</p>
+            <p className="text-gray-600 mt-1">Step {step} of 4: {steps[step-1]?.description}</p>
           </div>
         </div>
 
-        {/* Progress Indicator */}
         <div className="mb-8 bg-white rounded-lg shadow-sm p-4">
           <div className="flex items-center justify-between">
             {steps.map((stepItem, index) => (
@@ -116,7 +111,6 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ onCancel, onSuccess }) 
           </div>
         </div>
 
-        {/* Step Content */}
         <Spin spinning={isSubmitting}>
           <div className="bg-white rounded-xl shadow-sm border border-gray-200">
             {step === 1 && (
@@ -128,6 +122,7 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ onCancel, onSuccess }) 
 
             {step === 2 && (
               <Step2Structure
+                initialStructure={structure}
                 onBack={() => setStep(1)}
                 onNext={(data: TemplateStructureRequest) => {
                   setStructure(data);
@@ -136,18 +131,18 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ onCancel, onSuccess }) 
               />
             )}
 
-            {step === 3 && structure && ( // NEW PERMISSIONS STEP
+            {step === 3 && structure && (
               <Step3Permissions
                 structure={structure}
                 onBack={() => setStep(2)}
                 onNext={(updatedStructure: TemplateStructureRequest) => {
                   setStructure(updatedStructure);
-                  setStep(4); // Now goes to Step 4 (review)
+                  setStep(4);
                 }}
               />
             )}
 
-             {step === 4 && structure && ( // RENAMED FROM Step3Review to Step4Review
+             {step === 4 && structure && (
               <Step4Review
                 meta={form.getValues()}
                 structure={structure}
