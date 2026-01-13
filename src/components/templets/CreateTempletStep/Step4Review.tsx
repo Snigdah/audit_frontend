@@ -109,7 +109,40 @@ const Step4Review: React.FC<Step4ReviewProps> = ({
             <span>Supervisor Only</span>
           </div>
         </div>
-        
+        {/* <div className="border border-gray-300 rounded overflow-auto shadow-sm" style={{ maxHeight: '450px' }}>
+  <table className="w-full border-collapse font-sans text-sm">
+    <tbody>
+      {structure.data.map((row, rowIdx) => (
+        <tr key={rowIdx} className={rowIdx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+          {row.map((cell, colIdx) => {
+            const cellInfo = getCellDisplay(rowIdx, colIdx);
+            if (!cellInfo.display) return null;
+
+            const isSupervisorOnly = !structure.permissions[rowIdx]?.[colIdx]?.includes("operator");
+
+            return (
+              <td
+                key={colIdx}
+                rowSpan={cellInfo.rowSpan}
+                colSpan={cellInfo.colSpan}
+                className={`border border-gray-300 p-1 text-left align-middle`}
+                style={{
+                  backgroundColor: isSupervisorOnly ? '#FFF3E0' : 'white',
+                }}
+              >
+                <span>{cellInfo.value}</span>
+                {isSupervisorOnly && (
+                  <Lock size={14} className="text-orange-600 inline ml-1" />
+                )}
+              </td>
+            );
+          })}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div> */}
+
         <div className="border-2 border-gray-200 rounded-lg overflow-auto shadow-sm" style={{ maxHeight: '450px' }}>
           <table className="w-full border-collapse min-w-full">
             <tbody>
