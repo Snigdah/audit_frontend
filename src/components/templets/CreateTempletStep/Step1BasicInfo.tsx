@@ -26,8 +26,8 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({ form, onNext }) => {
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-semibold text-gray-800 mb-6">Basic Information</h2>
+    <div className="p-4">
+      <h2 className="text-xl font-semibold text-gray-800 mb-4">Basic Information</h2>
       
       <div className="space-y-4">
         <InputField

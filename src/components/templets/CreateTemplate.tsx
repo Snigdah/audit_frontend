@@ -67,9 +67,8 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ onCancel, onSuccess }) 
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8 flex items-center gap-4">
+    <div className="p-4 bg-white rounded-lg shadow-sm">
+        <div className="mb-4 flex items-center gap-4">
           <button 
             onClick={onCancel}
             className="p-2 hover:bg-white rounded-lg transition-colors"
@@ -83,18 +82,19 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ onCancel, onSuccess }) 
           </div>
         </div>
 
-        <div className="mb-8 bg-white rounded-lg shadow-sm p-4">
-          <div className="flex items-center justify-between">
+        {/* Responsive Progress Indicator */}
+        <div className="mb-4 bg-white rounded-lg shadow-sm p-3 overflow-x-auto">
+          <div className="flex items-center justify-between min-w-max sm:min-w-0">
             {steps.map((stepItem, index) => (
               <React.Fragment key={stepItem.number}>
-                <div className="flex items-center">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                <div className="flex items-center flex-shrink-0">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
                     step >= stepItem.number ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
                   }`}>
                     {stepItem.number}
                   </div>
-                  <div className="ml-3">
-                    <div className={`text-sm font-medium ${
+                  <div className="ml-2 hidden md:block">
+                    <div className={`text-xs font-medium whitespace-nowrap ${
                       step >= stepItem.number ? 'text-blue-600' : 'text-gray-500'
                     }`}>
                       {stepItem.title}
@@ -102,7 +102,7 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ onCancel, onSuccess }) 
                   </div>
                 </div>
                 {index < steps.length - 1 && (
-                  <div className={`flex-1 h-1 mx-4 ${
+                  <div className={`flex-1 h-0.5 mx-2 min-w-[20px] ${
                     step > stepItem.number ? 'bg-blue-600' : 'bg-gray-200'
                   }`} />
                 )}
@@ -153,7 +153,6 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ onCancel, onSuccess }) 
             )}
           </div>
         </Spin>
-      </div>
     </div>
   );
 };

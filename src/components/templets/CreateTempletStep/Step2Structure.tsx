@@ -106,7 +106,7 @@ const Step2Structure: React.FC<Step2StructureProps> = ({ initialStructure, onBac
   };
 
   return (
-    <div className="p-6">
+    <div className="p-2">
       <h2 className="text-xl font-semibold text-gray-800 mb-4">Design Table Structure</h2>
       
       <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3">

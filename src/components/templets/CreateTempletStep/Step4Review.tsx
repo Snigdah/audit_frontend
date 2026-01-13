@@ -52,7 +52,7 @@ const Step4Review: React.FC<Step4ReviewProps> = ({
   const mergeCount = structure.mergeCells?.length || 0;
 
   return (
-    <div className="p-6">
+    <div className="p-3">
       <h2 className="text-xl font-semibold text-gray-800 mb-4">Review & Submit</h2>
       
       <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
@@ -91,7 +91,7 @@ const Step4Review: React.FC<Step4ReviewProps> = ({
         </div>
       </div>
 
-      <div className="mb-6 bg-white border border-gray-200 rounded-lg p-4">
+      <div className="mb-6 bg-white border border-gray-200 rounded-lg p-2">
         <h3 className="font-semibold text-gray-800 mb-3">Structure Preview</h3>
         
         <div className="mb-3 text-sm text-gray-600">

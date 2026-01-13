@@ -122,7 +122,7 @@ const Step3Permissions: React.FC<Step3PermissionsProps> = ({
   };
 
   return (
-    <div className="p-6">
+    <div className="p-2">
       <h2 className="text-xl font-semibold text-gray-800 mb-4">Set Cell Permissions</h2>
       
       <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
