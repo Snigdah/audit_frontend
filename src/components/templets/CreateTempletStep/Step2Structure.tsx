@@ -24,6 +24,7 @@ interface Step2StructureProps {
 const Step2Structure: React.FC<Step2StructureProps> = ({ initialStructure, onBack, onNext }) => {
   const hotRef = useRef<any>(null);
   
+  // If we already have a structure from Step 3, use it. Otherwise use default.
   const defaultStructure: TemplateStructureRequest = {
     data: [
       ["Field Name", "Value", "Notes", "Status"],
@@ -39,15 +40,22 @@ const Step2Structure: React.FC<Step2StructureProps> = ({ initialStructure, onBac
 
   const structure = initialStructure || defaultStructure;
 
+  // Load handsontable data on mount
   useEffect(() => {
     if (hotRef.current?.hotInstance && initialStructure) {
       const hot = hotRef.current.hotInstance;
       hot.loadData(initialStructure.data);
-      if (initialStructure.mergeCells && initialStructure.mergeCells.length > 0) {
+
+      if (initialStructure.mergeCells?.length) {
         const mergePlugin = hot.getPlugin("mergeCells");
         mergePlugin.clearCollections();
-        initialStructure.mergeCells.forEach(merge => {
-          mergePlugin.merge(merge.row, merge.col, merge.row + merge.rowspan - 1, merge.col + merge.colspan - 1);
+        initialStructure.mergeCells.forEach((merge) => {
+          mergePlugin.merge(
+            merge.row,
+            merge.col,
+            merge.row + merge.rowspan - 1,
+            merge.col + merge.colspan - 1
+          );
         });
       }
     }
@@ -66,11 +74,17 @@ const Step2Structure: React.FC<Step2StructureProps> = ({ initialStructure, onBac
       colspan: mc.colspan,
     })) || [];
 
+    // --- Preserve existing permissions where possible ---
+    const newPermissions: string[][][] = tableData.map((row: any[], rowIdx: number) =>
+      row.map((_, colIdx: number) =>
+        // Keep previous permission if exists, otherwise default
+        structure.permissions[rowIdx]?.[colIdx] || ["admin", "supervisor", "operator"]
+      )
+    );
+
     const newStructure: TemplateStructureRequest = {
       data: tableData,
-      permissions: initialStructure?.permissions || Array(tableData.length).fill(null).map(() => 
-        Array(tableData[0].length).fill(["admin", "supervisor", "operator"])
-      ),
+      permissions: newPermissions,
       mergeCells: mergeCells,
     };
 
