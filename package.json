@@ -10,13 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@handsontable/react": "^16.2.0",
     "@stomp/stompjs": "^7.2.1",
     "@tailwindcss/vite": "^4.1.5",
     "antd": "^5.25.0",
     "axios": "^1.9.0",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.18.1",
+    "handsontable": "^16.2.0",
     "lodash": "^4.17.21",
+    "lucide-react": "^0.562.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.56.2",

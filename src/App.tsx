@@ -31,6 +31,7 @@ import EmailSettingsPage from "./pages/settings/EmailSettingsPage";
 import ViewerPage from "./pages/resource/ViewerPage";
 import UserProfilePage from "./pages/user/UserProfilePage";
 import TemplatePage from "./pages/templet/TemplatePage";
+import CreateTemplate from "./components/templets/CreateTemplate";
 
 function App() {
   return (
@@ -110,6 +111,7 @@ function App() {
 
                   {/* ======================= Templet ======================== */}
                   <Route path="/template" element={<TemplatePage />} />
+                  <Route path="/template/create" element={<CreateTemplate />} />
 
                   {/* ======================= Settings ======================== */}
                   <Route path="/user/profile" element={<ProfilePage />} />

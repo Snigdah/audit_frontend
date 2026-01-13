@@ -11,7 +11,8 @@ const BASE = {
   VIEWER: "viewer",
   EQUIPMENT: "equipment",
   NOTIFICATION: "notification",
-  EMAIL: "mail"
+  EMAIL: "mail",
+  TEMPLET: "template"
 };
 
 export const ENDPOINTS = {
@@ -219,5 +220,8 @@ export const ENDPOINTS = {
     CONFIGURE_EMAIL: `${BASE.EMAIL}/configure`,
     GET_EMAIL_CONFIG: `${BASE.EMAIL}/configure`,
     TEST_EMAIL: `${BASE.EMAIL}/test`,
+  },
+  TEMPLET: {
+    CREATET_REQUEST: `${BASE.TEMPLET}`
   }
 };
