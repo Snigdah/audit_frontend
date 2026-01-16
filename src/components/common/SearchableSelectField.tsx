@@ -1,8 +1,9 @@
-// components/common/ControlledSearchableSelect.tsx
+// components/common/SearchableSelectField.tsx
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Controller } from "react-hook-form";
-import type { FieldError, Control, Path, FieldValues } from "react-hook-form";
+import type { FieldError, Control, FieldValues } from "react-hook-form";
 import { Select } from "antd";
+import type { SelectProps } from "antd";
 import debounce from "lodash/debounce";
 
 export type SearchableSelectOption = {
@@ -12,7 +13,7 @@ export type SearchableSelectOption = {
 
 type ControlledSearchableSelectProps = {
   name: string;
-  control: Control<any>; // Use any to avoid generic complexity
+  control: Control<any>;
   label: string;
   required?: boolean;
   error?: FieldError;
@@ -21,6 +22,7 @@ type ControlledSearchableSelectProps = {
   debounceMs?: number;
   allowClear?: boolean;
   className?: string;
+  selectClassName?: string; // New prop for Select component styling
   rules?: any;
   defaultValue?: number | string;
 };
@@ -36,6 +38,7 @@ export function ControlledSearchableSelect({
   debounceMs = 300,
   allowClear = true,
   className = "",
+  selectClassName = "", // Default empty
   rules = {},
   defaultValue,
 }: ControlledSearchableSelectProps) {
@@ -99,20 +102,24 @@ export function ControlledSearchableSelect({
             onSearch={handleSearch}
             onChange={(value) => {
               field.onChange(value);
-              setSearchTerm(""); // Clear search when value is selected
+              setSearchTerm("");
             }}
             loading={isLoading}
             allowClear={allowClear}
-            className="w-full"
             size="middle"
             options={options}
+            className={`custom-searchable-select ${selectClassName}`}
+            style={{
+              width: '100%',
+              height: '40px', // Match your input field height
+            }}
             notFoundContent={
               isLoading ? (
-                <div className="py-2 text-center">Loading...</div>
+                <div className="py-2 text-center text-sm">Loading...</div>
               ) : searchTerm ? (
-                <div className="py-2 text-center">No options found</div>
+                <div className="py-2 text-center text-sm">No options found</div>
               ) : (
-                <div className="py-2 text-center">Start typing to search</div>
+                <div className="py-2 text-center text-sm">Start typing to search</div>
               )
             }
           />

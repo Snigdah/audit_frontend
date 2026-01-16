@@ -30,9 +30,9 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({ form, onNext }) => {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Basic Information</h2>
+      <h2 className="text-xl font-semibold text-gray-800 mb-6">Basic Information</h2>
       
-      <div className="space-y-4">
+      <div className="space-y-6">
         <InputField
           name="templateName"
           label="Template Name"
@@ -51,9 +51,10 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({ form, onNext }) => {
               message: "Template name must not exceed 100 characters",
             },
           }}
+          className="mb-0" // Remove default margin if InputField has it
         />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <ControlledSearchableSelect
             name="departmentId"
             control={control}
@@ -73,6 +74,8 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({ form, onNext }) => {
             rules={{
               validate: (value: number) => value > 0 || "Please select a department",
             }}
+            className="mb-0" // Custom class name
+            selectClassName="w-full h-10" // Pass custom class to Select component
           />
 
           <InputField
@@ -90,25 +93,26 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({ form, onNext }) => {
                 message: "Equipment ID must be greater than 0",
               },
             }}
+            className="mb-0"
           />
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
             Description
           </label>
           <textarea
             {...register("description")}
             placeholder="Describe what this template is used for..."
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            rows={4}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
           />
         </div>
 
         <div className="pt-6 border-t border-gray-200 flex justify-end">
           <CustomButton
             onClick={handleNext}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-md text-sm font-medium"
             size="large"
           >
             Next Step <ArrowRight size={18} className="ml-2" />
