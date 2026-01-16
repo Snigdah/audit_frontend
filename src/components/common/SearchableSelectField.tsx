@@ -26,6 +26,7 @@ type ControlledSearchableSelectProps = {
   rules?: any;
   defaultValue?: number | string;
   disabled?: boolean;
+  onSelectChange?: (value: number | string) => void; 
 };
 
 export function ControlledSearchableSelect({
@@ -44,6 +45,7 @@ export function ControlledSearchableSelect({
   rules = {},
   defaultValue,
   disabled = false,
+  onSelectChange,
 }: ControlledSearchableSelectProps) {
   const [options, setOptions] = useState<SearchableSelectOption[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -86,7 +88,7 @@ export function ControlledSearchableSelect({
   }, []);
 
   return (
-    <div className={`mb-4 ${className}`}>
+     <div className={`mb-4 ${className}`}>
       {label && (
         <label
           htmlFor={name}
@@ -115,6 +117,7 @@ export function ControlledSearchableSelect({
             onChange={(value) => {
               field.onChange(value);
               setSearchTerm("");
+              onSelectChange?.(value); // Call the callback
             }}
             loading={isLoading}
             allowClear={allowClear && !disabled}

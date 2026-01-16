@@ -81,12 +81,12 @@ const Step4Review: React.FC<Step4ReviewProps> = ({
             <p className="font-medium">{meta.description || "No description"}</p>
           </div>
           <div>
-            <label className="text-gray-600">Department ID</label>
-            <p className="font-medium">{meta.departmentId}</p>
+            <label className="text-gray-600">Department</label>
+            <p className="font-medium">{meta.departmentName || `ID: ${meta.departmentId}`}</p>
           </div>
           <div>
-            <label className="text-gray-600">Equipment ID</label>
-            <p className="font-medium">{meta.equipmentId}</p>
+            <label className="text-gray-600">Equipment</label>
+            <p className="font-medium">{meta.equipmentName || `ID: ${meta.equipmentId}`}</p>
           </div>
         </div>
       </div>

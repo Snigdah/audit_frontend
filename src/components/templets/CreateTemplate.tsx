@@ -42,8 +42,14 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ onCancel, onSuccess }) 
     setIsSubmitting(true);
     
     try {
+      const formValues = form.getValues();
+      
+      // Only send IDs to the API, not names
       const payload: TemplateRequest = {
-        ...form.getValues(),
+        templateName: formValues.templateName,
+        description: formValues.description,
+        departmentId: formValues.departmentId,
+        equipmentId: formValues.equipmentId,
         templateStructureRequest: structure!,
       };
 

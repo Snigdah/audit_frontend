@@ -2,7 +2,9 @@ export interface TemplateMetaForm {
   templateName: string;
   description?: string;
   departmentId: number;
+  departmentName?: string;
   equipmentId: number;
+  equipmentName?: string;
 }
 
 export type MergeCellDto = {

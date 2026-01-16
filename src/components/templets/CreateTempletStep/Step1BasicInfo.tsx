@@ -6,8 +6,9 @@ import { InputField } from "../../common/InputField";
 import CustomButton from "../../common/CustomButton";
 import DepartmentService from "../../../services/DepartmentService";
 import type { Department } from "../../../types/department";
+import type { EquipmentResponse } from "../../../types/equipment";
 import { ControlledSearchableSelect } from "../../common/SearchableSelectField";
-import EquipmentService from "../../../services/EquipmentService";
+import type { SearchableSelectOption } from "../../common/SearchableSelectField";
 
 interface Step1BasicInfoProps {
   form: UseFormReturn<TemplateMetaForm>;
@@ -17,6 +18,10 @@ interface Step1BasicInfoProps {
 const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({ form, onNext }) => {
   const { control, register, trigger, formState: { errors }, setValue } = form;
 
+  // State to store fetched data for name lookup
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [equipments, setEquipments] = useState<EquipmentResponse[]>([]);
+
   // Watch departmentId to trigger equipment fetch
   const departmentId = useWatch({
     control,
@@ -25,8 +30,9 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({ form, onNext }) => {
 
   // Clear equipment when department changes
   useEffect(() => {
-    // Clear equipment field when department changes (including when cleared)
     setValue("equipmentId", null as any);
+    setValue("equipmentName", undefined);
+    setEquipments([]); // Clear equipment list
   }, [departmentId, setValue]);
 
   const handleNext = async (): Promise<void> => {
@@ -39,34 +45,58 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({ form, onNext }) => {
   };
 
   // Department fetch function
-  const fetchDepartments = async (searchTerm: string) => {
+  const fetchDepartments = async (searchTerm: string): Promise<SearchableSelectOption[]> => {
     try {
-      const depts = await DepartmentService.searchDepartments(searchTerm);
-      return depts.map(d => ({ value: d.id, label: d.name }));
-    } catch {
+      const depts: Department[] = await DepartmentService.searchDepartments(searchTerm);
+      setDepartments(depts);
+      return depts.map(dept => ({ 
+        value: dept.id, 
+        label: dept.name 
+      }));
+    } catch (error) {
+      console.error("Error fetching departments:", error);
       return [];
     }
   };
 
   // Equipment fetch function - memoized with departmentId
   const fetchEquipments = useMemo(() => {
-    return async (searchTerm: string) => {
+    return async (searchTerm: string): Promise<SearchableSelectOption[]> => {
       if (!departmentId) return [];
       try {
-        const eqs = await DepartmentService.getEquipmentsByDepartmentDropdown(
+        const eqs: EquipmentResponse[] = await DepartmentService.getEquipmentsByDepartmentDropdown(
           departmentId, 
           searchTerm
         );
-        return eqs.map(e => ({ 
-          value: e.id, 
-          label: `${e.equipmentNumber} - ${e.equipmentName}` 
+        setEquipments(eqs);
+        return eqs.map(eq => ({ 
+          value: eq.id, 
+          label: `${eq.equipmentName} (${eq.equipmentNumber})`
         }));
       } catch (error) {
         console.error("Error fetching equipment:", error);
         return [];
       }
     };
-  }, [departmentId]); // Recreate function when departmentId changes
+  }, [departmentId]);
+
+  // Handle department selection
+  const handleDepartmentChange = (value: number | string): void => {
+    const deptId = Number(value);
+    const selected = departments.find(dept => dept.id === deptId);
+    if (selected) {
+      setValue("departmentName", selected.name);
+    }
+  };
+
+  // Handle equipment selection
+  const handleEquipmentChange = (value: number | string): void => {
+    const eqId = Number(value);
+    const selected = equipments.find(eq => eq.id === eqId);
+    if (selected) {
+      setValue("equipmentName", `${selected.equipmentName} (${selected.equipmentNumber})`);
+    }
+  };
 
   return (
     <div className="p-4">
@@ -110,10 +140,11 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({ form, onNext }) => {
             }}
             className="mb-0"
             selectClassName="w-full h-10"
+            onSelectChange={handleDepartmentChange}
           />
 
           <ControlledSearchableSelect
-            key={departmentId || 'no-dept'} // Force re-mount when department changes
+            key={departmentId || 'no-dept'}
             name="equipmentId"
             control={control}
             label="Equipment"
@@ -130,6 +161,7 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({ form, onNext }) => {
             className="mb-0"
             selectClassName="searchable-select-custom"
             disabled={!departmentId}
+            onSelectChange={handleEquipmentChange}
           />
         </div>
 
