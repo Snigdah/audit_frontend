@@ -91,6 +91,8 @@ export const ENDPOINTS = {
       `${BASE.DEPARTMENT}/remove-equipment/${equipmentId}`,
     GET_EQUIPMENTS: (departmentId: number) =>
       `${BASE.DEPARTMENT}/${departmentId}/equipments`,
+    DROPDOWN_EQUIPMENTS: (departmentId: number) =>
+      `${BASE.DEPARTMENT}/${departmentId}/equipments/all`,
   },
   PASSWORD_POLICY: {
     CREATE: `${BASE.PASSWORD_POLICY}`,

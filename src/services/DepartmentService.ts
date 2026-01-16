@@ -36,7 +36,7 @@ class DepartmentService {
       return response.data.data;
     }
 
-    async searchDepartments(query: string): Promise<Department[]> {
+  async searchDepartments(query: string): Promise<Department[]> {
     const response = await apiClient.get<ApiResponse<Department[]>>(
       ENDPOINTS.DEPARTMENT.SEARCH_DROP_DOWN(query)
     );
@@ -142,6 +142,17 @@ class DepartmentService {
     const response = await apiClient.get<ApiResponse<EquipmentResponse[]>>(
       ENDPOINTS.DEPARTMENT.GET_EQUIPMENTS(departmentId)
     );
+    return response.data.data;
+  }
+
+   async getEquipmentsByDepartmentDropdown(
+    departmentId: number,
+    search?: string
+  ): Promise<EquipmentResponse[]> {
+    const url = `${ENDPOINTS.DEPARTMENT.DROPDOWN_EQUIPMENTS(departmentId)}${
+      search ? `?search=${encodeURIComponent(search)}` : ""
+    }`;
+    const response = await apiClient.get<ApiResponse<EquipmentResponse[]>>(url);
     return response.data.data;
   }
 }

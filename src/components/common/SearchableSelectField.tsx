@@ -1,9 +1,8 @@
 // components/common/SearchableSelectField.tsx
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Controller } from "react-hook-form";
-import type { FieldError, Control, FieldValues } from "react-hook-form";
+import type { FieldError, Control } from "react-hook-form";
 import { Select } from "antd";
-import type { SelectProps } from "antd";
 import debounce from "lodash/debounce";
 
 export type SearchableSelectOption = {
@@ -14,7 +13,7 @@ export type SearchableSelectOption = {
 type ControlledSearchableSelectProps = {
   name: string;
   control: Control<any>;
-  label: string;
+  label?: string;
   required?: boolean;
   error?: FieldError;
   placeholder?: string;
@@ -22,9 +21,11 @@ type ControlledSearchableSelectProps = {
   debounceMs?: number;
   allowClear?: boolean;
   className?: string;
-  selectClassName?: string; // New prop for Select component styling
+  labelClassName?: string;
+  selectClassName?: string;
   rules?: any;
   defaultValue?: number | string;
+  disabled?: boolean;
 };
 
 export function ControlledSearchableSelect({
@@ -38,9 +39,11 @@ export function ControlledSearchableSelect({
   debounceMs = 300,
   allowClear = true,
   className = "",
-  selectClassName = "", // Default empty
+  labelClassName = "",
+  selectClassName = "",
   rules = {},
   defaultValue,
+  disabled = false,
 }: ControlledSearchableSelectProps) {
   const [options, setOptions] = useState<SearchableSelectOption[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -63,13 +66,17 @@ export function ControlledSearchableSelect({
 
   // Initial load
   useEffect(() => {
-    debouncedFetchRef.current("");
-  }, []);
+    if (!disabled) {
+      debouncedFetchRef.current("");
+    }
+  }, [disabled]);
 
   const handleSearch = useCallback((value: string) => {
-    setSearchTerm(value);
-    debouncedFetchRef.current(value);
-  }, []);
+    if (!disabled) {
+      setSearchTerm(value);
+      debouncedFetchRef.current(value);
+    }
+  }, [disabled]);
 
   // Cleanup
   useEffect(() => {
@@ -80,10 +87,15 @@ export function ControlledSearchableSelect({
 
   return (
     <div className={`mb-4 ${className}`}>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
-      </label>
+      {label && (
+        <label
+          htmlFor={name}
+          className={`block text-sm font-medium text-gray-700 mb-1 ${labelClassName} ${disabled ? 'opacity-60' : ''}`}
+        >
+          {label}
+          {required && <span className="text-red-500 ml-1">*</span>}
+        </label>
+      )}
       <Controller
         name={name}
         control={control}
@@ -96,7 +108,7 @@ export function ControlledSearchableSelect({
           <Select
             {...field}
             showSearch
-            placeholder={placeholder || `Search ${label.toLowerCase()}...`}
+            placeholder={disabled ? "Disabled - select department first" : (placeholder || `Search ${label?.toLowerCase()}...`)}
             optionFilterProp="label"
             filterOption={false}
             onSearch={handleSearch}
@@ -105,21 +117,23 @@ export function ControlledSearchableSelect({
               setSearchTerm("");
             }}
             loading={isLoading}
-            allowClear={allowClear}
+            allowClear={allowClear && !disabled}
             size="middle"
             options={options}
-            className={`custom-searchable-select ${selectClassName}`}
+            className={`w-full ${selectClassName} ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
             style={{
               width: '100%',
-              height: '40px', // Match your input field height
             }}
+            disabled={disabled}
             notFoundContent={
-              isLoading ? (
-                <div className="py-2 text-center text-sm">Loading...</div>
+              disabled ? (
+                <div className="py-2 text-center text-sm text-gray-500">Please select department first</div>
+              ) : isLoading ? (
+                <div className="py-2 text-center text-sm text-gray-500">Loading...</div>
               ) : searchTerm ? (
-                <div className="py-2 text-center text-sm">No options found</div>
+                <div className="py-2 text-center text-sm text-gray-500">No options found</div>
               ) : (
-                <div className="py-2 text-center text-sm">Start typing to search</div>
+                <div className="py-2 text-center text-sm text-gray-500">Start typing to search</div>
               )
             }
           />
@@ -127,7 +141,7 @@ export function ControlledSearchableSelect({
       />
       {error && (
         <p className="mt-1 text-sm text-red-600" role="alert">
-          {error.message}
+          {error.message || "This field is required"}
         </p>
       )}
     </div>

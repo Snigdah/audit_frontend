@@ -1,8 +1,5 @@
-// ============================================
-// Step1BasicInfo.tsx
-// ============================================
-import React, { useEffect, useState } from "react";
-import type { UseFormReturn } from "react-hook-form";
+import React, { useEffect, useState, useMemo } from "react";
+import { useWatch, type UseFormReturn } from "react-hook-form";
 import { ArrowRight } from "lucide-react";
 import type { TemplateMetaForm } from "../../../types/template";
 import { InputField } from "../../common/InputField";
@@ -10,6 +7,7 @@ import CustomButton from "../../common/CustomButton";
 import DepartmentService from "../../../services/DepartmentService";
 import type { Department } from "../../../types/department";
 import { ControlledSearchableSelect } from "../../common/SearchableSelectField";
+import EquipmentService from "../../../services/EquipmentService";
 
 interface Step1BasicInfoProps {
   form: UseFormReturn<TemplateMetaForm>;
@@ -17,7 +15,19 @@ interface Step1BasicInfoProps {
 }
 
 const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({ form, onNext }) => {
-  const { control, register, trigger, formState: { errors } } = form;
+  const { control, register, trigger, formState: { errors }, setValue } = form;
+
+  // Watch departmentId to trigger equipment fetch
+  const departmentId = useWatch({
+    control,
+    name: "departmentId",
+  });
+
+  // Clear equipment when department changes
+  useEffect(() => {
+    // Clear equipment field when department changes (including when cleared)
+    setValue("equipmentId", null as any);
+  }, [departmentId, setValue]);
 
   const handleNext = async (): Promise<void> => {
     const valid = await trigger([
@@ -27,6 +37,36 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({ form, onNext }) => {
     ]);
     if (valid) onNext();
   };
+
+  // Department fetch function
+  const fetchDepartments = async (searchTerm: string) => {
+    try {
+      const depts = await DepartmentService.searchDepartments(searchTerm);
+      return depts.map(d => ({ value: d.id, label: d.name }));
+    } catch {
+      return [];
+    }
+  };
+
+  // Equipment fetch function - memoized with departmentId
+  const fetchEquipments = useMemo(() => {
+    return async (searchTerm: string) => {
+      if (!departmentId) return [];
+      try {
+        const eqs = await DepartmentService.getEquipmentsByDepartmentDropdown(
+          departmentId, 
+          searchTerm
+        );
+        return eqs.map(e => ({ 
+          value: e.id, 
+          label: `${e.equipmentNumber} - ${e.equipmentName}` 
+        }));
+      } catch (error) {
+        console.error("Error fetching equipment:", error);
+        return [];
+      }
+    };
+  }, [departmentId]); // Recreate function when departmentId changes
 
   return (
     <div className="p-4">
@@ -51,7 +91,7 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({ form, onNext }) => {
               message: "Template name must not exceed 100 characters",
             },
           }}
-          className="mb-0" // Remove default margin if InputField has it
+          className="mb-0"
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -62,38 +102,34 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({ form, onNext }) => {
             required
             error={errors.departmentId}
             placeholder="Search or select department..."
-            fetchOptions={async (searchTerm: string) => {
-              const departments = await DepartmentService.searchDepartments(searchTerm);
-              return departments.map(d => ({ 
-                value: d.id, 
-                label: d.name 
-              }));
-            }}
+            fetchOptions={fetchDepartments}
             debounceMs={300}
             allowClear
             rules={{
               validate: (value: number) => value > 0 || "Please select a department",
             }}
-            className="mb-0" // Custom class name
-            selectClassName="w-full h-10" // Pass custom class to Select component
+            className="mb-0"
+            selectClassName="w-full h-10"
           />
 
-          <InputField
+          <ControlledSearchableSelect
+            key={departmentId || 'no-dept'} // Force re-mount when department changes
             name="equipmentId"
+            control={control}
             label="Equipment"
-            type="number"
-            placeholder="Enter equipment ID"
-            register={register}
-            error={errors.equipmentId}
             required
-            registerOptions={{
-              required: "Equipment ID is required",
-              min: {
-                value: 1,
-                message: "Equipment ID must be greater than 0",
-              },
+            error={errors.equipmentId}
+            placeholder={departmentId ? "Search or select equipment..." : "Select department first"}
+            fetchOptions={fetchEquipments}
+            debounceMs={300}
+            allowClear
+            rules={{
+              required: "Equipment is required",
+              validate: (value: number) => value > 0 || "Please select an equipment",
             }}
             className="mb-0"
+            selectClassName="searchable-select-custom"
+            disabled={!departmentId}
           />
         </div>
 
