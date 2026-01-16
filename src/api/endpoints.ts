@@ -223,7 +223,8 @@ export const ENDPOINTS = {
     GET_EMAIL_CONFIG: `${BASE.EMAIL}/configure`,
     TEST_EMAIL: `${BASE.EMAIL}/test`,
   },
-  TEMPLET: {
-    CREATET_REQUEST: `${BASE.TEMPLET}`
+  TEMPLATE: {
+    CREATET_REQUEST: `${BASE.TEMPLET}`,
+    FETCH_REQUEST_TEMPLET: `${BASE.TEMPLET}`,
   }
 };

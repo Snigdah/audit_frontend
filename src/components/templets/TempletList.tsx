@@ -1,89 +1,174 @@
-import { useMemo, useState } from "react";
-import { Table, Space, Input, Select, Tag } from "antd";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Table, Input, Select, Tag, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import SectionHeader from "../../components/common/SectionHeader";
 import CustomButton from "../../components/common/CustomButton";
 import { useNavigate } from "react-router-dom";
+import type { TemplateRequestList as TemplateRow } from "../../types/template";
+import { debounce } from "lodash";
+import { TemplateService } from "../../services/TempletService";
 
-type TemplateRow = {
-  id: number;
-  name: string;
-  department: string;
-  equipment: string;
-  status: "ACTIVE" | "INACTIVE";
-};
-
-const DUMMY_TEMPLATES: TemplateRow[] = [
-  {
-    id: 1,
-    name: "Daily Safety Check",
-    department: "Production",
-    equipment: "Machine A",
-    status: "ACTIVE",
-  },
-  {
-    id: 2,
-    name: "Maintenance Report",
-    department: "Maintenance",
-    equipment: "Lift B",
-    status: "ACTIVE",
-  },
-  {
-    id: 3,
-    name: "Quality Audit",
-    department: "Quality",
-    equipment: "Machine A",
-    status: "INACTIVE",
-  },
-];
-
-const TempletList = () => {
+const TemplateRequestList = () => {
   const navigate = useNavigate();
 
-  const [searchText, setSearchText] = useState("");
-  const [department, setDepartment] = useState<string | undefined>();
-  const [equipment, setEquipment] = useState<string | undefined>();
+  // Data states
+  const [templates, setTemplates] = useState<TemplateRow[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
+  // Filter states (UI only - not sent to API yet)
+  const [searchText, setSearchText] = useState("");
+  const [departmentFilter, setDepartmentFilter] = useState<string | undefined>();
+  const [equipmentFilter, setEquipmentFilter] = useState<string | undefined>();
+  const [statusFilter, setStatusFilter] = useState<string | undefined>();
+
+  // Fetch templates from API
+  const fetchTemplates = () => {
+    setLoading(true);
+    TemplateService.fetchTemplateRequests()
+      .then((response) => {
+        setTemplates(response.data || []);
+      })
+      .catch((err) => {
+        console.error(err);
+        message.error("Failed to fetch templates");
+        setTemplates([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchTemplates();
+  }, []);
+
+  // Debounced search (for future API integration)
+  const debouncedSearch = useCallback(
+    debounce((searchValue: string) => {
+      // When API supports search, call fetchTemplates with params here
+      console.log("Search term:", searchValue);
+    }, 500),
+    []
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchText(value);
+    debouncedSearch(value);
+  };
+
+  // Client-side filtering (until API supports query parameters)
   const filteredData = useMemo(() => {
-    return DUMMY_TEMPLATES.filter((t) => {
-      return (
-        t.name.toLowerCase().includes(searchText.toLowerCase()) &&
-        (!department || t.department === department) &&
-        (!equipment || t.equipment === equipment)
-      );
+    return templates.filter((t) => {
+      const matchesSearch =
+        t.templateName.toLowerCase().includes(searchText.toLowerCase()) ||
+        t.description?.toLowerCase().includes(searchText.toLowerCase());
+      const matchesDepartment = !departmentFilter || t.departmentName === departmentFilter;
+      const matchesEquipment = !equipmentFilter || t.equipmentName === equipmentFilter;
+      const matchesStatus = !statusFilter || t.status === statusFilter;
+
+      return matchesSearch && matchesDepartment && matchesEquipment && matchesStatus;
     });
-  }, [searchText, department, equipment]);
+  }, [templates, searchText, departmentFilter, equipmentFilter, statusFilter]);
+
+  // Extract unique values for filters
+  const uniqueDepartments = useMemo(
+    () => [...new Set(templates.map((t) => t.departmentName))].filter(Boolean),
+    [templates]
+  );
+
+  const uniqueEquipment = useMemo(
+    () => [...new Set(templates.map((t) => t.equipmentName))].filter(Boolean),
+    [templates]
+  );
+
+  // Status configuration
+  const getStatusConfig = (status: string) => {
+    switch (status) {
+      case "APPROVED":
+        return { color: "green", label: "Approved" };
+      case "REJECTED":
+        return { color: "red", label: "Rejected" };
+      case "PENDING":
+        return { color: "orange", label: "Pending" };
+      default:
+        return { color: "default", label: status };
+    }
+  };
 
   const columns: ColumnsType<TemplateRow> = [
     {
-      title: "Template Name",
-      dataIndex: "name",
-      key: "name",
-      render: (name: string) => (
-        <div className="font-semibold text-gray-800">{name}</div>
+      title: (
+        <div className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
+          <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+          Template
+        </div>
+      ),
+      dataIndex: "templateName",
+      key: "templateName",
+      sorter: (a, b) => a.templateName.localeCompare(b.templateName),
+      render: (name: string, record: TemplateRow) => (
+        <div>
+          <div className="font-semibold text-gray-900 text-sm">{name}</div>
+          {record.description && (
+            <div className="text-xs text-gray-500 truncate max-w-[200px] mt-0.5">
+              {record.description}
+            </div>
+          )}
+        </div>
       ),
     },
     {
-      title: "Department",
-      dataIndex: "department",
-      key: "department",
+      title: (
+        <div className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
+          <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+          Department
+        </div>
+      ),
+      dataIndex: "departmentName",
+      key: "departmentName",
+      sorter: (a, b) => a.departmentName.localeCompare(b.departmentName),
+      render: (dept: string) => (
+        <span className="text-sm text-gray-700">{dept}</span>
+      ),
     },
     {
-      title: "Equipment",
-      dataIndex: "equipment",
-      key: "equipment",
+      title: (
+        <div className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
+          <span className="w-1.5 h-1.5 bg-teal-500 rounded-full"></span>
+          Equipment
+        </div>
+      ),
+      dataIndex: "equipmentName",
+      key: "equipmentName",
+      sorter: (a, b) => a.equipmentName.localeCompare(b.equipmentName),
+      render: (equipment: string) => (
+        <span className="text-sm text-gray-700">{equipment}</span>
+      ),
     },
     {
-      title: "Status",
+      title: (
+        <div className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
+          <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+          Status
+        </div>
+      ),
       dataIndex: "status",
       key: "status",
-      render: (status: string) =>
-        status === "ACTIVE" ? (
-          <Tag color="green">Active</Tag>
-        ) : (
-          <Tag color="default">Inactive</Tag>
-        ),
+      width: 120,
+      sorter: (a, b) => a.status.localeCompare(b.status),
+      render: (status: string) => {
+        const config = getStatusConfig(status);
+        return (
+          <Tag color={config.color} className="font-medium text-xs">
+            {config.label}
+          </Tag>
+        );
+      },
     },
   ];
 
@@ -93,86 +178,112 @@ const TempletList = () => {
         <SectionHeader
           title="Templates"
           rightContent={
-            <Space>
+            <div className="flex flex-wrap lg:flex-nowrap gap-2">
               <Input
-                placeholder="Search template..."
-                prefix={<SearchOutlined />}
+                placeholder="Search templates..."
+                prefix={<SearchOutlined className="text-gray-400" />}
                 allowClear
-                onChange={(e) => setSearchText(e.target.value)}
-                className="w-56"
+                onChange={handleSearchChange}
+                className="w-full sm:w-48 lg:w-44 xl:w-52"
+                size="middle"
               />
 
-              {/* 🔍 Searchable Department */}
               <Select
                 placeholder="Department"
                 allowClear
                 showSearch
                 optionFilterProp="label"
-                className="w-44"
-                onChange={(value) => setDepartment(value)}
+                className="w-full sm:w-32 lg:w-32 xl:w-36"
+                size="middle"
+                onChange={(value) => setDepartmentFilter(value)}
                 filterOption={(input, option) =>
-                String(option?.label ?? "")
+                  String(option?.label ?? "")
                     .toLowerCase()
                     .includes(input.toLowerCase())
                 }
               >
-                <Select.Option value="Production" label="Production">
-                  Production
-                </Select.Option>
-                <Select.Option value="Maintenance" label="Maintenance">
-                  Maintenance
-                </Select.Option>
-                <Select.Option value="Quality" label="Quality">
-                  Quality
-                </Select.Option>
+                {uniqueDepartments.map((dept) => (
+                  <Select.Option key={dept} value={dept} label={dept}>
+                    {dept}
+                  </Select.Option>
+                ))}
               </Select>
 
-              {/* 🔍 Searchable Equipment */}
               <Select
                 placeholder="Equipment"
                 allowClear
                 showSearch
                 optionFilterProp="label"
-                className="w-44"
-                onChange={(value) => setEquipment(value)}
+                className="w-full sm:w-32 lg:w-32 xl:w-36"
+                size="middle"
+                onChange={(value) => setEquipmentFilter(value)}
                 filterOption={(input, option) =>
-                String(option?.label ?? "")
+                  String(option?.label ?? "")
                     .toLowerCase()
                     .includes(input.toLowerCase())
                 }
               >
-                <Select.Option value="Machine A" label="Machine A">
-                  Machine A
-                </Select.Option>
-                <Select.Option value="Lift B" label="Lift B">
-                  Lift B
-                </Select.Option>
+                {uniqueEquipment.map((eq) => (
+                  <Select.Option key={eq} value={eq} label={eq}>
+                    {eq}
+                  </Select.Option>
+                ))}
+              </Select>
+
+              <Select
+                placeholder="Status"
+                allowClear
+                className="w-full sm:w-28 lg:w-28 xl:w-32"
+                size="middle"
+                onChange={(value) => setStatusFilter(value)}
+              >
+                <Select.Option value="PENDING">Pending</Select.Option>
+                <Select.Option value="APPROVED">Approved</Select.Option>
+                <Select.Option value="REJECTED">Rejected</Select.Option>
               </Select>
 
               <CustomButton
                 icon={<PlusOutlined />}
-                onClick={() => navigate("/template/create")}
+                onClick={() => navigate("/reports/template/create")}
+                className="w-full sm:w-auto whitespace-nowrap"
               >
                 Create Template
               </CustomButton>
-            </Space>
+            </div>
           }
         />
 
         <Table
           dataSource={filteredData}
           columns={columns}
-          rowKey="id"
-          pagination={{ pageSize: 10 }}
+          rowKey="templateId"
+          loading={loading}
+          pagination={{
+            pageSize: 10,
+            pageSizeOptions: ["10", "20", "50"],
+            showQuickJumper: true,
+            showSizeChanger: true,
+            showTotal: (total, range) =>
+              `Showing ${range[0]}-${range[1]} of ${total} templates`,
+          }}
+          scroll={{ x: 600 }}
           bordered
           size="middle"
+          className="shadow-sm cursor-pointer"
           locale={{
-            emptyText: "No templates found",
+            emptyText: searchText
+              ? `No templates found matching "${searchText}"`
+              : "No templates available",
           }}
+          onRow={(record) => ({
+            onClick: () => {
+              navigate(`/reports/template/${record.templateId}`);
+            },
+          })}
         />
       </div>
     </div>
   );
 };
 
-export default TempletList;
+export default TemplateRequestList;

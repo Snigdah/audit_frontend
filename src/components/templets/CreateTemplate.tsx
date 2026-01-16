@@ -17,13 +17,12 @@ import type {
 } from "../../types/template";
 import Step3Permissions from "./CreateTempletStep/Step3Permissions";
 import Step4Review from "./CreateTempletStep/Step4Review";
+import { useNavigate } from "react-router-dom";
 
-interface CreateTemplateProps {
-  onCancel: () => void;
-  onSuccess: () => void;
-}
 
-const CreateTemplate: React.FC<CreateTemplateProps> = ({ onCancel, onSuccess }) => {
+const CreateTemplate: React.FC = () => {
+  const navigate = useNavigate();
+
   const [step, setStep] = useState<number>(1);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -35,6 +34,11 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ onCancel, onSuccess }) 
       equipmentId: undefined as any,
     },
   });
+
+   // 🔙 Cancel → go back to template list
+  const handleCancel = () => {
+    navigate("/reports/template");
+  };
 
   const [structure, setStructure] = useState<TemplateStructureRequest | null>(null);
 
@@ -55,7 +59,8 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ onCancel, onSuccess }) 
 
       await TemplateService.createTemplateRequest(payload);
       toast.success("Template created successfully and sent for approval");
-      onSuccess();
+
+      navigate("/reports/template");
     } catch (error: any) {
       toast.error(
         error.response?.data?.devMessage || "Failed to create template"
@@ -76,7 +81,7 @@ const CreateTemplate: React.FC<CreateTemplateProps> = ({ onCancel, onSuccess }) 
     <div className="p-4 bg-white rounded-lg shadow-sm">
         <div className="mb-4 flex items-center gap-4">
           <button 
-            onClick={onCancel}
+            onClick={handleCancel}
             className="p-2 hover:bg-white rounded-lg transition-colors"
             type="button"
           >

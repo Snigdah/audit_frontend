@@ -8,6 +8,10 @@ import {
   FaBell,
   FaUserEdit,
   FaClipboardCheck,
+  FaRegFileAlt,
+  FaLayerGroup,
+  FaPaperPlane,
+  FaChartLine,
 } from "react-icons/fa";
 import { AiFillHome } from "react-icons/ai";
 import {
@@ -80,30 +84,30 @@ const sidebarData: SidebarItem[] = [
     ],
   },
   {
-    title: "Template",
-    path: "/template",
-    icon: <FaFileAlt className="text-xl" />,
+    title: "Reports",
+    path: "/reports",
+    icon: <FaRegFileAlt className="text-xl" />,
     cName: "nav-text group",
     subMenu: [
       {
+        title: "Template Requests",
+        path: "/reports/template",
+        icon: <FaClipboardCheck className="text-blue-500" />,
+      },
+      {
         title: "Templates",
-        path: "/template",
-        icon: <FaClipboardList className="text-blue-500" />,
+        path: "/reports/templates",
+        icon: <FaLayerGroup className="text-green-500" />,
       },
       {
-       title: "Template Requests",
-       path: "/template/my-requests",
-       icon: <MdOutlineAssignmentTurnedIn className="text-green-500" />,
-      },
-      {
-        title: "Report Submission",
-        path: "/template/report-submit",
-        icon: <MdOutlineAssignmentTurnedIn className="text-orange-500" />,
+        title: "Submit Report",
+        path: "/reports/submit",
+        icon: <FaPaperPlane className="text-orange-500" />,
       },
       {
         title: "Submitted Reports",
-        path: "/template/reports",
-        icon: <FaChartBar className="text-purple-500" />,
+        path: "/reports/submitted",
+        icon: <FaChartLine className="text-purple-500" />,
       },
     ],
   },

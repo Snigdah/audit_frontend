@@ -28,3 +28,15 @@ export type TemplateRequest = {
   templateStructureRequest: TemplateStructureRequest;
 };
 
+export type TemplateStatus = "PENDING" | "APPROVED" | "REJECTED";
+
+export type TemplateRequestList = {
+  templateId: number;
+  templateName: string;
+  description: string;
+  departmentId: number;
+  departmentName: string;
+  equipmentId: number;
+  equipmentName: string;
+  status: TemplateStatus;
+};

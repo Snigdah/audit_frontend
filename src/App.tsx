@@ -30,8 +30,9 @@ import { ForgotPasswordPage } from "./pages/auth/ForgotPasswordPage";
 import EmailSettingsPage from "./pages/settings/EmailSettingsPage";
 import ViewerPage from "./pages/resource/ViewerPage";
 import UserProfilePage from "./pages/user/UserProfilePage";
-import TemplatePage from "./pages/templet/TemplatePage";
+import TemplatePage from "./pages/templet/TemplateRequestPage";
 import CreateTemplate from "./components/templets/CreateTemplate";
+import TemplateRequestPage from "./pages/templet/TemplateRequestPage";
 
 function App() {
   return (
@@ -110,8 +111,8 @@ function App() {
                   />
 
                   {/* ======================= Templet ======================== */}
-                  <Route path="/template" element={<TemplatePage />} />
-                  <Route path="/template/create" element={<CreateTemplate />} />
+                  <Route path="/reports/template" element={<TemplateRequestPage />} />
+                  <Route path="/reports/template/create" element={<CreateTemplate />} />
 
                   {/* ======================= Settings ======================== */}
                   <Route path="/user/profile" element={<ProfilePage />} />
