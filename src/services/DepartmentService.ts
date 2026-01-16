@@ -31,10 +31,17 @@ class DepartmentService {
     ): Promise<PaginatedData<Department>> {
       const response = await apiClient.get<
         ApiResponse<PaginatedData<Department>>
-      >(ENDPOINTS.SUPERVISOR.FETCH_ALL(params));
+      >(ENDPOINTS.DEPARTMENT.FETCH_ALL(params));
   
       return response.data.data;
     }
+
+    async searchDepartments(query: string): Promise<Department[]> {
+    const response = await apiClient.get<ApiResponse<Department[]>>(
+      ENDPOINTS.DEPARTMENT.SEARCH_DROP_DOWN(query)
+    );
+    return response.data.data;
+  }
 
   async getDepartmentsByFloorId(floorId: number): Promise<Department[]> {
     const url = ENDPOINTS.DEPARTMENT.FETCH_BY_FLOOR_ID(floorId);

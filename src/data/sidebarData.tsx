@@ -6,6 +6,8 @@ import {
   FaCity,
   FaIdBadge,
   FaBell,
+  FaUserEdit,
+  FaClipboardCheck,
 } from "react-icons/fa";
 import { AiFillHome } from "react-icons/ai";
 import {
@@ -87,6 +89,11 @@ const sidebarData: SidebarItem[] = [
         title: "Templates",
         path: "/template",
         icon: <FaClipboardList className="text-blue-500" />,
+      },
+      {
+       title: "Template Requests",
+       path: "/template/my-requests",
+       icon: <MdOutlineAssignmentTurnedIn className="text-green-500" />,
       },
       {
         title: "Report Submission",

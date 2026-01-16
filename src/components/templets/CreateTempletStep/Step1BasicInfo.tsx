@@ -1,12 +1,15 @@
 // ============================================
 // Step1BasicInfo.tsx
 // ============================================
-import React from "react";
+import React, { useEffect, useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import { ArrowRight } from "lucide-react";
 import type { TemplateMetaForm } from "../../../types/template";
 import { InputField } from "../../common/InputField";
 import CustomButton from "../../common/CustomButton";
+import DepartmentService from "../../../services/DepartmentService";
+import type { Department } from "../../../types/department";
+import { ControlledSearchableSelect } from "../../common/SearchableSelectField";
 
 interface Step1BasicInfoProps {
   form: UseFormReturn<TemplateMetaForm>;
@@ -14,7 +17,7 @@ interface Step1BasicInfoProps {
 }
 
 const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({ form, onNext }) => {
-  const { register, trigger, formState: { errors } } = form;
+  const { control, register, trigger, formState: { errors } } = form;
 
   const handleNext = async (): Promise<void> => {
     const valid = await trigger([
@@ -51,20 +54,24 @@ const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({ form, onNext }) => {
         />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <InputField
+          <ControlledSearchableSelect
             name="departmentId"
+            control={control}
             label="Department"
-            type="number"
-            placeholder="Enter department ID"
-            register={register}
-            error={errors.departmentId}
             required
-            registerOptions={{
-              required: "Department ID is required",
-              min: {
-                value: 1,
-                message: "Department ID must be greater than 0",
-              },
+            error={errors.departmentId}
+            placeholder="Search or select department..."
+            fetchOptions={async (searchTerm: string) => {
+              const departments = await DepartmentService.searchDepartments(searchTerm);
+              return departments.map(d => ({ 
+                value: d.id, 
+                label: d.name 
+              }));
+            }}
+            debounceMs={300}
+            allowClear
+            rules={{
+              validate: (value: number) => value > 0 || "Please select a department",
             }}
           />
 

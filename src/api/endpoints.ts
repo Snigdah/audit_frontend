@@ -76,7 +76,7 @@ export const ENDPOINTS = {
     FETCH_BY_ID: (id: number) => `${BASE.DEPARTMENT}/${id}`,
     FETCH_BY_FLOOR_ID: (floorId: number) =>
       `${BASE.DEPARTMENT}/floor/${floorId}`,
-    SEARCH: (query: string) => `${BASE.DEPARTMENT}?search=${query}`,
+    SEARCH_DROP_DOWN: (query: string) => `${BASE.DEPARTMENT}/all?search=${query}`,
     UPDATE: (id: number) => `${BASE.DEPARTMENT}/${id}`,
     DELETE: (id: number) => `${BASE.DEPARTMENT}/${id}`,
     DROPDOWN: `${BASE.DEPARTMENT}/dropdown`,
