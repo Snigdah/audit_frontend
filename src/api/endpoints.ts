@@ -157,6 +157,7 @@ export const ENDPOINTS = {
     GET_OPERATORS: (supervisorId: number) =>
       `${BASE.SUPERVISOR}/${supervisorId}/operators`,
     GET_DEPARTMENT: (supervisorId: number) =>  `${BASE.SUPERVISOR}/${supervisorId}/departments`,
+    SEARCH_DROP_DOWN: (query: string) => `${BASE.SUPERVISOR}/all?search=${query}`,
   },
   OPERATOR: {
     FETCH_BY_ID: (id: number) => `${BASE.OPERATOR}/${id}`,

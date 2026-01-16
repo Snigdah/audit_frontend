@@ -33,6 +33,13 @@ class SupervisorService {
     return response.data.data;
   }
 
+  async getAllSupervisorsDropdown(query: string): Promise<SupervisorSimple[]> {
+    const response = await apiClient.get<ApiResponse<SupervisorSimple[]>>(
+      ENDPOINTS.SUPERVISOR.SEARCH_DROP_DOWN(query)
+    );
+    return response.data.data;
+  }
+
   async updateSupervisor(
     id: number,
     request: UpdateSupervisorRequest
