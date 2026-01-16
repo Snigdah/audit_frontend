@@ -83,9 +83,24 @@ export const ENDPOINTS = {
 
     ASSIGN_SUPERVISOR: `${BASE.DEPARTMENT}/assign-supervisor`,
     REMOVE_SUPERVISOR: `${BASE.DEPARTMENT}/remove-supervisor`,
-    GET_SUPERVISORS: (departmentId: number) =>
-      `${BASE.DEPARTMENT}/${departmentId}/supervisors`,
+    GET_SUPERVISORS: (params?: {
+      departmentId: number;
+      search?: string;
+      page?: number;
+      size?: number;
+      all?: boolean;
+    }) => {
+      const query = new URLSearchParams();
+      if (params?.search) query.append("search", params.search);
+      if (params?.page !== undefined) query.append("page", params.page.toString());
+      if (params?.size !== undefined) query.append("size", params.size.toString());
+      if (params?.all !== undefined) query.append("all", String(params.all));
 
+      const queryString = query.toString();
+      return `/api/v1/department/${params?.departmentId}/supervisors${
+        queryString ? `?${queryString}` : ""
+      }`;
+    },
     ASSIGN_EQUIPMENT: `${BASE.DEPARTMENT}/assign-equipment`,
     REMOVE_EQUIPMENT: (equipmentId: number) =>
       `${BASE.DEPARTMENT}/remove-equipment/${equipmentId}`,

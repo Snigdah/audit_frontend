@@ -266,7 +266,7 @@ const TemplateRequestList = () => {
             showTotal: (total, range) =>
               `Showing ${range[0]}-${range[1]} of ${total} templates`,
           }}
-          scroll={{ x: 600 }}
+          scroll={{ x: 50 }}
           bordered
           size="middle"
           className="shadow-sm cursor-pointer"

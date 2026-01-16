@@ -106,15 +106,24 @@ class DepartmentService {
     return response.data;
   }
 
-  // ✅ Fetch Supervisor by Department
-  async getSupervisorsByDepartment(
-    departmentId: number
-  ): Promise<SupervisorSimple[]> {
-    const response = await apiClient.get<ApiResponse<SupervisorSimple[]>>(
-      ENDPOINTS.DEPARTMENT.GET_SUPERVISORS(departmentId)
-    );
-    return response.data.data;
-  }
+  // Fetch Supervisor by Department
+    async getSupervisorsByDepartment(
+      departmentId: number,
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+    ): Promise<PaginatedData<SupervisorSimple>> {
+      const response = await apiClient.get<
+        ApiResponse<PaginatedData<SupervisorSimple>>
+      >(ENDPOINTS.DEPARTMENT.GET_SUPERVISORS({ departmentId, ...params }));
+
+      return response.data.data; 
+    }
+
+
 
   // ✅ Assign Equipment
   async assignEquipment(
