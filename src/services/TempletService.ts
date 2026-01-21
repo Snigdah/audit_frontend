@@ -1,7 +1,7 @@
 import apiClient from "../api/axios";
 import { ENDPOINTS } from "../api/endpoints";
-import type { ApiResponse } from "../types/api";
-import type { TemplateRequest, TemplateRequestList } from "../types/template";
+import type { ApiResponse, PaginatedData } from "../types/api";
+import type { ReviewDecisionRequest, TemplateDetailResponse, TemplateRequest, TemplateRequestList, TemplateSubmission } from "../types/template";
 
 export const TemplateService = {
 
@@ -23,4 +23,39 @@ export const TemplateService = {
     return response.data;
   },
   
+  async fetchTemplateDetails(templateId: number): Promise<
+    ApiResponse<TemplateDetailResponse>
+  > {
+    const response = await apiClient.get<ApiResponse<TemplateDetailResponse>>(
+      ENDPOINTS.TEMPLATE.DETAILS(templateId)
+    );
+    return response.data;
+  },
+
+  async fetchTemplateSubmissions(
+    templateId: number,
+    params?: {
+      page?: number;
+      size?: number;
+    }
+  ): Promise<PaginatedData<TemplateSubmission>> {
+    const response = await apiClient.get<
+      ApiResponse<PaginatedData<TemplateSubmission>>
+    >(
+      ENDPOINTS.TEMPLATE.FETCH_SUBMISSIONS(templateId, params)
+    );
+
+    return response.data.data;
+  },
+
+   async reviewTemplateSubmission(
+    templateId: number,
+    submissionId: number,
+    payload: ReviewDecisionRequest
+    ): Promise<void> {
+      await apiClient.post(
+        ENDPOINTS.TEMPLATE.REVIEW_SUBMISSION(templateId, submissionId),
+        payload
+      );
+    },
 };

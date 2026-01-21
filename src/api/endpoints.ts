@@ -97,7 +97,7 @@ export const ENDPOINTS = {
       if (params?.all !== undefined) query.append("all", String(params.all));
 
       const queryString = query.toString();
-      return `/api/v1/department/${params?.departmentId}/supervisors${
+      return `${BASE.DEPARTMENT}/${params?.departmentId}/supervisors${
         queryString ? `?${queryString}` : ""
       }`;
     },
@@ -240,7 +240,23 @@ export const ENDPOINTS = {
     TEST_EMAIL: `${BASE.EMAIL}/test`,
   },
   TEMPLATE: {
+    FETCH_SUBMISSIONS: (
+      templateId: number,
+      params?: {
+        page?: number;
+        size?: number;
+      }
+    ) => {
+      const query = new URLSearchParams();
+      if (params?.page !== undefined) query.append("page", params.page.toString());
+      if (params?.size !== undefined) query.append("size", params.size.toString());
+
+      const qs = query.toString();
+      return `${BASE.TEMPLET}/${templateId}/submissions${qs ? `?${qs}` : ""}`;
+    },
     CREATET_REQUEST: `${BASE.TEMPLET}`,
     FETCH_REQUEST_TEMPLET: `${BASE.TEMPLET}`,
+    DETAILS: (id: number) => `${BASE.TEMPLET}/${id}`,
+    REVIEW_SUBMISSION: ( templateId: number,submissionId: number ) => `${BASE.TEMPLET}/${templateId}/approve/${submissionId}`,
   }
 };

@@ -33,6 +33,7 @@ import UserProfilePage from "./pages/user/UserProfilePage";
 import TemplatePage from "./pages/templet/TemplateRequestPage";
 import CreateTemplate from "./components/templets/CreateTemplate";
 import TemplateRequestPage from "./pages/templet/TemplateRequestPage";
+import TemplatRequestDetails from "./pages/templet/TemplatRequestDetails";
 
 function App() {
   return (
@@ -112,6 +113,10 @@ function App() {
 
                   {/* ======================= Templet ======================== */}
                   <Route path="/reports/template" element={<TemplateRequestPage />} />
+                  <Route
+                    path="/reports/template/:templateRequestId"
+                    element={<TemplatRequestDetails />}
+                  />
                   <Route path="/reports/template/create" element={<CreateTemplate />} />
 
                   {/* ======================= Settings ======================== */}

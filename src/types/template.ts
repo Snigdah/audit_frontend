@@ -40,3 +40,29 @@ export type TemplateRequestList = {
   equipmentName: string;
   status: TemplateStatus;
 };
+
+export interface TemplateDetailResponse {
+  id: number;
+  templateName: string;
+  description?: string;
+  departmentId: number;
+  departmentName?: string;
+  equipmentId: number;
+  equipmentName?: string;
+  status: TemplateStatus;
+  latestSubmissionId?: number;
+  latestSubmission?: TemplateStructureRequest;
+}
+
+export interface TemplateSubmission {
+  submissionId: number;
+  status: TemplateStatus;
+  reviewComment?: string | null;
+  reviewerEmpId?: number | null;
+  createdAt: string;
+}
+
+export interface ReviewDecisionRequest {
+  status: TemplateStatus;
+  reviewComment: string;
+}
