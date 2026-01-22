@@ -258,5 +258,7 @@ export const ENDPOINTS = {
     FETCH_REQUEST_TEMPLET: `${BASE.TEMPLET}`,
     DETAILS: (id: number) => `${BASE.TEMPLET}/${id}`,
     REVIEW_SUBMISSION: ( templateId: number,submissionId: number ) => `${BASE.TEMPLET}/${templateId}/approve/${submissionId}`,
+    SUBMIT_TEMPLATE: (templateId: number) =>
+    `${BASE.TEMPLET}/${templateId}/submission`,
   }
 };

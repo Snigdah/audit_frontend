@@ -67,3 +67,5 @@ export interface ReviewDecisionRequest {
   status: TemplateStatus;
   reviewComment: string;
 }
+
+export type TemplateSubmissionRequest = TemplateStructureRequest;

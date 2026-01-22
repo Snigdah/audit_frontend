@@ -1,7 +1,7 @@
 import apiClient from "../api/axios";
 import { ENDPOINTS } from "../api/endpoints";
 import type { ApiResponse, PaginatedData } from "../types/api";
-import type { ReviewDecisionRequest, TemplateDetailResponse, TemplateRequest, TemplateRequestList, TemplateSubmission } from "../types/template";
+import type { ReviewDecisionRequest, TemplateDetailResponse, TemplateRequest, TemplateRequestList, TemplateSubmission, TemplateSubmissionRequest } from "../types/template";
 
 export const TemplateService = {
 
@@ -55,6 +55,17 @@ export const TemplateService = {
     ): Promise<void> {
       await apiClient.post(
         ENDPOINTS.TEMPLATE.REVIEW_SUBMISSION(templateId, submissionId),
+        payload
+      );
+    },
+   
+    // ✅ NEW: submit / resubmit template
+  async submitTemplate(
+      templateId: number,
+      payload: TemplateSubmissionRequest
+    ): Promise<void> {
+      await apiClient.post(
+        ENDPOINTS.TEMPLATE.SUBMIT_TEMPLATE(templateId),
         payload
       );
     },
