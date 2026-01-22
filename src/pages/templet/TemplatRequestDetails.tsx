@@ -44,6 +44,27 @@ const TemplatRequestDetails = () => {
             defaultActiveKey="overview"
             items={items}
             destroyOnHidden
+            tabBarGutter={32}
+            className="
+              [&_.ant-tabs-nav]:mb-0
+              [&_.ant-tabs-nav]:border-b
+              [&_.ant-tabs-nav]:border-gray-200
+
+              [&_.ant-tabs-tab]:px-1
+              [&_.ant-tabs-tab]:py-3
+              [&_.ant-tabs-tab]:text-sm
+              [&_.ant-tabs-tab]:font-medium
+              [&_.ant-tabs-tab]:text-gray-500
+
+              [&_.ant-tabs-tab:hover_.ant-tabs-tab-btn]:text-gray-800
+
+              [&_.ant-tabs-tab-active_.ant-tabs-tab-btn]:text-gray-800
+              [&_.ant-tabs-tab-active_.ant-tabs-tab-btn]:font-semibold
+
+              [&_.ant-tabs-ink-bar]:bg-gray-800
+              [&_.ant-tabs-ink-bar]:h-[3px]
+              [&_.ant-tabs-ink-bar]:rounded-full
+            "
           />
         </div>
       </div>

@@ -173,7 +173,7 @@ const TemplateHistory = ({ templateRequestId }: TemplateHistoryProps) => {
       render: (reviewerId: number | null) => (
         <div className="text-sm text-gray-600">
           {reviewerId ? (
-            <span className="font-medium">ID: {reviewerId}</span>
+            <span className="font-medium">{reviewerId}</span>
           ) : (
             <span className="text-gray-400 italic">Not reviewed</span>
           )}

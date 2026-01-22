@@ -57,17 +57,44 @@ const TemplateOverview = ({ templateRequestId }: TemplateOverviewProps) => {
   }
 
   const getStatusColor = (status: string) => {
+      switch (status) {
+        case "APPROVED":
+          return "success";
+        case "PENDING":
+          return "warning";
+        case "REJECTED":
+          return "error";
+        default:
+          return "default";
+      }
+    };
+
+    const getReviewStyles = (status: string) => {
     switch (status) {
-      case "APPROVED":
-        return "success";
-      case "PENDING":
-        return "warning";
       case "REJECTED":
-        return "error";
+        return {
+          border: "border-rose-200",
+          bg: "bg-rose-50",
+          text: "text-rose-600",
+          label: "Rejected Reason",
+        };
+      case "APPROVED":
+        return {
+          border: "border-emerald-200",
+          bg: "bg-emerald-50",
+          text: "text-emerald-600",
+          label: "Approval Note",
+        };
       default:
-        return "default";
+        return {
+          border: "border-gray-200",
+          bg: "bg-gray-50",
+          text: "text-gray-700",
+          label: "Review Note",
+        };
     }
   };
+
 
   const handleActionComplete = () => {
     // Refetch template details after approve/reject action
@@ -128,6 +155,21 @@ const TemplateOverview = ({ templateRequestId }: TemplateOverviewProps) => {
               </div>
             </div>
           </div>
+
+          {templateData.reviewComment && (
+            <div
+              className={`mt-4 p-4 rounded-lg border-l-4 
+                ${getReviewStyles(templateData.status).border}
+                ${getReviewStyles(templateData.status).bg}`}
+            >
+              <p className={`text-xs font-medium mb-1 ${getReviewStyles(templateData.status).text}`}>
+                {getReviewStyles(templateData.status).label}
+              </p>
+              <p className="text-sm text-gray-800 leading-relaxed">
+                {templateData.reviewComment}
+              </p>
+            </div>
+          )}
         </div>
       </Card>
 

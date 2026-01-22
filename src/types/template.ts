@@ -51,6 +51,7 @@ export interface TemplateDetailResponse {
   equipmentName?: string;
   status: TemplateStatus;
   latestSubmissionId?: number;
+  reviewComment?: string;
   latestSubmission?: TemplateStructureRequest;
 }
 
