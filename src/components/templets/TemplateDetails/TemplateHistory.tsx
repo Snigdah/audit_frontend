@@ -12,6 +12,7 @@ import type { TemplateSubmission } from "../../../types/template";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { TemplateService } from "../../../services/TempletService";
+import { useNavigate } from "react-router-dom";
 
 dayjs.extend(relativeTime);
 
@@ -26,6 +27,7 @@ const TemplateHistory = ({ templateRequestId }: TemplateHistoryProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalElements, setTotalElements] = useState(0);
+  const navigate = useNavigate();
 
   const fetchSubmissions = async (page: number = 0, size: number = 10) => {
     try {
@@ -244,6 +246,13 @@ const TemplateHistory = ({ templateRequestId }: TemplateHistoryProps) => {
         }}
         scroll={{ x: 600 }}
         onChange={handleTableChange}
+        onRow={(record) => ({
+          onClick: () =>
+            navigate(
+              `/reports/template/${templateRequestId}/submissions/${record.submissionId}`
+            ),
+          className: "cursor-pointer",
+        })}
         bordered
         size="middle"
         className="shadow-sm"

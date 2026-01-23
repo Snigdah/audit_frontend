@@ -34,6 +34,7 @@ import TemplatePage from "./pages/templet/TemplateRequestPage";
 import CreateTemplate from "./components/templets/CreateTemplate";
 import TemplateRequestPage from "./pages/templet/TemplateRequestPage";
 import TemplatRequestDetails from "./pages/templet/TemplatRequestDetails";
+import TemplateSubmissionDetailsPage from "./pages/templet/TemplateSubmissionDetailsPage";
 
 function App() {
   return (
@@ -116,6 +117,10 @@ function App() {
                   <Route
                     path="/reports/template/:templateRequestId"
                     element={<TemplatRequestDetails />}
+                  />
+                  <Route
+                    path="/reports/template/:templateRequestId/submissions/:submissionId"
+                    element={<TemplateSubmissionDetailsPage />}
                   />
                   <Route path="/reports/template/create" element={<CreateTemplate />} />
 
