@@ -260,5 +260,6 @@ export const ENDPOINTS = {
     REVIEW_SUBMISSION: ( templateId: number,submissionId: number ) => `${BASE.TEMPLET}/${templateId}/approve/${submissionId}`,
     SUBMIT_TEMPLATE: (templateId: number) =>
     `${BASE.TEMPLET}/${templateId}/submission`,
+    SUBMISSION_DETAIL: ( templateId: number, submissionId: number ) => `${BASE.TEMPLET}/${templateId}/submission/${submissionId}`,
   }
 };

@@ -69,3 +69,15 @@ export interface ReviewDecisionRequest {
 }
 
 export type TemplateSubmissionRequest = TemplateStructureRequest;
+
+export interface TemplateSubmissionDetailResponse {
+  submissionId: number;
+  status: TemplateStatus;
+  creatorId: number;
+  createdEmpId: string;
+  creatorName: string;
+  reviewerEmpId?: string | null;
+  reviewComments?: string | null;
+  data: TemplateStructureRequest;
+  createdAt: string; // ISO string from LocalDateTime
+}
