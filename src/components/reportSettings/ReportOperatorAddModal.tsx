@@ -109,9 +109,8 @@ const ReportOperatorAddModal = ({
             loading={isSubmitting}
             disabled={!isDirty}
             className="bg-gray-800 hover:bg-gray-700 border-none"
-            size="large"
           >
-            Assign
+            Assign Operator
           </CustomButton>
         </div>
       </form>

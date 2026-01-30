@@ -177,28 +177,30 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
   return (
     <div className="py-4 space-y-5">
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="bg-white p-2 rounded-lg shadow-sm border border-gray-200">
+      <div className="flex items-center justify-between gap-4 mb-6">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="bg-white p-2 rounded-lg shadow-sm border border-gray-200 flex-shrink-0">
             <ScheduleOutlined className="text-gray-800 text-xl" />
           </div>
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800 m-0">
+          <div className="min-w-0 flex-1">
+            <h3 className="text-lg font-semibold text-gray-800 m-0 truncate">
               Report Schedule
             </h3>
-            <p className="text-xs text-gray-500 m-0 mt-0.5">
+            <p className="text-xs text-gray-500 m-0 mt-0.5 truncate">
               {timeSlots.length} time slot{timeSlots.length !== 1 ? "s" : ""} configured
             </p>
           </div>
         </div>
-        <CustomButton
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => setIsAddModalOpen(true)}
-          className="bg-gray-800 hover:bg-gray-700 border-none shadow-sm"
-        >
-          Add Time Slot
-        </CustomButton>
+        <div className="flex-shrink-0">
+          <CustomButton
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => setIsAddModalOpen(true)}
+            className="bg-gray-800 hover:bg-gray-700 border-none shadow-sm"
+          >
+            Add Time Slot
+          </CustomButton>
+        </div>
       </div>
 
       {/* Time Scale Visualization */}
