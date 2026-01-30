@@ -19,6 +19,14 @@ class DesignationService {
   
       return response.data.data;
     }
+  
+  async searchDesignations(query: string): Promise<Designation[]> {
+    const response = await apiClient.get<ApiResponse<Designation[]>>(
+      ENDPOINTS.DESIGNATION.SEARCH_DROP_DOWN(query)
+    );
+
+    return response.data.data;
+  }
 
   async createDesignation(designation: DesignationModel): Promise<void> {
     await apiClient.post<ApiResponse<void>>(ENDPOINTS.DESIGNATION.CREATE, {

@@ -128,9 +128,9 @@ export const ENDPOINTS = {
         if (params?.size !== undefined) query.append("size", params.size.toString());
         if (params?.all !== undefined) query.append("all", String(params.all));
 
-        return `${BASE.DEPARTMENT}?${query.toString()}`;
+        return `${BASE.DESIGNATION}?${query.toString()}`;
       },
-    SEARCH: (query: string) => `${BASE.DESIGNATION}?search=${query}`,
+    SEARCH_DROP_DOWN: (query: string) => `${BASE.DESIGNATION}?search=${query}`,
     UPDATE: (id: number) => `${BASE.DESIGNATION}/${id}`,
   },
   SUPERVISOR: {
