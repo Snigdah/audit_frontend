@@ -3,7 +3,6 @@ import { ReportTimeService } from "../../services/ReportTimeService";
 import type { ReportTimeResponse } from "../../types/reportTime";
 import {
   Card,
-  Skeleton,
   Button,
   TimePicker,
   Modal,
@@ -13,6 +12,7 @@ import {
   Tooltip,
   Dropdown,
   Pagination,
+  Spin,
 } from "antd";
 import {
   ClockCircleOutlined,
@@ -21,6 +21,7 @@ import {
   ScheduleOutlined,
   MoreOutlined,
   ExclamationCircleOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { toast } from "../common/Toast";
@@ -92,6 +93,7 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
       setIsAddModalOpen(false);
       setSelectedTime(null);
       setIsAppliedFromToday(true);
+      toast.success("Time slot added successfully");
       fetchTimeSlots();
     } catch (error: any) {
       console.error("Error adding time slot:", error);
@@ -123,6 +125,7 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
       setIsDeleteModalOpen(false);
       setDeleteSlot(null);
       setDeleteAppliedFromToday(true);
+      toast.success("Time slot deleted successfully");
       fetchTimeSlots();
     } catch (error: any) {
       console.error("Error deleting time slot:", error);
@@ -149,11 +152,10 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
 
   const getTimeColor = (time: string) => {
     const hour = parseInt(time.split(":")[0]);
-    if (hour >= 6 && hour < 12) return { bg: "bg-amber-500", text: "Morning" };
-    if (hour >= 12 && hour < 17)
-      return { bg: "bg-orange-500", text: "Afternoon" };
-    if (hour >= 17 && hour < 21) return { bg: "bg-purple-500", text: "Evening" };
-    return { bg: "bg-indigo-600", text: "Night" };
+    if (hour >= 6 && hour < 12) return { bg: "bg-amber-500", text: "Morning", color: "#f59e0b" };
+    if (hour >= 12 && hour < 17) return { bg: "bg-blue-500", text: "Afternoon", color: "#3b82f6" };
+    if (hour >= 17 && hour < 21) return { bg: "bg-purple-500", text: "Evening", color: "#a855f7" };
+    return { bg: "bg-slate-600", text: "Night", color: "#475569" };
   };
 
   // Pagination calculations
@@ -165,27 +167,27 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
 
   if (loading) {
     return (
-      <div className="py-6">
-        <Skeleton active paragraph={{ rows: 6 }} />
+      <div className="py-12 flex flex-col items-center justify-center">
+        <Spin indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />} />
+        <p className="mt-4 text-gray-500 text-sm">Loading time slots...</p>
       </div>
     );
   }
 
   return (
-    <div className="py-6">
+    <div className="py-4 space-y-5">
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="bg-blue-900 p-2.5 rounded-lg">
-            <ScheduleOutlined className="text-white text-lg" />
+          <div className="bg-white p-2 rounded-lg shadow-sm border border-gray-200">
+            <ScheduleOutlined className="text-gray-800 text-xl" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-slate-800 m-0">
+            <h3 className="text-lg font-semibold text-gray-800 m-0">
               Report Schedule
             </h3>
-            <p className="text-xs text-slate-500 m-0 mt-0.5">
-              {timeSlots.length} time slot{timeSlots.length !== 1 ? "s" : ""}{" "}
-              configured
+            <p className="text-xs text-gray-500 m-0 mt-0.5">
+              {timeSlots.length} time slot{timeSlots.length !== 1 ? "s" : ""} configured
             </p>
           </div>
         </div>
@@ -193,7 +195,7 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
           type="primary"
           icon={<PlusOutlined />}
           onClick={() => setIsAddModalOpen(true)}
-          className="bg-gray-900 hover:bg-gray-800 border-none shadow-sm"
+          className="bg-gray-800 hover:bg-gray-700 border-none shadow-sm"
         >
           Add Time Slot
         </CustomButton>
@@ -201,104 +203,95 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
 
       {/* Time Scale Visualization */}
       {timeSlots.length > 0 && (
-        <Card
-          className="mb-6 border border-slate-200 shadow-sm overflow-hidden"
-          bodyStyle={{ padding: 0 }}
-        >
-          <div className="p-4 bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-            <div className="flex items-center gap-2 mb-3">
-              <ClockCircleOutlined className="text-blue-900" />
-              <span className="text-sm font-medium text-slate-700">
-                24-Hour Timeline
-              </span>
+        <Card className="border border-gray-200 shadow-sm" bodyStyle={{ padding: '20px' }}>
+          <div className="flex items-center gap-2 mb-4">
+            <ClockCircleOutlined className="text-gray-700 text-base" />
+            <span className="text-sm font-medium text-gray-700">24-Hour Timeline</span>
+          </div>
+
+          {/* Timeline Container */}
+          <div className="relative">
+            {/* Hour markers - Desktop */}
+            <div className="hidden sm:flex justify-between text-xs text-gray-400 mb-2">
+              {[0, 3, 6, 9, 12, 15, 18, 21, 24].map((hour) => (
+                <span key={hour} className="w-8 text-center">
+                  {hour === 24 ? "00" : hour.toString().padStart(2, "0")}:00
+                </span>
+              ))}
+            </div>
+            {/* Mobile hour markers */}
+            <div className="flex sm:hidden justify-between text-xs text-gray-400 mb-2">
+              {[0, 6, 12, 18, 24].map((hour) => (
+                <span key={hour} className="text-center">
+                  {hour === 24 ? "00" : hour.toString().padStart(2, "0")}
+                </span>
+              ))}
             </div>
 
-            {/* Timeline Container */}
-            <div className="relative">
-              {/* Hour markers - Desktop */}
-              <div className="hidden sm:flex justify-between text-xs text-slate-400 mb-2">
-                {[0, 3, 6, 9, 12, 15, 18, 21, 24].map((hour) => (
-                  <span key={hour} className="w-8 text-center">
-                    {hour === 24 ? "00" : hour.toString().padStart(2, "0")}:00
-                  </span>
-                ))}
-              </div>
-              {/* Mobile hour markers */}
-              <div className="flex sm:hidden justify-between text-xs text-slate-400 mb-2">
-                {[0, 6, 12, 18, 24].map((hour) => (
-                  <span key={hour} className="text-center">
-                    {hour === 24 ? "00" : hour.toString().padStart(2, "0")}
-                  </span>
-                ))}
-              </div>
+            {/* Timeline Bar with realistic gradient */}
+            <div className="relative h-14 rounded-lg overflow-hidden shadow-inner border border-gray-200">
+              {/* Base gradient simulating day cycle */}
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-800 via-amber-300 via-sky-400 via-orange-300 via-purple-400 to-slate-800"></div>
+              
+              {/* Overlay for depth and realism */}
+              <div className="absolute inset-0" style={{
+                background: 'linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.1) 100%)'
+              }}></div>
 
-              {/* Timeline Bar */}
-              <div className="relative h-12 sm:h-14 bg-gradient-to-r from-indigo-900 via-blue-600 via-amber-500 via-orange-500 via-purple-600 to-indigo-900 rounded-lg overflow-hidden shadow-inner">
-                {/* Day/Night gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-slate-900/60 via-transparent via-transparent via-transparent to-slate-900/60" />
-
-                {/* Period labels */}
-                <div className="absolute inset-0 flex items-center justify-around text-white/70 text-xs font-medium pointer-events-none">
-                  <span className="hidden md:inline">Night</span>
-                  <span className="hidden md:inline">Morning</span>
-                  <span className="hidden md:inline">Afternoon</span>
-                  <span className="hidden md:inline">Evening</span>
-                  <span className="hidden md:inline">Night</span>
-                </div>
-
-                {/* Time slot markers */}
-                {timeSlots.map((slot) => {
-                  const position = getTimePosition(slot.time);
-                  const timeInfo = getTimeColor(slot.time);
-                  return (
-                    <Tooltip
-                      key={slot.id}
-                      title={`${formatTimeDisplay(slot.time)} (${timeInfo.text})`}
+              {/* Time slot markers */}
+              {timeSlots.map((slot) => {
+                const position = getTimePosition(slot.time);
+                const timeInfo = getTimeColor(slot.time);
+                return (
+                  <Tooltip
+                    key={slot.id}
+                    title={`${formatTimeDisplay(slot.time)} - ${timeInfo.text}`}
+                    color="#1f2937"
+                  >
+                    <div
+                      className="absolute top-1/2 -translate-y-1/2 cursor-pointer transition-transform hover:scale-110 z-10"
+                      style={{ left: `${position}%`, marginLeft: '-8px' }}
                     >
-                      <div
-                        className="absolute top-1/2 -translate-y-1/2 cursor-pointer transition-transform hover:scale-110"
-                        style={{ left: `${position}%` }}
-                      >
-                        <div className="relative">
-                          {/* Marker pin */}
-                          <div className="w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full shadow-lg border-2 border-blue-900 flex items-center justify-center">
-                            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-900 rounded-full" />
-                          </div>
-                          {/* Pulse effect */}
-                          <div className="absolute inset-0 w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full animate-ping opacity-30" />
+                      <div className="relative">
+                        {/* Main marker */}
+                        <div 
+                          className="w-4 h-4 bg-white rounded-full shadow-lg border-2 flex items-center justify-center"
+                          style={{ borderColor: timeInfo.color }}
+                        >
+                          <div 
+                            className="w-1.5 h-1.5 rounded-full"
+                            style={{ backgroundColor: timeInfo.color }}
+                          />
                         </div>
+                        {/* Subtle pulse */}
+                        <div 
+                          className="absolute inset-0 w-4 h-4 rounded-full animate-ping opacity-25"
+                          style={{ backgroundColor: timeInfo.color }}
+                        />
                       </div>
-                    </Tooltip>
-                  );
-                })}
-              </div>
+                    </div>
+                  </Tooltip>
+                );
+              })}
+            </div>
 
-              {/* Legend */}
-              <div className="flex flex-wrap gap-3 mt-3 justify-center">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-indigo-600" />
-                  <span className="text-xs text-slate-500">
-                    Night (9PM-6AM)
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-amber-500" />
-                  <span className="text-xs text-slate-500">
-                    Morning (6AM-12PM)
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-orange-500" />
-                  <span className="text-xs text-slate-500">
-                    Afternoon (12PM-5PM)
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-purple-500" />
-                  <span className="text-xs text-slate-500">
-                    Evening (5PM-9PM)
-                  </span>
-                </div>
+            {/* Legend */}
+            <div className="flex flex-wrap gap-3 mt-3 justify-start">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-slate-600"></div>
+                <span className="text-xs text-gray-600">Night (9PM-6AM)</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
+                <span className="text-xs text-gray-600">Morning (6AM-12PM)</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
+                <span className="text-xs text-gray-600">Afternoon (12PM-5PM)</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-purple-500"></div>
+                <span className="text-xs text-gray-600">Evening (5PM-9PM)</span>
               </div>
             </div>
           </div>
@@ -307,23 +300,21 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
 
       {/* Time Slots List */}
       <Card
-        className="border border-slate-200 shadow-sm"
-        bodyStyle={{ padding: timeSlots.length === 0 ? "40px 20px" : "16px" }}
+        className="border border-gray-200 shadow-sm"
+        bodyStyle={{ padding: timeSlots.length === 0 ? "40px 20px" : "20px" }}
       >
         {timeSlots.length === 0 ? (
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={
-              <span className="text-slate-500">
-                No time slots configured yet
-              </span>
+              <span className="text-gray-500 text-sm">No time slots configured yet</span>
             }
           >
             <CustomButton
               type="primary"
               icon={<PlusOutlined />}
               onClick={() => setIsAddModalOpen(true)}
-              className="bg-gray-900 hover:bg-gray-800 border-none"
+              className="bg-gray-800 hover:bg-gray-700 border-none mt-3"
             >
               Add Your First Time Slot
             </CustomButton>
@@ -336,17 +327,20 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
                 return (
                   <div
                     key={slot.id}
-                    className="relative flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 transition-all duration-200"
+                    className="group relative flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200 hover:border-gray-800 hover:shadow-md transition-all duration-200"
                   >
-                    <div className="flex items-center gap-3">
-                      <div className={`${timeInfo.bg} p-2 rounded-lg shadow-sm`}>
-                        <ClockCircleOutlined className="text-white text-sm" />
+                    <div className="flex items-center gap-2.5">
+                      <div className="bg-white p-2 rounded-md shadow-sm border border-gray-200">
+                        <ClockCircleOutlined 
+                          className="text-base"
+                          style={{ color: timeInfo.color }}
+                        />
                       </div>
                       <div>
-                        <p className="text-base font-semibold text-slate-800 m-0">
+                        <p className="text-base font-semibold text-gray-800 m-0">
                           {formatTimeDisplay(slot.time)}
                         </p>
-                        <p className="text-xs text-slate-500 m-0 mt-0.5">
+                        <p className="text-xs text-gray-500 m-0 mt-0.5">
                           {timeInfo.text}
                         </p>
                       </div>
@@ -374,8 +368,14 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
                       <Button
                         type="text"
                         size="small"
-                        icon={<MoreOutlined className="text-slate-500" />}
-                        className="hover:bg-slate-200"
+                        icon={<MoreOutlined className="text-gray-500" />}
+                       // className="hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="
+                          hover:bg-gray-100
+                          opacity-100 sm:opacity-0
+                          sm:group-hover:opacity-100
+                          transition-opacity
+                        "
                       />
                     </Dropdown>
                   </div>
@@ -385,7 +385,7 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
 
             {/* Pagination */}
             {showPagination && (
-              <div className="flex justify-center mt-6">
+              <div className="flex justify-center mt-5 pt-4 border-t border-gray-100">
                 <Pagination
                   current={currentPage}
                   pageSize={PAGE_SIZE}
@@ -396,7 +396,7 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
                     `${range[0]}-${range[1]} of ${total} time slots`
                   }
                   size="small"
-                  responsive
+                  className="[&_.ant-pagination-item-active]:bg-gray-800 [&_.ant-pagination-item-active]:border-gray-800"
                 />
               </div>
             )}
@@ -407,11 +407,11 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
       {/* Add Time Slot Modal */}
       <Modal
         title={
-          <div className="flex items-center gap-2 pb-2">
-            <div className="bg-blue-900 p-1.5 rounded-md">
-              <ClockCircleOutlined className="text-white text-sm" />
+          <div className="flex items-center gap-2.5">
+            <div className="bg-white p-1.5 rounded-md border border-gray-200">
+              <ClockCircleOutlined className="text-gray-800 text-base" />
             </div>
-            <span className="font-semibold">Add Time Slot</span>
+            <span className="font-semibold text-gray-800">Add Time Slot</span>
           </div>
         }
         open={isAddModalOpen}
@@ -422,11 +422,11 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
         }}
         footer={null}
         centered
-        className="[&_.ant-modal-content]:rounded-xl"
+        width={440}
       >
-        <div className="py-4 space-y-5">
+        <div className="py-4 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Select Time
             </label>
             <TimePicker
@@ -441,15 +441,16 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
             />
           </div>
 
-          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+          <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
             <Checkbox
               checked={isAppliedFromToday}
               onChange={(e) => setIsAppliedFromToday(e.target.checked)}
+              className="[&_.ant-checkbox-checked_.ant-checkbox-inner]:bg-gray-800 [&_.ant-checkbox-checked_.ant-checkbox-inner]:border-gray-800"
             >
-              <span className="text-slate-700">Apply from today</span>
+              <span className="text-gray-700 text-sm">Apply from today</span>
             </Checkbox>
-            <p className="text-xs text-slate-500 mt-1 ml-6">
-              If checked, the time slot will be active starting from today
+            <p className="text-xs text-gray-500 mt-1.5 ml-6">
+              The time slot will be active starting from today
             </p>
           </div>
 
@@ -468,7 +469,7 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
               onClick={handleAddTimeSlot}
               loading={submitting}
               disabled={!selectedTime}
-              className="bg-gray-900 hover:bg-gray-800 border-none"
+              className="bg-gray-800 hover:bg-gray-700 border-none"
             >
               Add Time Slot
             </CustomButton>
@@ -479,11 +480,11 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
       {/* Delete Time Slot Modal */}
       <Modal
         title={
-          <div className="flex items-center gap-2 pb-2">
-            <div className="bg-red-500 p-1.5 rounded-md">
-              <ExclamationCircleOutlined className="text-white text-sm" />
+          <div className="flex items-center gap-2.5">
+            <div className="bg-white p-1.5 rounded-md border border-red-200">
+              <ExclamationCircleOutlined className="text-red-600 text-base" />
             </div>
-            <span className="font-semibold">Delete Time Slot</span>
+            <span className="font-semibold text-gray-800">Delete Time Slot</span>
           </div>
         }
         open={isDeleteModalOpen}
@@ -494,42 +495,43 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
         }}
         footer={null}
         centered
-        className="[&_.ant-modal-content]:rounded-xl"
+        width={440}
       >
-        <div className="py-4 space-y-5">
+        <div className="py-4 space-y-4">
           {/* Time slot info */}
           {deleteSlot && (
-            <div className="flex items-center gap-3 p-4 bg-red-50 rounded-lg border border-red-200">
-              <div
-                className={`${getTimeColor(deleteSlot.time).bg} p-2 rounded-lg`}
-              >
-                <ClockCircleOutlined className="text-white text-sm" />
+            <div className="flex items-center gap-2.5 p-3 bg-red-50 rounded-lg border border-red-200">
+              <div className="bg-white p-2 rounded-md shadow-sm border border-gray-200">
+                <ClockCircleOutlined 
+                  className="text-base"
+                  style={{ color: getTimeColor(deleteSlot.time).color }}
+                />
               </div>
               <div>
-                <p className="text-base font-semibold text-slate-800 m-0">
+                <p className="text-base font-semibold text-gray-800 m-0">
                   {formatTimeDisplay(deleteSlot.time)}
                 </p>
-                <p className="text-xs text-slate-500 m-0 mt-0.5">
+                <p className="text-xs text-gray-500 m-0 mt-0.5">
                   {getTimeColor(deleteSlot.time).text}
                 </p>
               </div>
             </div>
           )}
 
-          <p className="text-sm text-slate-600">
-            Are you sure you want to delete this time slot? This action cannot
-            be undone.
+          <p className="text-sm text-gray-600">
+            Are you sure you want to delete this time slot? This action cannot be undone.
           </p>
 
-          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+          <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
             <Checkbox
               checked={deleteAppliedFromToday}
               onChange={(e) => setDeleteAppliedFromToday(e.target.checked)}
+              className="[&_.ant-checkbox-checked_.ant-checkbox-inner]:bg-gray-800 [&_.ant-checkbox-checked_.ant-checkbox-inner]:border-gray-800"
             >
-              <span className="text-slate-700">Apply from today</span>
+              <span className="text-gray-700 text-sm">Apply from today</span>
             </Checkbox>
-            <p className="text-xs text-slate-500 mt-1 ml-6">
-              If checked, the deletion will take effect starting from today
+            <p className="text-xs text-gray-500 mt-1.5 ml-6">
+              The deletion will take effect starting from today
             </p>
           </div>
 

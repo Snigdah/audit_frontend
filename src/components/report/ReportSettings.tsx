@@ -1,3 +1,4 @@
+import ReportOperator from "../reportSettings/ReportOperator";
 import ReportTime from "../reportSettings/ReportTime";
 
 interface ReportSettingsProps {
@@ -8,6 +9,7 @@ const ReportSettings = ({ reportId }: ReportSettingsProps) => {
   return (
     <>
       <ReportTime reportId={reportId} />
+      <ReportOperator reportId={reportId} />
     </>
   )
 }
