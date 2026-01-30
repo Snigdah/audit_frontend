@@ -1,6 +1,10 @@
 import { useParams } from "react-router-dom";
 import { Tabs } from "antd";
 import PageHeader from "../../components/common/PageHeader";
+import ReportOverview from "../../components/report/ReportOverview";
+import ReportSettings from "../../components/report/ReportSettings";
+import ReportHistory from "../../components/report/ReportHistory";
+import ReportSubmission from "../../components/report/ReportSubmission";
 
 const ReportDetails = () => {
     const { reportId } = useParams<{ reportId: string }>();
@@ -13,22 +17,22 @@ const ReportDetails = () => {
         {
             key: "overview",
             label: "Overview",
-            children: <h1>This is overview page</h1>,
-        },
-        {
-            key: "settings",
-            label: "Settings",
-            children: <h1>This is settings page</h1>,
+            children: <ReportOverview reportId={reportId} />,
         },
         {
             key: "submission",
             label: "Submission",
-            children: <h1>This is submission page</h1>,
+            children: <ReportSubmission reportId={reportId} />,
+        },
+        {
+            key: "settings",
+            label: "Settings",
+            children: <ReportSettings reportId={reportId} />,
         },
         {
             key: "history",
             label: "History",
-            children: <h1>This is history page</h1>,
+            children: <ReportHistory reportId={reportId} />,
         },
     ];
 

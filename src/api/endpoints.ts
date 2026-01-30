@@ -14,6 +14,7 @@ const BASE = {
   EMAIL: "mail",
   TEMPLET: "template",
   REPORT: "report",
+  REPORT_TIME: "report-time",
 };
 
 export const ENDPOINTS = {
@@ -266,5 +267,23 @@ export const ENDPOINTS = {
   },
    REPORT: {
     FETCH_ALL: `${BASE.REPORT}`,
+  },
+  REPORT_TIME: {
+    ADD_TIME_SLOT: (reportId: number) =>
+      `${BASE.REPORT_TIME}/${reportId}/time-slot`,
+
+    FETCH_TIME_SLOTS: (reportId: number) =>
+      `${BASE.REPORT_TIME}/${reportId}/time-slot`,
+
+    DELETE_TIME_SLOT: (
+      reportId: number,
+      timeSlotId: number,
+      isAppliedFromToday?: boolean
+    ) =>
+      `${BASE.REPORT_TIME}/${reportId}/time-slot/${timeSlotId}${
+        isAppliedFromToday !== undefined
+          ? `?isAppliedFromToday=${isAppliedFromToday}`
+          : ""
+      }`,
   },
 };
