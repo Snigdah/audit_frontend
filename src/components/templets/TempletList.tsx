@@ -244,7 +244,7 @@ const TemplateRequestList = () => {
 
               <CustomButton
                 icon={<PlusOutlined />}
-                onClick={() => navigate("/reports/template/create")}
+                onClick={() => navigate("/report/template/create")}
                 className="w-full sm:w-auto whitespace-nowrap"
               >
                 Create Template
@@ -277,7 +277,7 @@ const TemplateRequestList = () => {
           }}
           onRow={(record) => ({
             onClick: () => {
-              navigate(`/reports/template/${record.templateId}`);
+              navigate(`/report/template/${record.templateId}`);
             },
           })}
         />
