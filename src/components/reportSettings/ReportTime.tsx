@@ -10,30 +10,44 @@ import {
   Checkbox,
   Empty,
   message,
-  Popconfirm,
   Tooltip,
+  Dropdown,
+  Pagination,
 } from "antd";
 import {
   ClockCircleOutlined,
   PlusOutlined,
   DeleteOutlined,
   ScheduleOutlined,
+  MoreOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
-import CustomButton from "../common/CustomButton";
 import { toast } from "../common/Toast";
+import CustomButton from "../common/CustomButton";
 
 interface ReportTimeProps {
   reportId: string;
 }
 
+const PAGE_SIZE = 8;
+
 const ReportTime = ({ reportId }: ReportTimeProps) => {
   const [timeSlots, setTimeSlots] = useState<ReportTimeResponse[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedTime, setSelectedTime] = useState<dayjs.Dayjs | null>(null);
   const [isAppliedFromToday, setIsAppliedFromToday] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+
+  // Delete modal state
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteSlot, setDeleteSlot] = useState<ReportTimeResponse | null>(null);
+  const [deleteAppliedFromToday, setDeleteAppliedFromToday] = useState(true);
+  const [deleting, setDeleting] = useState(false);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
 
   const fetchTimeSlots = useCallback(async () => {
     try {
@@ -54,6 +68,14 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
     fetchTimeSlots();
   }, [fetchTimeSlots]);
 
+  // Reset to page 1 if current page becomes invalid after deletion
+  useEffect(() => {
+    const totalPages = Math.ceil(timeSlots.length / PAGE_SIZE);
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+  }, [timeSlots.length, currentPage]);
+
   const handleAddTimeSlot = async () => {
     if (!selectedTime) {
       message.warning("Please select a time");
@@ -67,35 +89,48 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
         isAppliedFromToday,
       });
       message.success("Time slot added successfully");
-      setIsModalOpen(false);
+      setIsAddModalOpen(false);
       setSelectedTime(null);
       setIsAppliedFromToday(true);
       fetchTimeSlots();
     } catch (error: any) {
       console.error("Error adding time slot:", error);
       toast.error(
-              error.response?.data?.devMessage || "Failed to add time slot"
-            );
+        error.response?.data?.devMessage || "Failed to add time slot"
+      );
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleDeleteTimeSlot = async (
-    timeSlotId: number,
-    applyFromToday: boolean = true
-  ) => {
+  const openDeleteModal = (slot: ReportTimeResponse) => {
+    setDeleteSlot(slot);
+    setDeleteAppliedFromToday(true);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteTimeSlot = async () => {
+    if (!deleteSlot) return;
+
     try {
+      setDeleting(true);
       await ReportTimeService.deleteTimeSlot(
         Number(reportId),
-        timeSlotId,
-        applyFromToday
+        deleteSlot.id,
+        deleteAppliedFromToday
       );
       message.success("Time slot removed successfully");
+      setIsDeleteModalOpen(false);
+      setDeleteSlot(null);
+      setDeleteAppliedFromToday(true);
       fetchTimeSlots();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting time slot:", error);
-      message.error("Failed to remove time slot");
+      toast.error(
+        error.response?.data?.devMessage || "Failed to delete time slot"
+      );
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -115,10 +150,18 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
   const getTimeColor = (time: string) => {
     const hour = parseInt(time.split(":")[0]);
     if (hour >= 6 && hour < 12) return { bg: "bg-amber-500", text: "Morning" };
-    if (hour >= 12 && hour < 17) return { bg: "bg-orange-500", text: "Afternoon" };
+    if (hour >= 12 && hour < 17)
+      return { bg: "bg-orange-500", text: "Afternoon" };
     if (hour >= 17 && hour < 21) return { bg: "bg-purple-500", text: "Evening" };
     return { bg: "bg-indigo-600", text: "Night" };
   };
+
+  // Pagination calculations
+  const totalItems = timeSlots.length;
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const endIndex = startIndex + PAGE_SIZE;
+  const paginatedSlots = timeSlots.slice(startIndex, endIndex);
+  const showPagination = totalItems > PAGE_SIZE;
 
   if (loading) {
     return (
@@ -141,14 +184,15 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
               Report Schedule
             </h3>
             <p className="text-xs text-slate-500 m-0 mt-0.5">
-              {timeSlots.length} time slot{timeSlots.length !== 1 ? "s" : ""} configured
+              {timeSlots.length} time slot{timeSlots.length !== 1 ? "s" : ""}{" "}
+              configured
             </p>
           </div>
         </div>
         <CustomButton
           type="primary"
           icon={<PlusOutlined />}
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => setIsAddModalOpen(true)}
           className="bg-gray-900 hover:bg-gray-800 border-none shadow-sm"
         >
           Add Time Slot
@@ -171,20 +215,16 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
 
             {/* Timeline Container */}
             <div className="relative">
-              {/* Hour markers */}
-              <div className="flex justify-between text-xs text-slate-400 mb-2">
+              {/* Hour markers - Desktop */}
+              <div className="hidden sm:flex justify-between text-xs text-slate-400 mb-2">
                 {[0, 3, 6, 9, 12, 15, 18, 21, 24].map((hour) => (
-                  <span
-                    key={hour}
-                    className="w-8 text-center hidden sm:inline-block"
-                    style={{ transform: hour === 0 ? "none" : hour === 24 ? "none" : "translateX(-50%)" }}
-                  >
+                  <span key={hour} className="w-8 text-center">
                     {hour === 24 ? "00" : hour.toString().padStart(2, "0")}:00
                   </span>
                 ))}
               </div>
               {/* Mobile hour markers */}
-              <div className="flex justify-between text-xs text-slate-400 mb-2 sm:hidden">
+              <div className="flex sm:hidden justify-between text-xs text-slate-400 mb-2">
                 {[0, 6, 12, 18, 24].map((hour) => (
                   <span key={hour} className="text-center">
                     {hour === 24 ? "00" : hour.toString().padStart(2, "0")}
@@ -237,19 +277,27 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
               <div className="flex flex-wrap gap-3 mt-3 justify-center">
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-indigo-600" />
-                  <span className="text-xs text-slate-500">Night (9PM-6AM)</span>
+                  <span className="text-xs text-slate-500">
+                    Night (9PM-6AM)
+                  </span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-amber-500" />
-                  <span className="text-xs text-slate-500">Morning (6AM-12PM)</span>
+                  <span className="text-xs text-slate-500">
+                    Morning (6AM-12PM)
+                  </span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-orange-500" />
-                  <span className="text-xs text-slate-500">Afternoon (12PM-5PM)</span>
+                  <span className="text-xs text-slate-500">
+                    Afternoon (12PM-5PM)
+                  </span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-purple-500" />
-                  <span className="text-xs text-slate-500">Evening (5PM-9PM)</span>
+                  <span className="text-xs text-slate-500">
+                    Evening (5PM-9PM)
+                  </span>
                 </div>
               </div>
             </div>
@@ -274,60 +322,85 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
             <CustomButton
               type="primary"
               icon={<PlusOutlined />}
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => setIsAddModalOpen(true)}
               className="bg-gray-900 hover:bg-gray-800 border-none"
             >
               Add Your First Time Slot
             </CustomButton>
           </Empty>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-            {timeSlots.map((slot) => {
-              const timeInfo = getTimeColor(slot.time);
-              return (
-                <div
-                  key={slot.id}
-                  className="group relative flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 transition-all duration-200"
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`${timeInfo.bg} p-2 rounded-lg shadow-sm`}
-                    >
-                      <ClockCircleOutlined className="text-white text-sm" />
-                    </div>
-                    <div>
-                      <p className="text-base font-semibold text-slate-800 m-0">
-                        {formatTimeDisplay(slot.time)}
-                      </p>
-                      <p className="text-xs text-slate-500 m-0 mt-0.5">
-                        {timeInfo.text}
-                      </p>
-                    </div>
-                  </div>
-
-                  <Popconfirm
-                    title="Remove Time Slot"
-                    description="Are you sure you want to remove this time slot?"
-                    onConfirm={() => handleDeleteTimeSlot(slot.id)}
-                    okText="Yes, Remove"
-                    cancelText="Cancel"
-                    okButtonProps={{
-                      danger: true,
-                      className: "bg-red-500 hover:bg-red-600",
-                    }}
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+              {paginatedSlots.map((slot) => {
+                const timeInfo = getTimeColor(slot.time);
+                return (
+                  <div
+                    key={slot.id}
+                    className="relative flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 transition-all duration-200"
                   >
-                    <Button
-                      type="text"
-                      danger
-                      size="small"
-                      icon={<DeleteOutlined />}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity"
-                    />
-                  </Popconfirm>
-                </div>
-              );
-            })}
-          </div>
+                    <div className="flex items-center gap-3">
+                      <div className={`${timeInfo.bg} p-2 rounded-lg shadow-sm`}>
+                        <ClockCircleOutlined className="text-white text-sm" />
+                      </div>
+                      <div>
+                        <p className="text-base font-semibold text-slate-800 m-0">
+                          {formatTimeDisplay(slot.time)}
+                        </p>
+                        <p className="text-xs text-slate-500 m-0 mt-0.5">
+                          {timeInfo.text}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Triple dot dropdown menu */}
+                    <Dropdown
+                      menu={{
+                        items: [
+                          {
+                            key: "delete",
+                            label: (
+                              <span className="flex items-center gap-2 text-red-600">
+                                <DeleteOutlined />
+                                Delete
+                              </span>
+                            ),
+                            onClick: () => openDeleteModal(slot),
+                          },
+                        ],
+                      }}
+                      trigger={["click"]}
+                      placement="bottomRight"
+                    >
+                      <Button
+                        type="text"
+                        size="small"
+                        icon={<MoreOutlined className="text-slate-500" />}
+                        className="hover:bg-slate-200"
+                      />
+                    </Dropdown>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Pagination */}
+            {showPagination && (
+              <div className="flex justify-center mt-6">
+                <Pagination
+                  current={currentPage}
+                  pageSize={PAGE_SIZE}
+                  total={totalItems}
+                  onChange={(page) => setCurrentPage(page)}
+                  showSizeChanger={false}
+                  showTotal={(total, range) =>
+                    `${range[0]}-${range[1]} of ${total} time slots`
+                  }
+                  size="small"
+                  responsive
+                />
+              </div>
+            )}
+          </>
         )}
       </Card>
 
@@ -341,9 +414,9 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
             <span className="font-semibold">Add Time Slot</span>
           </div>
         }
-        open={isModalOpen}
+        open={isAddModalOpen}
         onCancel={() => {
-          setIsModalOpen(false);
+          setIsAddModalOpen(false);
           setSelectedTime(null);
           setIsAppliedFromToday(true);
         }}
@@ -383,22 +456,13 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
           <div className="flex justify-end gap-2 pt-2">
             <Button
               onClick={() => {
-                setIsModalOpen(false);
+                setIsAddModalOpen(false);
                 setSelectedTime(null);
                 setIsAppliedFromToday(true);
               }}
             >
               Cancel
             </Button>
-            {/* <Button
-              type="primary"
-              onClick={handleAddTimeSlot}
-              loading={submitting}
-              disabled={!selectedTime}
-              className="bg-gray-900 hover:bg-gray-800 border-none"
-            >
-              Add Time Slot
-            </Button> */}
             <CustomButton
               type="primary"
               onClick={handleAddTimeSlot}
@@ -408,6 +472,86 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
             >
               Add Time Slot
             </CustomButton>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Delete Time Slot Modal */}
+      <Modal
+        title={
+          <div className="flex items-center gap-2 pb-2">
+            <div className="bg-red-500 p-1.5 rounded-md">
+              <ExclamationCircleOutlined className="text-white text-sm" />
+            </div>
+            <span className="font-semibold">Delete Time Slot</span>
+          </div>
+        }
+        open={isDeleteModalOpen}
+        onCancel={() => {
+          setIsDeleteModalOpen(false);
+          setDeleteSlot(null);
+          setDeleteAppliedFromToday(true);
+        }}
+        footer={null}
+        centered
+        className="[&_.ant-modal-content]:rounded-xl"
+      >
+        <div className="py-4 space-y-5">
+          {/* Time slot info */}
+          {deleteSlot && (
+            <div className="flex items-center gap-3 p-4 bg-red-50 rounded-lg border border-red-200">
+              <div
+                className={`${getTimeColor(deleteSlot.time).bg} p-2 rounded-lg`}
+              >
+                <ClockCircleOutlined className="text-white text-sm" />
+              </div>
+              <div>
+                <p className="text-base font-semibold text-slate-800 m-0">
+                  {formatTimeDisplay(deleteSlot.time)}
+                </p>
+                <p className="text-xs text-slate-500 m-0 mt-0.5">
+                  {getTimeColor(deleteSlot.time).text}
+                </p>
+              </div>
+            </div>
+          )}
+
+          <p className="text-sm text-slate-600">
+            Are you sure you want to delete this time slot? This action cannot
+            be undone.
+          </p>
+
+          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+            <Checkbox
+              checked={deleteAppliedFromToday}
+              onChange={(e) => setDeleteAppliedFromToday(e.target.checked)}
+            >
+              <span className="text-slate-700">Apply from today</span>
+            </Checkbox>
+            <p className="text-xs text-slate-500 mt-1 ml-6">
+              If checked, the deletion will take effect starting from today
+            </p>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <Button
+              onClick={() => {
+                setIsDeleteModalOpen(false);
+                setDeleteSlot(null);
+                setDeleteAppliedFromToday(true);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="primary"
+              danger
+              onClick={handleDeleteTimeSlot}
+              loading={deleting}
+              className="bg-red-500 hover:bg-red-600 border-none"
+            >
+              Yes, Delete
+            </Button>
           </div>
         </div>
       </Modal>
