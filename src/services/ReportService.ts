@@ -3,6 +3,7 @@ import { ENDPOINTS } from "../api/endpoints";
 import type { ApiResponse, PaginatedData } from "../types/api";
 import type { OperatorSimple } from "../types/operator";
 import type { AssignReportOperatorRequest, TemplateReportResponse } from "../types/report";
+import OperatorService from "./OperatorService";
 
 export const ReportService = {
 
@@ -14,7 +15,7 @@ export const ReportService = {
     return response.data.data;
   },
 
-   async assignOperator(
+  async assignOperator(
     reportId: number,
     payload: AssignReportOperatorRequest
   ): Promise<void> {

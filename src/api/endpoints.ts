@@ -182,6 +182,7 @@ export const ENDPOINTS = {
     UPDATE: (id: number) => `${BASE.OPERATOR}/${id}`,
     GET_SUPERVISOR: (operatorId: number) => `${BASE.OPERATOR}/${operatorId}/supervisors`,
     GET_EQUIPMENTS: (operatorId: number) => `${BASE.OPERATOR}/${operatorId}/equipments`,
+    SEARCH_OPERATOR_DOWN: (query: string) => `${BASE.OPERATOR}/all?search=${query}`,
   },
   VIEWER: {
     FETCH_ALL: (params?: {

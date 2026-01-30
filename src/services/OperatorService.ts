@@ -31,6 +31,14 @@ class OperatorService {
   
       return response.data.data;
     }
+  
+  async getAllOperatorsDropdown(query: string): Promise<OperatorSimple[]> {
+      const response = await apiClient.get<ApiResponse<OperatorSimple[]>>(
+        ENDPOINTS.OPERATOR.SEARCH_OPERATOR_DOWN(query)
+      );
+
+    return response.data.data;
+  }
 
   async updateOperator(
     id: number,
