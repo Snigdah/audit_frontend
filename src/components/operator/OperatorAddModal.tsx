@@ -1,17 +1,15 @@
 import { useEffect, useState } from "react";
-import { useForm, Controller, type SubmitHandler } from "react-hook-form";
-import { Button, Select, Spin, message } from "antd";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { Button, Spin } from "antd";
 import ModalComponent from "../common/ModalComponent";
 import { InputField } from "../common/InputField";
 import CustomButton from "../common/CustomButton";
+import { ControlledSearchableSelect } from "../common/SearchableSelectField";
+import type { SearchableSelectOption } from "../common/SearchableSelectField";
 import AuthService from "../../services/AuthService";
 import DesignationService from "../../services/DesignationService";
 import type { RegisterRequest } from "../../types/auth";
-import type { Designation } from "../../types/designation";
-import { debounce } from "lodash";
 import { toast } from "../common/Toast";
-
-const { Option } = Select;
 
 interface Props {
   visible: boolean;
@@ -21,10 +19,6 @@ interface Props {
 
 const OperatorAddModal = ({ visible, onCancel, onSuccess }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [designationOptions, setDesignationOptions] = useState<Designation[]>(
-    []
-  );
-  const [designationLoading, setDesignationLoading] = useState(false);
 
   const {
     register,
@@ -47,16 +41,20 @@ const OperatorAddModal = ({ visible, onCancel, onSuccess }: Props) => {
     }
   }, [visible, reset]);
 
-  const fetchDesignations = debounce((search: string) => {
-    setDesignationLoading(true);
-    DesignationService.getDesignations(search)
-      .then((data) => setDesignationOptions(data))
-      .catch((err) => {
-        console.error(err);
-        message.error("Failed to load designations");
-      })
-      .finally(() => setDesignationLoading(false));
-  }, 500);
+  const fetchDesignations = async (
+    searchTerm: string
+  ): Promise<SearchableSelectOption[]> => {
+    try {
+      const data = await DesignationService.searchDesignations(searchTerm);
+      return data.map((d) => ({
+          value: d.id,
+          label: d.name,
+        }));
+    } catch (err) {
+      console.error(err);
+      return [];
+    }
+  };
 
   const handleFormSubmit: SubmitHandler<Omit<RegisterRequest, "role">> = (
     data
@@ -123,44 +121,19 @@ const OperatorAddModal = ({ visible, onCancel, onSuccess }: Props) => {
             registerOptions={{ required: "Password is required" }}
           />
 
-          {/* Searchable Dropdown for Designation */}
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Designation
-            </label>
-            <Controller
-              name="designation"
-              control={control}
-              rules={{ required: "Designation is required" }}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  showSearch
-                  placeholder="Select a designation"
-                  loading={designationLoading}
-                  filterOption={false}
-                  onSearch={(value) => fetchDesignations(value)}
-                  onFocus={() => fetchDesignations("")}
-                  onChange={(value) => field.onChange(value)}
-                  className="w-full"
-                  listHeight={200}
-                  virtual
-                >
-                  {designationOptions.map((d) => (
-                    <Option key={d.id} value={d.id}>
-                      {d.name}
-                    </Option>
-                  ))}
-                </Select>
-              )}
-            />
-
-            {errors.designation && (
-              <span className="text-red-600 text-sm">
-                {errors.designation.message}
-              </span>
-            )}
-          </div>
+          <ControlledSearchableSelect
+            name="designation"
+            control={control}
+            label="Designation"
+            required
+            error={errors.designation}
+            placeholder="Search or select designation..."
+            fetchOptions={fetchDesignations}
+            debounceMs={300}
+            allowClear
+            rules={{ required: "Designation is required" }}
+            className="mb-0"
+          />
 
           <div className="flex flex-col-reverse md:flex-row justify-end gap-3 mt-3 pt-2 border-t border-gray-200">
             <Button

@@ -130,7 +130,8 @@ export const ENDPOINTS = {
 
         return `${BASE.DESIGNATION}?${query.toString()}`;
       },
-    SEARCH_DROP_DOWN: (query: string) => `${BASE.DESIGNATION}?search=${query}`,
+    SEARCH_DROP_DOWN: (query: string) =>
+    `${BASE.DESIGNATION}/all?search=${query}`,
     UPDATE: (id: number) => `${BASE.DESIGNATION}/${id}`,
   },
   SUPERVISOR: {
