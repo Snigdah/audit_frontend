@@ -14,3 +14,7 @@ export interface TemplateReportResponse {
   equipmentName: string;
   status: ReportStatusEnum;
 }
+
+export interface AssignReportOperatorRequest {
+  operatorId: number;
+}

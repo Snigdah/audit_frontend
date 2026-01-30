@@ -265,8 +265,29 @@ export const ENDPOINTS = {
     `${BASE.TEMPLET}/${templateId}/submission`,
     SUBMISSION_DETAIL: ( templateId: number, submissionId: number ) => `${BASE.TEMPLET}/${templateId}/submission/${submissionId}`,
   },
-   REPORT: {
+  REPORT: {
     FETCH_ALL: `${BASE.REPORT}`,
+    ASSIGN_OPERATOR: (reportId: number) => `${BASE.REPORT}/${reportId}/operator`,
+    REMOVE_OPERATOR: (reportId: number, operatorId: number) => `${BASE.REPORT}/${reportId}/operator/${operatorId}`,
+    FETCH_OPERATORS: (
+      reportId: number,
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+    ) => {
+      const query = new URLSearchParams();
+
+      if (params?.search) query.append("search", params.search);
+      if (params?.page !== undefined) query.append("page", params.page.toString());
+      if (params?.size !== undefined) query.append("size", params.size.toString());
+      if (params?.all !== undefined) query.append("all", String(params.all));
+
+      const qs = query.toString();
+      return `${BASE.REPORT}/${reportId}/operator${qs ? `?${qs}` : ""}`;
+    },
   },
   REPORT_TIME: {
     ADD_TIME_SLOT: (reportId: number) =>

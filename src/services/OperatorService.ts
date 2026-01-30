@@ -24,9 +24,9 @@ class OperatorService {
         size?: number;
         all?: boolean;
       }
-    ): Promise<PaginatedData<SupervisorSimple>> {
+    ): Promise<PaginatedData<OperatorSimple>> {
       const response = await apiClient.get<
-        ApiResponse<PaginatedData<SupervisorSimple>>
+        ApiResponse<PaginatedData<OperatorSimple>>
       >(ENDPOINTS.OPERATOR.FETCH_ALL(params));
   
       return response.data.data;

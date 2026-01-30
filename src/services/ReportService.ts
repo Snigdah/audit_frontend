@@ -1,7 +1,8 @@
 import apiClient from "../api/axios";
 import { ENDPOINTS } from "../api/endpoints";
-import type { ApiResponse } from "../types/api";
-import type { TemplateReportResponse } from "../types/report";
+import type { ApiResponse, PaginatedData } from "../types/api";
+import type { OperatorSimple } from "../types/operator";
+import type { AssignReportOperatorRequest, TemplateReportResponse } from "../types/report";
 
 export const ReportService = {
 
@@ -9,6 +10,41 @@ export const ReportService = {
     const response = await apiClient.get<ApiResponse<TemplateReportResponse[]>>(
       ENDPOINTS.REPORT.FETCH_ALL
     );
+
+    return response.data.data;
+  },
+
+   async assignOperator(
+    reportId: number,
+    payload: AssignReportOperatorRequest
+  ): Promise<void> {
+    await apiClient.post(
+      ENDPOINTS.REPORT.ASSIGN_OPERATOR(reportId),
+      payload
+    );
+  },
+
+  async removeOperator(
+    reportId: number,
+    operatorId: number
+  ): Promise<void> {
+    await apiClient.delete(
+      ENDPOINTS.REPORT.REMOVE_OPERATOR(reportId, operatorId)
+    );
+  },
+
+  async fetchOperatorsByReport(
+    reportId: number,
+    params?: {
+      search?: string;
+      page?: number;
+      size?: number;
+      all?: boolean;
+    }
+  ): Promise<PaginatedData<OperatorSimple>> {
+    const response = await apiClient.get<
+      ApiResponse<PaginatedData<OperatorSimple>>
+    >(ENDPOINTS.REPORT.FETCH_OPERATORS(reportId, params));
 
     return response.data.data;
   },
