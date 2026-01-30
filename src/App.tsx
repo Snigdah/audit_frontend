@@ -36,6 +36,7 @@ import TemplateRequestPage from "./pages/templet/TemplateRequestPage";
 import TemplatRequestDetails from "./pages/templet/TemplatRequestDetails";
 import TemplateSubmissionDetailsPage from "./pages/templet/TemplateSubmissionDetailsPage";
 import ReportPage from "./pages/templet/ReportsPage";
+import ReportDetails from "./pages/templet/ReportDetails";
 
 function App() {
   return (
@@ -109,13 +110,17 @@ function App() {
                   />
 
                   <Route
-                     path="/user/notifications"
-                     element={<NotificationsPage />}
+                    path="/user/notifications"
+                    element={<NotificationsPage />}
                   />
 
                   {/* ======================= Templet ======================== */}
                   <Route path="/report/template" element={<TemplateRequestPage />} />
                   <Route path="/report/reports" element={<ReportPage />} />
+                  <Route
+                    path="/report/reports/:reportId"
+                    element={<ReportDetails />}
+                  />
 
                   <Route
                     path="/report/template/:templateRequestId"
@@ -146,9 +151,9 @@ function App() {
                       element={<DesignationPage />}
                     />
 
-                    <Route 
-                      path="/user/profiles" 
-                      element={<UserProfilePage />} 
+                    <Route
+                      path="/user/profiles"
+                      element={<UserProfilePage />}
                     />
                   </Route>
 

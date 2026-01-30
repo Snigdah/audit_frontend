@@ -257,7 +257,7 @@ const ReportList = () => {
           }}
           onRow={(record) => ({
             onClick: () => {
-              navigate(`/report/template/${record.templateId}`);
+              navigate(`/report/reports/${record.templateId}`);
             },
           })}
         />

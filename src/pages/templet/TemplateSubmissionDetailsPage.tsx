@@ -19,7 +19,7 @@ const TemplateSubmissionDetailsPage = () => {
         breadcrumbs={[
           { label: "Reports" },
           { label: "Template Request", path: "/reports/template" },
-          { label: "Details", path: `/reports/template/${templateRequestId}` },
+          { label: "Details", path: `/report/template/${templateRequestId}` },
           { label: "Submission Details" },
         ]}
       />
