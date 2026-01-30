@@ -35,6 +35,7 @@ import CreateTemplate from "./components/templets/CreateTemplate";
 import TemplateRequestPage from "./pages/templet/TemplateRequestPage";
 import TemplatRequestDetails from "./pages/templet/TemplatRequestDetails";
 import TemplateSubmissionDetailsPage from "./pages/templet/TemplateSubmissionDetailsPage";
+import ReportPage from "./pages/templet/ReportsPage";
 
 function App() {
   return (
@@ -113,16 +114,18 @@ function App() {
                   />
 
                   {/* ======================= Templet ======================== */}
-                  <Route path="/reports/template" element={<TemplateRequestPage />} />
+                  <Route path="/report/template" element={<TemplateRequestPage />} />
+                  <Route path="/report/reports" element={<ReportPage />} />
+
                   <Route
-                    path="/reports/template/:templateRequestId"
+                    path="/report/template/:templateRequestId"
                     element={<TemplatRequestDetails />}
                   />
                   <Route
-                    path="/reports/template/:templateRequestId/submissions/:submissionId"
+                    path="/report/template/:templateRequestId/submissions/:submissionId"
                     element={<TemplateSubmissionDetailsPage />}
                   />
-                  <Route path="/reports/template/create" element={<CreateTemplate />} />
+                  <Route path="/report/template/create" element={<CreateTemplate />} />
 
                   {/* ======================= Settings ======================== */}
                   <Route path="/user/profile" element={<ProfilePage />} />

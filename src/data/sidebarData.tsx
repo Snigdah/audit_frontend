@@ -85,18 +85,18 @@ const sidebarData: SidebarItem[] = [
   },
   {
     title: "Reports",
-    path: "/reports",
+    path: "/report",
     icon: <FaRegFileAlt className="text-xl" />,
     cName: "nav-text group",
     subMenu: [
       {
         title: "Template Requests",
-        path: "/reports/template",
+        path: "/report/template",
         icon: <FaClipboardCheck className="text-blue-500" />,
       },
       {
-        title: "Templates",
-        path: "/reports/templates",
+        title: "Reports",
+        path: "/report/reports",
         icon: <FaLayerGroup className="text-green-500" />,
       },
       {

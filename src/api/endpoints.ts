@@ -12,7 +12,8 @@ const BASE = {
   EQUIPMENT: "equipment",
   NOTIFICATION: "notification",
   EMAIL: "mail",
-  TEMPLET: "template"
+  TEMPLET: "template",
+  REPORT: "report",
 };
 
 export const ENDPOINTS = {
@@ -262,5 +263,8 @@ export const ENDPOINTS = {
     SUBMIT_TEMPLATE: (templateId: number) =>
     `${BASE.TEMPLET}/${templateId}/submission`,
     SUBMISSION_DETAIL: ( templateId: number, submissionId: number ) => `${BASE.TEMPLET}/${templateId}/submission/${submissionId}`,
-  }
+  },
+   REPORT: {
+    FETCH_ALL: `${BASE.REPORT}`,
+  },
 };

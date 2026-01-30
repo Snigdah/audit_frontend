@@ -7,7 +7,7 @@ const TemplateRequestPage = () => {
     <div className="min-h-screen">
       <PageHeader
         title="Template Request"
-        breadcrumbs={[{ label: "Reports" }, { label: "Templet Request" }]}
+        breadcrumbs={[{ label: "Report" }, { label: "Templet Request" }]}
       />
 
       <TempletRequestList />
