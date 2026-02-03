@@ -14,6 +14,9 @@ export type ExpectedSubmissionStatus =
   | "NO_SUBMISSION"
   | "APPROVED";
 
+/** Display-only status for upcoming slots (derived on frontend) */
+export type SlotDisplayStatus = ExpectedSubmissionStatus | "INCOMING";
+
 export interface ExpectedSlotStatusResponse {
   expectedSubmissionId: number | null;
   time: string; // HH:mm:ss
