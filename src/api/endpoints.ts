@@ -307,5 +307,10 @@ export const ENDPOINTS = {
           ? `?isAppliedFromToday=${isAppliedFromToday}`
           : ""
       }`,
+    FETCH_EXPECTED_SLOTS: (
+      reportId: number,
+      businessDate: string
+      ) =>
+        `${BASE.REPORT_TIME}/report/${reportId}/expected-slot?businessDate=${businessDate}`,
   },
 };

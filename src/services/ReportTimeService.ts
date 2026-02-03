@@ -3,6 +3,7 @@ import { ENDPOINTS } from "../api/endpoints";
 import type { ApiResponse } from "../types/api";
 import type {
   AddReportTimeSlotRequest,
+  ExpectedSlotStatusResponse,
   ReportTimeResponse,
 } from "../types/reportTime";
 
@@ -40,5 +41,16 @@ export const ReportTimeService = {
         isAppliedFromToday
       )
     );
+  },
+
+  async fetchExpectedSlots(reportId: number, businessDate: string): Promise<ExpectedSlotStatusResponse[]> {
+    const response = await apiClient.get<ApiResponse<ExpectedSlotStatusResponse[]>>(
+      ENDPOINTS.REPORT_TIME.FETCH_EXPECTED_SLOTS(
+        reportId,
+        businessDate
+      )
+    );
+
+    return response.data.data;
   },
 };
