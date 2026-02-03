@@ -1,21 +1,20 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Calendar, Table, Tag, message, Spin } from "antd";
-import type { ColumnsType } from "antd/es/table";
+import { Calendar, message, Spin, Pagination } from "antd";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import { ReportTimeService } from "../../services/ReportTimeService";
 import type {
   ExpectedSlotStatusResponse,
-  ExpectedSubmissionStatus,
   SlotDisplayStatus,
 } from "../../types/reportTime";
+import { Clock } from "lucide-react";
 
 interface ReportSlotProps {
   reportId: string;
 }
 
-const PAGE_SIZE = 10;
-const PAGE_SIZE_OPTIONS = ["10", "20", "50"];
+const PAGE_SIZE = 12;
+const PAGE_SIZE_OPTIONS = [12, 24, 48];
 
 function formatTime(hhmmss: string): string {
   const [h, m] = hhmmss.split(":").map(Number);
@@ -38,34 +37,50 @@ function getDisplayStatus(
   return slotToday.isAfter(now) ? "INCOMING" : slot.status;
 }
 
-const statusConfig: Record<
+/** Card styling by status – whole card color. NO_SUBMISSION = danger (past, nobody submitted). */
+const statusCardConfig: Record<
   SlotDisplayStatus,
-  { color: string; label: string; bgClass?: string }
+  {
+    label: string;
+    cardClass: string;
+    textClass: string;
+    iconClass: string;
+  }
 > = {
   INCOMING: {
-    color: "blue",
     label: "Incoming",
-    bgClass: "bg-blue-50 border-blue-200 text-blue-800",
+    cardClass:
+      "bg-blue-50 border-blue-200 hover:border-blue-300 hover:bg-blue-100/80",
+    textClass: "text-blue-900",
+    iconClass: "text-blue-600",
   },
   PENDING: {
-    color: "orange",
     label: "Pending",
-    bgClass: "bg-amber-50 border-amber-200 text-amber-800",
-  },
-  ALL_REJECTED: {
-    color: "red",
-    label: "All Rejected",
-    bgClass: "bg-red-50 border-red-200 text-red-800",
-  },
-  NO_SUBMISSION: {
-    color: "default",
-    label: "No Submission",
-    bgClass: "bg-gray-50 border-gray-200 text-gray-700",
+    cardClass:
+      "bg-amber-50 border-amber-200 hover:border-amber-300 hover:bg-amber-100/80",
+    textClass: "text-amber-900",
+    iconClass: "text-amber-600",
   },
   APPROVED: {
-    color: "green",
     label: "Approved",
-    bgClass: "bg-emerald-50 border-emerald-200 text-emerald-800",
+    cardClass:
+      "bg-emerald-50 border-emerald-200 hover:border-emerald-300 hover:bg-emerald-100/80",
+    textClass: "text-emerald-900",
+    iconClass: "text-emerald-600",
+  },
+  NO_SUBMISSION: {
+    label: "No submission",
+    cardClass:
+      "bg-red-50 border-red-200 hover:border-red-300 hover:bg-red-100/80",
+    textClass: "text-red-900",
+    iconClass: "text-red-600",
+  },
+  ALL_REJECTED: {
+    label: "All rejected",
+    cardClass:
+      "bg-rose-100/80 border-rose-300 hover:border-rose-400 hover:bg-rose-200/80",
+    textClass: "text-rose-900",
+    iconClass: "text-rose-600",
   },
 };
 
@@ -115,64 +130,11 @@ const ReportSlot = ({ reportId }: ReportSlotProps) => {
   }, [displayRows, currentPage, pageSize]);
 
   const handleCalendarSelect = (date: Dayjs | null) => {
-    if (date) setSelectedDate(date);
+    if (date) {
+      setSelectedDate(date);
+      setCurrentPage(1);
+    }
   };
-
-  const columns: ColumnsType<typeof displayRows[0]> = [
-    {
-      title: (
-        <span className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
-          <span className="w-1.5 h-1.5 bg-slate-500 rounded-full" />
-          Time
-        </span>
-      ),
-      dataIndex: "time",
-      key: "time",
-      width: 140,
-      sorter: (a, b) => a.time.localeCompare(b.time),
-      render: (time: string) => (
-        <span className="font-medium text-gray-900">{formatTime(time)}</span>
-      ),
-    },
-    {
-      title: (
-        <span className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
-          <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
-          Status
-        </span>
-      ),
-      dataIndex: "displayStatus",
-      key: "displayStatus",
-      width: 160,
-      render: (displayStatus: SlotDisplayStatus) => {
-        const config = statusConfig[displayStatus] ?? statusConfig.NO_SUBMISSION;
-        return (
-          <Tag
-            color={config.color}
-            className={`font-medium text-xs border ${config.bgClass ?? ""}`}
-          >
-            {config.label}
-          </Tag>
-        );
-      },
-    },
-    {
-      title: (
-        <span className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
-          <span className="w-1.5 h-1.5 bg-teal-500 rounded-full" />
-          Submission
-        </span>
-      ),
-      dataIndex: "expectedSubmissionId",
-      key: "expectedSubmissionId",
-      render: (id: number | null) =>
-        id != null ? (
-          <span className="text-sm text-gray-600">#{id}</span>
-        ) : (
-          <span className="text-sm text-gray-400">—</span>
-        ),
-    },
-  ];
 
   return (
     <div className="p-4 md:p-6 bg-white rounded-xl shadow-sm border border-gray-100">
@@ -196,69 +158,85 @@ const ReportSlot = ({ reportId }: ReportSlotProps) => {
                 className="rounded-xl [&_.ant-picker-calendar]:rounded-xl"
               />
             </div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {(
-                [
-                  "INCOMING",
-                  "PENDING",
-                  "APPROVED",
-                  "NO_SUBMISSION",
-                  "ALL_REJECTED",
-                ] as SlotDisplayStatus[]
-              ).map((s) => {
-                const c = statusConfig[s];
-                return (
-                  <Tag
-                    key={s}
-                    color={c.color}
-                    className={`text-xs border ${c.bgClass ?? ""}`}
-                  >
-                    {c.label}
-                  </Tag>
-                );
-              })}
-            </div>
+            <p className="mt-3 text-xs text-gray-500">
+              Card color = status. Red = past with no submission or rejected.
+            </p>
           </div>
 
           <div className="lg:col-span-2 flex flex-col min-w-0">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-medium text-gray-600">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm font-semibold text-gray-700">
                 {selectedDate.format("dddd, MMM D, YYYY")}
               </span>
-              {loading && (
-                <Spin size="small" tip="Loading slots…" />
-              )}
+              {loading && <Spin size="small" tip="Loading slots…" />}
             </div>
-            <div className="rounded-xl border border-gray-200 overflow-hidden flex-1">
-              <Table
-                dataSource={paginatedData}
-                columns={columns}
-                rowKey={(r) => `${r.time}-${r.expectedSubmissionId ?? "n"}`}
-                loading={loading}
-                pagination={{
-                  current: currentPage,
-                  pageSize,
-                  pageSizeOptions: PAGE_SIZE_OPTIONS,
-                  total: displayRows.length,
-                  showSizeChanger: true,
-                  showQuickJumper: true,
-                  showTotal: (total, range) =>
-                    `Showing ${range[0]}-${range[1]} of ${total} slots`,
-                  onChange: (page, size) => {
-                    setCurrentPage(page);
-                    if (size) setPageSize(size);
-                  },
-                }}
-                size="middle"
-                bordered
-                locale={{
-                  emptyText: loading
-                    ? "Loading…"
-                    : "No expected slots for this date.",
-                }}
-                className="shadow-sm"
-              />
-            </div>
+
+            {loading ? (
+              <div className="min-h-[200px] flex items-center justify-center rounded-xl border border-gray-200 bg-gray-50/50">
+                <Spin tip="Loading slots…" />
+              </div>
+            ) : displayRows.length === 0 ? (
+              <div className="min-h-[200px] flex items-center justify-center rounded-xl border border-gray-200 bg-gray-50/50 text-gray-500 text-sm">
+                No expected slots for this date.
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {paginatedData.map((row) => {
+                    const config =
+                      statusCardConfig[row.displayStatus] ??
+                      statusCardConfig.NO_SUBMISSION;
+                    return (
+                      <div
+                        key={`${row.time}-${row.displayStatus}`}
+                        className={`rounded-xl border-2 transition-all duration-200 p-4 flex flex-col justify-center min-h-[88px] ${config.cardClass}`}
+                      >
+                        <div
+                          className={`flex items-center gap-2 font-semibold text-lg ${config.textClass}`}
+                        >
+                          <Clock
+                            className={`w-5 h-5 shrink-0 ${config.iconClass}`}
+                          />
+                          {formatTime(row.time)}
+                        </div>
+                        <span
+                          className={`mt-1 text-xs font-medium ${config.textClass} opacity-90`}
+                        >
+                          {config.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {displayRows.length > pageSize && (
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-sm text-gray-500">
+                      Showing {(currentPage - 1) * pageSize + 1}–
+                      {Math.min(
+                        currentPage * pageSize,
+                        displayRows.length
+                      )}{" "}
+                      of {displayRows.length} slots
+                    </span>
+                    <Pagination
+                      current={currentPage}
+                      pageSize={pageSize}
+                      total={displayRows.length}
+                      pageSizeOptions={PAGE_SIZE_OPTIONS}
+                      showSizeChanger
+                      showQuickJumper
+                      onChange={(page, size) => {
+                        setCurrentPage(page);
+                        if (size) setPageSize(size);
+                      }}
+                      size="small"
+                      className="[&_.ant-pagination-item]:rounded-md"
+                    />
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>
