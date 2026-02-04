@@ -37,6 +37,7 @@ import TemplatRequestDetails from "./pages/templet/TemplatRequestDetails";
 import TemplateSubmissionDetailsPage from "./pages/templet/TemplateSubmissionDetailsPage";
 import ReportPage from "./pages/templet/ReportsPage";
 import ReportDetails from "./pages/templet/ReportDetails";
+import ReportSubmissionListPage from "./pages/templet/ReportSubmissionListPage";
 
 function App() {
   return (
@@ -117,6 +118,10 @@ function App() {
                   {/* ======================= Templet ======================== */}
                   <Route path="/report/template" element={<TemplateRequestPage />} />
                   <Route path="/report/reports" element={<ReportPage />} />
+                  <Route
+                    path="/report/reports/:reportId/submissions/:expectedSubmissionId"
+                    element={<ReportSubmissionListPage />}
+                  />
                   <Route
                     path="/report/reports/:reportId"
                     element={<ReportDetails />}

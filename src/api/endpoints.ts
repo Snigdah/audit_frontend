@@ -15,6 +15,7 @@ const BASE = {
   TEMPLET: "template",
   REPORT: "report",
   REPORT_TIME: "report-time",
+  REPORT_SUBMISSION: "report-submission",
 };
 
 export const ENDPOINTS = {
@@ -313,4 +314,39 @@ export const ENDPOINTS = {
       ) =>
         `${BASE.REPORT_TIME}/report/${reportId}/expected-slot?businessDate=${businessDate}`,
   },
+  REPORT_SUBMISSION: {
+    FETCH_SUBMISSION: (
+          expectedSubmissionId: number,
+          params?: {
+          all?: boolean;
+          page?: number;
+          size?: number;
+        }
+      ) => {
+        const query = new URLSearchParams();
+
+        if (params?.all !== undefined)
+          query.append("all", String(params.all));
+
+        if (params?.page !== undefined)
+          query.append("page", params.page.toString());
+
+        if (params?.size !== undefined)
+          query.append("size", params.size.toString());
+
+        return `${BASE.REPORT_SUBMISSION}/expected/${expectedSubmissionId}/submissions?${query.toString()}`;
+      },
+    CREATE_SUBMISSION: (
+      reportId: number,
+      versionId: number,
+      expectedSubmissionId: number
+    ) =>
+      `${BASE.REPORT_SUBMISSION}/report/${reportId}/version/${versionId}/expected/${expectedSubmissionId}`,
+    GET_SUBMISSION_DETAIL: (
+      expectedSubmissionId: number,
+      submissionId: number
+    ) =>
+      `${BASE.REPORT_SUBMISSION}/expected/${expectedSubmissionId}/submissions/${submissionId}/detail`,
+  },
+
 };

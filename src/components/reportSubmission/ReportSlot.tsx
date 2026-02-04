@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Calendar, message, Spin, Pagination } from "antd";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
@@ -85,6 +86,7 @@ const statusCardConfig: Record<
 };
 
 const ReportSlot = ({ reportId }: ReportSlotProps) => {
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Dayjs>(() => dayjs());
   const [slots, setSlots] = useState<ExpectedSlotStatusResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -182,14 +184,25 @@ const ReportSlot = ({ reportId }: ReportSlotProps) => {
             ) : (
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {paginatedData.map((row) => {
+                  {paginatedData.map((row, idx) => {
                     const config =
                       statusCardConfig[row.displayStatus] ??
                       statusCardConfig.NO_SUBMISSION;
+                    const hasSubmission = row.expectedSubmissionId != null;
+                    const uniqueKey = (currentPage - 1) * pageSize + idx;
                     return (
                       <div
-                        key={`${row.time}-${row.displayStatus}`}
-                        className={`rounded-xl border-2 transition-all duration-200 p-4 flex flex-col justify-center min-h-[88px] ${config.cardClass}`}
+                        key={`slot-${uniqueKey}`}
+                        role={hasSubmission ? "button" : undefined}
+                        tabIndex={hasSubmission ? 0 : undefined}
+                        onClick={() => {
+                          if (hasSubmission && row.expectedSubmissionId != null)
+                            navigate(
+                              `/report/reports/${reportId}/submissions/${row.expectedSubmissionId}`
+                            );
+                        }}
+                        
+                        className={`rounded-xl border-2 transition-all duration-200 p-4 flex flex-col justify-center min-h-[88px] ${config.cardClass} ${hasSubmission ? "cursor-pointer" : ""}`}
                       >
                         <div
                           className={`flex items-center gap-2 font-semibold text-lg ${config.textClass}`}
