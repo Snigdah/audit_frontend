@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, Tag, Spin, Alert, Button } from "antd";
 import { useNavigate } from "react-router-dom";
-import { BankOutlined, ToolOutlined, RedoOutlined } from "@ant-design/icons";
+import { BankOutlined, ToolOutlined, RedoOutlined, UserOutlined } from "@ant-design/icons";
 import type { TemplateDetailResponse } from "../../../types/template";
 import TemplateActions from "./TemplateActions";
 import { TemplateService } from "../../../services/TempletService";
@@ -126,7 +126,7 @@ const TemplateOverview = ({ templateRequestId }: TemplateOverviewProps) => {
           </div>
 
           {/* Info Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Department */}
             <div 
               className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
@@ -155,6 +155,21 @@ const TemplateOverview = ({ templateRequestId }: TemplateOverviewProps) => {
                 <p className="text-xs text-gray-500 mb-1">Equipment</p>
                 <p className="text-sm font-medium text-gray-800 truncate">
                   {templateData.equipmentName || "N/A"}
+                </p>
+              </div>
+            </div>
+
+            {/* Supervisor */}
+            <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+              onClick={() => navigate(`/infrastructure/supervisor/${templateData.supervisorId}`)}
+            >
+              <div className="flex items-center justify-center w-10 h-10 bg-white rounded-lg shadow-sm">
+                <UserOutlined className="text-lg text-gray-700" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-gray-500 mb-1">Supervisor</p>
+                <p className="text-sm font-medium text-gray-800 truncate">
+                  {templateData.supervisorName || "N/A"}
                 </p>
               </div>
             </div>

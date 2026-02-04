@@ -45,6 +45,8 @@ export interface TemplateDetailResponse {
   id: number;
   templateName: string;
   description?: string;
+  supervisorId: number;
+  supervisorName?: string;
   departmentId: number;
   departmentName?: string;
   equipmentId: number;
