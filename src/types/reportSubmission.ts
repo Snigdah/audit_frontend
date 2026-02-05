@@ -48,8 +48,29 @@ export interface ReportSubmissionRequest {
 
 /** Response for GET submission detail (structure for create/resubmit). */
 export interface ReportSubmissionDetailResponse {
-  data: any[][];
-  permissions: string[][][];
-  mergeCells?: MergeCellDto[];
-  versionId?: number;
+  submissionId: number;
+  status: SubmissionStatus;
+
+  creatorId: number;
+  creatorName: string;
+
+  reviewerId?: number | null;
+  reviewerName?: string | null;
+
+  departmentId: number;
+  departmentName: string;
+
+  equipmentId: number;
+  equipmentName: string;
+
+  reviewComments?: string | null;
+
+  data: TemplateStructureRequest;
+
+  changes: CellChangeRequest[];
+
+  submittedAt: string;
+  lateMinutes?: number | null;
+
+  expectedSubmissionId: number;
 }

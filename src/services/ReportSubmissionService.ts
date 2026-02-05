@@ -49,21 +49,16 @@ export const ReportSubmissionService = {
   },
 
   async getSubmissionDetail(
-    expectedSubmissionId: number,
-    submissionId: number
-  ): Promise<ReportSubmissionDetailResponse | null> {
-    try {
-      const response = await apiClient.get<
-        ApiResponse<ReportSubmissionDetailResponse>
-      >(
-        ENDPOINTS.REPORT_SUBMISSION.GET_SUBMISSION_DETAIL(
-          expectedSubmissionId,
-          submissionId
-        )
-      );
-      return response.data.data;
-    } catch {
-      return null;
-    }
-  },
+  submissionId: number
+): Promise<ReportSubmissionDetailResponse | null> {
+  try {
+    const response = await apiClient.get<
+      ApiResponse<ReportSubmissionDetailResponse>
+    >(ENDPOINTS.REPORT_SUBMISSION.GET_SUBMISSION_DETAIL(submissionId));
+
+    return response.data.data;
+  } catch {
+    return null;
+  }
+},
 };

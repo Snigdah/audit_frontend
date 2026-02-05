@@ -344,11 +344,7 @@ export const ENDPOINTS = {
       expectedSubmissionId: number
     ) =>
       `${BASE.REPORT_SUBMISSION}/report/${reportId}/version/${versionId}/expected/${expectedSubmissionId}`,
-    GET_SUBMISSION_DETAIL: (
-      expectedSubmissionId: number,
-      submissionId: number
-    ) =>
-      `${BASE.REPORT_SUBMISSION}/expected/${expectedSubmissionId}/submissions/${submissionId}/detail`,
+    GET_SUBMISSION_DETAIL: (submissionId: number) => `${BASE.REPORT_SUBMISSION}/${submissionId}`,
   },
 
 };
