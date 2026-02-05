@@ -290,6 +290,7 @@ export const ENDPOINTS = {
       const qs = query.toString();
       return `${BASE.REPORT}/${reportId}/operator${qs ? `?${qs}` : ""}`;
     },
+    FETCH_STRUCTURE: (reportId: number) =>`${BASE.REPORT}/${reportId}/structure`,
   },
   REPORT_TIME: {
     ADD_TIME_SLOT: (reportId: number) =>

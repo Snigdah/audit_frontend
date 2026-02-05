@@ -3,6 +3,7 @@ import { ENDPOINTS } from "../api/endpoints";
 import type { ApiResponse, PaginatedData } from "../types/api";
 import type { OperatorSimple } from "../types/operator";
 import type { AssignReportOperatorRequest, TemplateReportResponse } from "../types/report";
+import type { TemplateStructureRequest } from "../types/reportSubmission";
 import OperatorService from "./OperatorService";
 
 export const ReportService = {
@@ -46,6 +47,14 @@ export const ReportService = {
     const response = await apiClient.get<
       ApiResponse<PaginatedData<OperatorSimple>>
     >(ENDPOINTS.REPORT.FETCH_OPERATORS(reportId, params));
+
+    return response.data.data;
+  },
+
+  async fetchReport(reportId: number): Promise<TemplateStructureRequest> {
+    const response = await apiClient.get<
+      ApiResponse<TemplateStructureRequest>
+    >(ENDPOINTS.REPORT.FETCH_STRUCTURE(reportId));
 
     return response.data.data;
   },
