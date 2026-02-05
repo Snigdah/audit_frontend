@@ -75,10 +75,16 @@ class SupervisorService {
 
   // ✅ Fetch Operators by Supervisor
   async getOperatorsBySupervisor(
-    supervisorId: number
-  ): Promise<OperatorSimple[]> {
-    const response = await apiClient.get<ApiResponse<OperatorSimple[]>>(
-      ENDPOINTS.SUPERVISOR.GET_OPERATORS(supervisorId)
+    supervisorId: number,
+    params?: {
+      search?: string;
+      page?: number;
+      size?: number;
+      all?: boolean;
+    }
+  ): Promise<PaginatedData<OperatorSimple>> {
+    const response = await apiClient.get<ApiResponse<PaginatedData<OperatorSimple>>>(
+      ENDPOINTS.SUPERVISOR.GET_OPERATORS({ supervisorId, ...params })
     );
     return response.data.data;
   }

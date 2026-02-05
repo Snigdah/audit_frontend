@@ -39,7 +39,7 @@ class OperatorService {
 
     return response.data.data;
   }
-
+ 
   async updateOperator(
     id: number,
     request: UpdateOperatorRequest

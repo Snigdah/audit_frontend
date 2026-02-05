@@ -32,20 +32,20 @@ export const ENDPOINTS = {
   BUILDING: {
     CREATE: `${BASE.BUILDING}`,
     FETCH_ALL: (params?: {
-        search?: string;
-        page?: number;
-        size?: number;
-        all?: boolean;
-      }) => {
-        const query = new URLSearchParams();
+      search?: string;
+      page?: number;
+      size?: number;
+      all?: boolean;
+    }) => {
+      const query = new URLSearchParams();
 
-        if (params?.search) query.append("search", params.search);
-        if (params?.page !== undefined) query.append("page", params.page.toString());
-        if (params?.size !== undefined) query.append("size", params.size.toString());
-        if (params?.all !== undefined) query.append("all", String(params.all));
+      if (params?.search) query.append("search", params.search);
+      if (params?.page !== undefined) query.append("page", params.page.toString());
+      if (params?.size !== undefined) query.append("size", params.size.toString());
+      if (params?.all !== undefined) query.append("all", String(params.all));
 
-        return `${BASE.BUILDING}?${query.toString()}`;
-      },
+      return `${BASE.BUILDING}?${query.toString()}`;
+    },
     UPDATE: (id: number) => `${BASE.BUILDING}/${id}`,
     FETCH_BY_ID: (id: number) => `${BASE.BUILDING}/${id}`,
     DELETE_BY_ID: (id: number) => `${BASE.BUILDING}/${id}`,
@@ -62,20 +62,20 @@ export const ENDPOINTS = {
   DEPARTMENT: {
     CREATE: `${BASE.DEPARTMENT}`,
     FETCH_ALL: (params?: {
-        search?: string;
-        page?: number;
-        size?: number;
-        all?: boolean;
-      }) => {
-        const query = new URLSearchParams();
+      search?: string;
+      page?: number;
+      size?: number;
+      all?: boolean;
+    }) => {
+      const query = new URLSearchParams();
 
-        if (params?.search) query.append("search", params.search);
-        if (params?.page !== undefined) query.append("page", params.page.toString());
-        if (params?.size !== undefined) query.append("size", params.size.toString());
-        if (params?.all !== undefined) query.append("all", String(params.all));
+      if (params?.search) query.append("search", params.search);
+      if (params?.page !== undefined) query.append("page", params.page.toString());
+      if (params?.size !== undefined) query.append("size", params.size.toString());
+      if (params?.all !== undefined) query.append("all", String(params.all));
 
-        return `${BASE.DEPARTMENT}?${query.toString()}`;
-      },
+      return `${BASE.DEPARTMENT}?${query.toString()}`;
+    },
     FETCH_BY_ID: (id: number) => `${BASE.DEPARTMENT}/${id}`,
     FETCH_BY_FLOOR_ID: (floorId: number) =>
       `${BASE.DEPARTMENT}/floor/${floorId}`,
@@ -100,9 +100,8 @@ export const ENDPOINTS = {
       if (params?.all !== undefined) query.append("all", String(params.all));
 
       const queryString = query.toString();
-      return `${BASE.DEPARTMENT}/${params?.departmentId}/supervisors${
-        queryString ? `?${queryString}` : ""
-      }`;
+      return `${BASE.DEPARTMENT}/${params?.departmentId}/supervisors${queryString ? `?${queryString}` : ""
+        }`;
     },
     ASSIGN_EQUIPMENT: `${BASE.DEPARTMENT}/assign-equipment`,
     REMOVE_EQUIPMENT: (equipmentId: number) =>
@@ -119,67 +118,82 @@ export const ENDPOINTS = {
   DESIGNATION: {
     CREATE: `${BASE.DESIGNATION}`,
     FETCH_ALL: (params?: {
-        search?: string;
-        page?: number;
-        size?: number;
-        all?: boolean;
-      }) => {
-        const query = new URLSearchParams();
+      search?: string;
+      page?: number;
+      size?: number;
+      all?: boolean;
+    }) => {
+      const query = new URLSearchParams();
 
-        if (params?.search) query.append("search", params.search);
-        if (params?.page !== undefined) query.append("page", params.page.toString());
-        if (params?.size !== undefined) query.append("size", params.size.toString());
-        if (params?.all !== undefined) query.append("all", String(params.all));
+      if (params?.search) query.append("search", params.search);
+      if (params?.page !== undefined) query.append("page", params.page.toString());
+      if (params?.size !== undefined) query.append("size", params.size.toString());
+      if (params?.all !== undefined) query.append("all", String(params.all));
 
-        return `${BASE.DESIGNATION}?${query.toString()}`;
-      },
+      return `${BASE.DESIGNATION}?${query.toString()}`;
+    },
     SEARCH_DROP_DOWN: (query: string) =>
-    `${BASE.DESIGNATION}/all?search=${query}`,
+      `${BASE.DESIGNATION}/all?search=${query}`,
     UPDATE: (id: number) => `${BASE.DESIGNATION}/${id}`,
   },
   SUPERVISOR: {
     FETCH_BY_ID: (id: number) => `${BASE.SUPERVISOR}/${id}`,
     FETCH_ALL: (params?: {
-        search?: string;
-        page?: number;
-        size?: number;
-        all?: boolean;
-      }) => {
-        const query = new URLSearchParams();
+      search?: string;
+      page?: number;
+      size?: number;
+      all?: boolean;
+    }) => {
+      const query = new URLSearchParams();
 
-        if (params?.search) query.append("search", params.search);
-        if (params?.page !== undefined) query.append("page", params.page.toString());
-        if (params?.size !== undefined) query.append("size", params.size.toString());
-        if (params?.all !== undefined) query.append("all", String(params.all));
+      if (params?.search) query.append("search", params.search);
+      if (params?.page !== undefined) query.append("page", params.page.toString());
+      if (params?.size !== undefined) query.append("size", params.size.toString());
+      if (params?.all !== undefined) query.append("all", String(params.all));
 
-        return `${BASE.SUPERVISOR}?${query.toString()}`;
-      },
+      return `${BASE.SUPERVISOR}?${query.toString()}`;
+    },
     UPDATE: (id: number) => `${BASE.SUPERVISOR}/${id}`,
 
     ASSIGN_OPERATOR: `${BASE.SUPERVISOR}/assign-operator`,
     REMOVE_OPERATOR: `${BASE.SUPERVISOR}/remove-operator`,
-    GET_OPERATORS: (supervisorId: number) =>
-      `${BASE.SUPERVISOR}/${supervisorId}/operators`,
-    GET_DEPARTMENT: (supervisorId: number) =>  `${BASE.SUPERVISOR}/${supervisorId}/departments`,
+    GET_OPERATORS: (params?: {
+      supervisorId: number;
+      search?: string;
+      page?: number;
+      size?: number;
+      all?: boolean;
+    }) => {
+      const query = new URLSearchParams();
+      if (params?.search) query.append("search", params.search);
+      if (params?.page !== undefined) query.append("page", params.page.toString());
+      if (params?.size !== undefined) query.append("size", params.size.toString());
+      if (params?.all !== undefined) query.append("all", String(params.all));
+
+      const queryString = query.toString();
+      return `${BASE.SUPERVISOR}/${params?.supervisorId}/operators${queryString ? `?${queryString}` : ""
+        }`;
+    },
+    GET_DEPARTMENT: (supervisorId: number) => `${BASE.SUPERVISOR}/${supervisorId}/departments`,
     SEARCH_DROP_DOWN: (query: string) => `${BASE.SUPERVISOR}/all?search=${query}`,
   },
   OPERATOR: {
     FETCH_BY_ID: (id: number) => `${BASE.OPERATOR}/${id}`,
     FETCH_ALL: (params?: {
-        search?: string;
-        page?: number;
-        size?: number;
-        all?: boolean;
-      }) => {
-        const query = new URLSearchParams();
+      search?: string;
+      page?: number;
+      size?: number;
+      all?: boolean;
+    }) => {
+      const query = new URLSearchParams();
 
-        if (params?.search) query.append("search", params.search);
-        if (params?.page !== undefined) query.append("page", params.page.toString());
-        if (params?.size !== undefined) query.append("size", params.size.toString());
-        if (params?.all !== undefined) query.append("all", String(params.all));
+      if (params?.search) query.append("search", params.search);
+      if (params?.page !== undefined) query.append("page", params.page.toString());
+      if (params?.size !== undefined) query.append("size", params.size.toString());
+      if (params?.all !== undefined) query.append("all", String(params.all));
 
-        return `${BASE.OPERATOR}?${query.toString()}`;
-      },
+      return `${BASE.OPERATOR}?${query.toString()}`;
+    },
     UPDATE: (id: number) => `${BASE.OPERATOR}/${id}`,
     GET_SUPERVISOR: (operatorId: number) => `${BASE.OPERATOR}/${operatorId}/supervisors`,
     GET_EQUIPMENTS: (operatorId: number) => `${BASE.OPERATOR}/${operatorId}/equipments`,
@@ -187,38 +201,38 @@ export const ENDPOINTS = {
   },
   VIEWER: {
     FETCH_ALL: (params?: {
-        search?: string;
-        page?: number;
-        size?: number;
-        all?: boolean;
-      }) => {
-        const query = new URLSearchParams();
+      search?: string;
+      page?: number;
+      size?: number;
+      all?: boolean;
+    }) => {
+      const query = new URLSearchParams();
 
-        if (params?.search) query.append("search", params.search);
-        if (params?.page !== undefined) query.append("page", params.page.toString());
-        if (params?.size !== undefined) query.append("size", params.size.toString());
-        if (params?.all !== undefined) query.append("all", String(params.all));
+      if (params?.search) query.append("search", params.search);
+      if (params?.page !== undefined) query.append("page", params.page.toString());
+      if (params?.size !== undefined) query.append("size", params.size.toString());
+      if (params?.all !== undefined) query.append("all", String(params.all));
 
-        return `${BASE.VIEWER}?${query.toString()}`;
-      },
+      return `${BASE.VIEWER}?${query.toString()}`;
+    },
   },
   EQUIPMENT: {
     FETCH_BY_ID: (id: number) => `${BASE.EQUIPMENT}/${id}`,
     FETCH_ALL: (params?: {
-        search?: string;
-        page?: number;
-        size?: number;
-        all?: boolean;
-      }) => {
-        const query = new URLSearchParams();
+      search?: string;
+      page?: number;
+      size?: number;
+      all?: boolean;
+    }) => {
+      const query = new URLSearchParams();
 
-        if (params?.search) query.append("search", params.search);
-        if (params?.page !== undefined) query.append("page", params.page.toString());
-        if (params?.size !== undefined) query.append("size", params.size.toString());
-        if (params?.all !== undefined) query.append("all", String(params.all));
+      if (params?.search) query.append("search", params.search);
+      if (params?.page !== undefined) query.append("page", params.page.toString());
+      if (params?.size !== undefined) query.append("size", params.size.toString());
+      if (params?.all !== undefined) query.append("all", String(params.all));
 
-        return `${BASE.EQUIPMENT}?${query.toString()}`;
-      },
+      return `${BASE.EQUIPMENT}?${query.toString()}`;
+    },
     // FETCH_ALL: (search?: string) =>
     //   search ? `${BASE.EQUIPMENT}?search=${search}` : `${BASE.EQUIPMENT}`,
     CREATE: () => `${BASE.EQUIPMENT}`,
@@ -232,12 +246,12 @@ export const ENDPOINTS = {
     FETCH_FULL: `${BASE.PROFILE}/details`,
     FETCH_BASIC: `${BASE.PROFILE}/basic`,
     FETCH_DEPARTMENT: `${BASE.PROFILE}/departments`,
-    FETCH_USRER_PROFILE: (employeeId: number)=> `${BASE.PROFILE}/${employeeId}`,
+    FETCH_USRER_PROFILE: (employeeId: number) => `${BASE.PROFILE}/${employeeId}`,
   },
   NOTIFICATION: {
     FETCH_ALL: `${BASE.NOTIFICATION}`,
-    UPDATE: (id: number)=> `${BASE.NOTIFICATION}/${id}`,
-    DELETE: (id: number)=> `${BASE.NOTIFICATION}/${id}`,
+    UPDATE: (id: number) => `${BASE.NOTIFICATION}/${id}`,
+    DELETE: (id: number) => `${BASE.NOTIFICATION}/${id}`,
   },
   EMAIL: {
     CONFIGURE_EMAIL: `${BASE.EMAIL}/configure`,
@@ -262,10 +276,10 @@ export const ENDPOINTS = {
     CREATET_REQUEST: `${BASE.TEMPLET}`,
     FETCH_REQUEST_TEMPLET: `${BASE.TEMPLET}`,
     DETAILS: (id: number) => `${BASE.TEMPLET}/${id}`,
-    REVIEW_SUBMISSION: ( templateId: number,submissionId: number ) => `${BASE.TEMPLET}/${templateId}/approve/${submissionId}`,
+    REVIEW_SUBMISSION: (templateId: number, submissionId: number) => `${BASE.TEMPLET}/${templateId}/approve/${submissionId}`,
     SUBMIT_TEMPLATE: (templateId: number) =>
-    `${BASE.TEMPLET}/${templateId}/submission`,
-    SUBMISSION_DETAIL: ( templateId: number, submissionId: number ) => `${BASE.TEMPLET}/${templateId}/submission/${submissionId}`,
+      `${BASE.TEMPLET}/${templateId}/submission`,
+    SUBMISSION_DETAIL: (templateId: number, submissionId: number) => `${BASE.TEMPLET}/${templateId}/submission/${submissionId}`,
   },
   REPORT: {
     FETCH_ALL: `${BASE.REPORT}`,
@@ -290,7 +304,7 @@ export const ENDPOINTS = {
       const qs = query.toString();
       return `${BASE.REPORT}/${reportId}/operator${qs ? `?${qs}` : ""}`;
     },
-    FETCH_STRUCTURE: (reportId: number) =>`${BASE.REPORT}/${reportId}/structure`,
+    FETCH_STRUCTURE: (reportId: number) => `${BASE.REPORT}/${reportId}/structure`,
     FETCH_BY_ID: (reportId: number) => `${BASE.REPORT}/${reportId}`,
   },
   REPORT_TIME: {
@@ -305,39 +319,38 @@ export const ENDPOINTS = {
       timeSlotId: number,
       isAppliedFromToday?: boolean
     ) =>
-      `${BASE.REPORT_TIME}/${reportId}/time-slot/${timeSlotId}${
-        isAppliedFromToday !== undefined
-          ? `?isAppliedFromToday=${isAppliedFromToday}`
-          : ""
+      `${BASE.REPORT_TIME}/${reportId}/time-slot/${timeSlotId}${isAppliedFromToday !== undefined
+        ? `?isAppliedFromToday=${isAppliedFromToday}`
+        : ""
       }`,
     FETCH_EXPECTED_SLOTS: (
       reportId: number,
       businessDate: string
-      ) =>
-        `${BASE.REPORT_TIME}/report/${reportId}/expected-slot?businessDate=${businessDate}`,
+    ) =>
+      `${BASE.REPORT_TIME}/report/${reportId}/expected-slot?businessDate=${businessDate}`,
   },
   REPORT_SUBMISSION: {
     FETCH_SUBMISSION: (
-          expectedSubmissionId: number,
-          params?: {
-          all?: boolean;
-          page?: number;
-          size?: number;
-        }
-      ) => {
-        const query = new URLSearchParams();
+      expectedSubmissionId: number,
+      params?: {
+        all?: boolean;
+        page?: number;
+        size?: number;
+      }
+    ) => {
+      const query = new URLSearchParams();
 
-        if (params?.all !== undefined)
-          query.append("all", String(params.all));
+      if (params?.all !== undefined)
+        query.append("all", String(params.all));
 
-        if (params?.page !== undefined)
-          query.append("page", params.page.toString());
+      if (params?.page !== undefined)
+        query.append("page", params.page.toString());
 
-        if (params?.size !== undefined)
-          query.append("size", params.size.toString());
+      if (params?.size !== undefined)
+        query.append("size", params.size.toString());
 
-        return `${BASE.REPORT_SUBMISSION}/expected/${expectedSubmissionId}/submissions?${query.toString()}`;
-      },
+      return `${BASE.REPORT_SUBMISSION}/expected/${expectedSubmissionId}/submissions?${query.toString()}`;
+    },
     CREATE_SUBMISSION: (
       reportId: number,
       versionId: number,
@@ -345,7 +358,7 @@ export const ENDPOINTS = {
     ) =>
       `${BASE.REPORT_SUBMISSION}/report/${reportId}/version/${versionId}/expected/${expectedSubmissionId}`,
     GET_SUBMISSION_DETAIL: (submissionId: number) => `${BASE.REPORT_SUBMISSION}/${submissionId}`,
-    REVIEW_SUBMISSION: (reportId: number,submissionId: number) =>
+    REVIEW_SUBMISSION: (reportId: number, submissionId: number) =>
       `${BASE.REPORT_SUBMISSION}/report/${reportId}/submission/${submissionId}/review`,
   },
 

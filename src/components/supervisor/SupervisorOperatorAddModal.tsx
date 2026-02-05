@@ -44,12 +44,15 @@ const SupervisorOperatorAddModal = ({
   useEffect(() => {
     if (!visible) {
       reset();
+    } else {
+      // Auto-fetch operators when modal opens
+      fetchOperators("");
     }
   }, [visible, reset]);
 
   const fetchOperators = debounce((search: string) => {
     setOperatorLoading(true);
-    OperatorService.getAllOperators(search)
+    OperatorService.getAllOperatorsDropdown(search)
       .then((data) => setOperatorOptions(data))
       .catch((err) => {
         console.error(err);
@@ -102,7 +105,6 @@ const SupervisorOperatorAddModal = ({
                   loading={operatorLoading}
                   filterOption={false}
                   onSearch={(value) => fetchOperators(value)}
-                  onFocus={() => fetchOperators("")}
                   onChange={(value) => field.onChange(value)}
                   className="w-full"
                   listHeight={200}

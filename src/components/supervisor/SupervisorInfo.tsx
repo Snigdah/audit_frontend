@@ -47,14 +47,14 @@ const SupervisorInfo = ({ supervisorId }: { supervisorId: string }) => {
   return (
     <Card
       className="shadow-sm border border-slate-200"
-      bodyStyle={{ padding: "20px" }}
+      styles={{ body: { padding: "20px" } }}
     >
       {/* Header */}
       <div className="flex items-center gap-3 pb-4 border-b border-slate-200 mb-5 cursor-pointer hover:bg-slate-50 transition-colors duration-200 p-2 rounded-md"
-          onClick={() => 
-             navigate("/user/profiles", { state: { employeeId: supervisor.employeeId } })
-          }
-          >
+        onClick={() =>
+          navigate("/user/profiles", { state: { employeeId: supervisor.employeeId } })
+        }
+      >
         <div className="bg-blue-900 p-2 rounded-md">
           <UserOutlined className="text-white text-base" />
         </div>
