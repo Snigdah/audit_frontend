@@ -26,7 +26,7 @@ const ReportSubmissionDetailsPage = () => {
         ]}
       />
       <div className="px-4 bg-white rounded-lg shadow-sm">
-        <ReportSubmissionDetail submissionId={Number(submissionId)} />
+        <ReportSubmissionDetail reportId={Number(reportId)} submissionId={Number(submissionId)} />
       </div>
     </div>
   );

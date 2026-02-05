@@ -61,13 +61,14 @@ export const ReportSubmissionService = {
     }
   },
 
-  async reviewSubmission(reportId: number, submissionId: number,payload: ReviewDecisionRequest):
-     Promise<void> {await apiClient.post(
-        ENDPOINTS.REPORT_SUBMISSION.REVIEW_SUBMISSION(
-            reportId,
-            submissionId
-        ),
-          payload
+  async reviewSubmission(
+    reportId: number,
+    submissionId: number,
+    payload: ReviewDecisionRequest
+  ): Promise<void> {
+    await apiClient.post(
+      ENDPOINTS.REPORT_SUBMISSION.REVIEW_SUBMISSION(reportId, submissionId),
+      payload
     );
   },
 };

@@ -9,10 +9,12 @@ import ReportSubmissionSpreadsheet from "./ReportSubmissionSpreadsheet";
 import dayjs from "dayjs";
 
 interface ReportSubmissionDetailProps {
+  reportId: number;
   submissionId: number;
 }
 
 const ReportSubmissionDetail = ({
+  reportId,
   submissionId,
 }: ReportSubmissionDetailProps) => {
   const [submission, setSubmission] =
@@ -228,6 +230,7 @@ const ReportSubmissionDetail = ({
       )}
 
       <ReportSubmissionActions
+        reportId={reportId}
         submissionId={submission.submissionId}
         status={submission.status}
         onActionComplete={fetchSubmissionDetail}

@@ -6,11 +6,13 @@ import { useAuth } from "../../context/AuthContext";
 import { toast } from "../common/Toast";
 import ModalComponent from "../common/ModalComponent";
 import CustomButton from "../common/CustomButton";
-import type { SubmissionStatus } from "../../types/reportSubmission";
+import { ReportSubmissionService } from "../../services/ReportSubmissionService";
+import type { SubmissionStatus, ReviewDecisionRequest } from "../../types/reportSubmission";
 
 const { TextArea } = Input;
 
 interface ReportSubmissionActionsProps {
+  reportId: number;
   submissionId: number;
   status: SubmissionStatus;
   onActionComplete: () => void;
@@ -21,6 +23,7 @@ interface ReviewFormData {
 }
 
 const ReportSubmissionActions = ({
+  reportId,
   submissionId,
   status,
   onActionComplete,
@@ -59,13 +62,19 @@ const ReportSubmissionActions = ({
   };
 
   const handleFormSubmit: SubmitHandler<ReviewFormData> = async (data) => {
+    if (!reviewAction) return;
     setActionLoading(true);
     try {
-      // TODO: Implement API call when backend is ready
-      // await ReportSubmissionService.reviewSubmission(submissionId, {
-      //   status: reviewAction,
-      //   reviewComment: data.reviewComment,
-      // });
+      const payload: ReviewDecisionRequest = {
+        status: reviewAction,
+        reviewComment: data.reviewComment || undefined,
+      };
+
+      await ReportSubmissionService.reviewSubmission(
+        reportId,
+        submissionId,
+        payload
+      );
 
       toast.success(
         reviewAction === "APPROVED"
