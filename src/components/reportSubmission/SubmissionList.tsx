@@ -157,7 +157,7 @@ const SubmissionList = ({
       title: (
         <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm">
           <span className="w-2 h-2 bg-teal-500 rounded-full" />
-          Creator
+          Submitted By
         </div>
       ),
       dataIndex: "creatorName",

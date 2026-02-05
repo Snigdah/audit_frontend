@@ -53,4 +53,3 @@ export interface ReportSubmissionDetailResponse {
   mergeCells?: MergeCellDto[];
   versionId?: number;
 }
-
