@@ -1,16 +1,45 @@
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Spin } from "antd";
 import { Tabs } from "antd";
 import PageHeader from "../../components/common/PageHeader";
 import ReportOverview from "../../components/report/ReportOverview";
 import ReportSettings from "../../components/report/ReportSettings";
 import ReportHistory from "../../components/report/ReportHistory";
 import ReportSubmission from "../../components/report/ReportSubmission";
+import { ReportService } from "../../services/ReportService";
+import type { TemplateReportResponse } from "../../types/report";
 
 const ReportDetails = () => {
     const { reportId } = useParams<{ reportId: string }>();
+    const [reportDetails, setReportDetails] = useState<TemplateReportResponse | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (reportId) {
+            setLoading(true);
+            ReportService.fetchAllReports()
+                .then((reports) => {
+                    const report = reports.find((r) => r.templateId === Number(reportId));
+                    if (report) setReportDetails(report);
+                })
+                .catch((err) => {
+                    console.error("Failed to fetch report details:", err);
+                })
+                .finally(() => setLoading(false));
+        }
+    }, [reportId]);
 
     if (!reportId) {
         return null;
+    }
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <Spin size="large" tip="Loading report details..." />
+            </div>
+        );
     }
 
     const items = [
@@ -22,7 +51,7 @@ const ReportDetails = () => {
         {
             key: "submission",
             label: "Submission",
-            children: <ReportSubmission reportId={reportId} />,
+            children: <ReportSubmission reportId={reportId} templateVersionId={reportDetails?.templateVersionId} />,
         },
         {
             key: "settings",

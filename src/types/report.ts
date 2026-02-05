@@ -9,7 +9,7 @@ export type ReportStatusEnum =
 export interface TemplateReportResponse {
   templateId: number;
   templateName: string;
-  templateVersionId: number;
+  templateVersionId?: number;
   description: string;
   departmentName: string;
   equipmentName: string;

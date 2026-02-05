@@ -2,12 +2,13 @@ import ReportSlot from "../reportSubmission/ReportSlot";
 
 interface ReportSubmissionProps {
     reportId: string;
+    templateVersionId?: number;
 }
 
-const ReportSubmission = ({ reportId }: ReportSubmissionProps) => {
+const ReportSubmission = ({ reportId, templateVersionId }: ReportSubmissionProps) => {
   return (
     <>
-      <ReportSlot reportId={reportId} />
+      <ReportSlot reportId={reportId} templateVersionId={templateVersionId} />
     </>
   )
 }

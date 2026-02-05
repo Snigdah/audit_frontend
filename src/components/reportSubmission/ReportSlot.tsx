@@ -12,6 +12,7 @@ import { Clock } from "lucide-react";
 
 interface ReportSlotProps {
   reportId: string;
+  templateVersionId?: number;
 }
 
 const PAGE_SIZE = 12;
@@ -85,7 +86,7 @@ const statusCardConfig: Record<
   },
 };
 
-const ReportSlot = ({ reportId }: ReportSlotProps) => {
+const ReportSlot = ({ reportId, templateVersionId }: ReportSlotProps) => {
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Dayjs>(() => dayjs());
   const [slots, setSlots] = useState<ExpectedSlotStatusResponse[]>([]);
@@ -196,12 +197,26 @@ const ReportSlot = ({ reportId }: ReportSlotProps) => {
                         role={hasSubmission ? "button" : undefined}
                         tabIndex={hasSubmission ? 0 : undefined}
                         onClick={() => {
-                          if (hasSubmission && row.expectedSubmissionId != null)
-                            navigate(
-                              `/report/reports/${reportId}/submissions/${row.expectedSubmissionId}`
-                            );
+                          if (hasSubmission && row.expectedSubmissionId != null) {
+                            const url = templateVersionId
+                              ? `/report/reports/${reportId}/submissions/${row.expectedSubmissionId}?versionId=${templateVersionId}`
+                              : `/report/reports/${reportId}/submissions/${row.expectedSubmissionId}`;
+                            navigate(url);
+                          }
                         }}
-                        
+                        onKeyDown={(e) => {
+                          if (
+                            hasSubmission &&
+                            row.expectedSubmissionId != null &&
+                            (e.key === "Enter" || e.key === " ")
+                          ) {
+                            e.preventDefault();
+                            const url = templateVersionId
+                              ? `/report/reports/${reportId}/submissions/${row.expectedSubmissionId}?versionId=${templateVersionId}`
+                              : `/report/reports/${reportId}/submissions/${row.expectedSubmissionId}`;
+                            navigate(url);
+                          }
+                        }}
                         className={`rounded-xl border-2 transition-all duration-200 p-4 flex flex-col justify-center min-h-[88px] ${config.cardClass} ${hasSubmission ? "cursor-pointer" : ""}`}
                       >
                         <div
