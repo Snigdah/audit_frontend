@@ -59,4 +59,12 @@ export const ReportService = {
     return response.data.data;
   },
 
+  async fetchReportDetails(reportId: number): Promise<TemplateReportResponse> {
+    const response = await apiClient.get<
+      ApiResponse<TemplateReportResponse>
+    >(ENDPOINTS.REPORT.FETCH_BY_ID(reportId));
+
+    return response.data.data;
+  },
+
 };

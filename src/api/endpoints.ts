@@ -291,6 +291,7 @@ export const ENDPOINTS = {
       return `${BASE.REPORT}/${reportId}/operator${qs ? `?${qs}` : ""}`;
     },
     FETCH_STRUCTURE: (reportId: number) =>`${BASE.REPORT}/${reportId}/structure`,
+    FETCH_BY_ID: (reportId: number) => `${BASE.REPORT}/${reportId}`,
   },
   REPORT_TIME: {
     ADD_TIME_SLOT: (reportId: number) =>
