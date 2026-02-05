@@ -249,7 +249,7 @@ const TemplateHistory = ({ templateRequestId }: TemplateHistoryProps) => {
         onRow={(record) => ({
           onClick: () =>
             navigate(
-              `/reports/template/${templateRequestId}/submissions/${record.submissionId}`
+              `/report/template/${templateRequestId}/submissions/${record.submissionId}`
             ),
           className: "cursor-pointer",
         })}

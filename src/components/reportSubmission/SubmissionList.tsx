@@ -104,8 +104,7 @@ const SubmissionList = ({
       ),
       dataIndex: "submittedAt",
       key: "submittedAt",
-      width: 160,
-      responsive: ["sm"],
+      width: 200,
       render: (date: string) => (
         <div className="flex flex-col">
           <span className="text-sm font-medium text-gray-800">
@@ -146,7 +145,6 @@ const SubmissionList = ({
       dataIndex: "reviewerName",
       key: "reviewerName",
       width: 140,
-      responsive: ["md"],
       render: (name: string | null) => (
         <span className="text-sm text-gray-700">
           {name ?? <span className="text-gray-400 italic">—</span>}
