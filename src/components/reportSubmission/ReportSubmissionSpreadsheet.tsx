@@ -76,14 +76,19 @@ const ReportSubmissionSpreadsheet = ({
         const baseClassName = getCellClassName(row, col);
         const isChanged = changedCellsSet.has(`${row}-${col}`);
         
+        let className = "";
         if (row === 0) {
-          cellProperties.className = (baseClassName ? baseClassName + " " : "") + "header-cell";
+          className = (baseClassName ? baseClassName + " " : "") + "header-cell";
         } else {
-          if (isChanged) {
-            cellProperties.className = (baseClassName ? baseClassName + " " : "") + "changed-cell";
-          } else if (baseClassName) {
-            cellProperties.className = baseClassName;
-          }
+          className = baseClassName || "";
+        }
+        
+        if (isChanged) {
+          className = (className ? className + " " : "") + "changed-cell";
+        }
+        
+        if (className) {
+          cellProperties.className = className.trim();
         }
         
         return cellProperties;
@@ -117,8 +122,6 @@ const ReportSubmissionSpreadsheet = ({
         
         .header-cell {
           background-color: #f5f5f5 !important;
-          font-weight: 600;
-          text-align: center;
         }
         
         .no-permission-cell {
