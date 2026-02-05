@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Table, Tag, Spin, Empty, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
@@ -32,6 +33,7 @@ const SubmissionList = ({
   expectedSubmissionId,
   onOpenCreate,
 }: SubmissionListProps) => {
+  const navigate = useNavigate();
   const [submissions, setSubmissions] = useState<
     ReportSubmissionSimpleResponse[]
   >([]);
@@ -220,6 +222,12 @@ const SubmissionList = ({
           }}
           scroll={{ x: 600 }}
           onChange={handleTableChange}
+          onRow={(record) => ({
+            onClick: () => {
+              navigate(`/report/reports/${reportId}/submissions/${expectedSubmissionId}/detail/${record.submissionId}`);
+            },
+            className: "cursor-pointer",
+          })}
           bordered
           size="middle"
           className="shadow-sm"

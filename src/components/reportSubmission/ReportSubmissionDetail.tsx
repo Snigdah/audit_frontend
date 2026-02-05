@@ -1,0 +1,239 @@
+import { useEffect, useState } from "react";
+import { Card, Tag, Spin, Alert } from "antd";
+import { useNavigate } from "react-router-dom";
+import { BankOutlined, ToolOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import type { ReportSubmissionDetailResponse } from "../../types/reportSubmission";
+import ReportSubmissionActions from "./ReportSubmissionActions";
+import { ReportSubmissionService } from "../../services/ReportSubmissionService";
+import ReportSubmissionSpreadsheet from "./ReportSubmissionSpreadsheet";
+import dayjs from "dayjs";
+
+interface ReportSubmissionDetailProps {
+  submissionId: number;
+}
+
+const ReportSubmissionDetail = ({
+  submissionId,
+}: ReportSubmissionDetailProps) => {
+  const [submission, setSubmission] =
+    useState<ReportSubmissionDetailResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const fetchSubmissionDetail = async () => {
+    try {
+      setLoading(true);
+      const data = await ReportSubmissionService.getSubmissionDetail(submissionId);
+      if (!data) {
+        setError("Submission not found");
+        return;
+      }
+      setSubmission(data);
+      setError(null);
+    } catch (err) {
+      setError("Failed to load submission details");
+      console.error("Error fetching submission detail:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSubmissionDetail();
+  }, [submissionId]);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "APPROVED":
+        return "success";
+      case "PENDING":
+      case "NO_APPROVAL":
+        return "warning";
+      case "REJECTED":
+        return "error";
+      default:
+        return "default";
+    }
+  };
+
+  const getReviewStyles = (status: string) => {
+    switch (status) {
+      case "REJECTED":
+        return {
+          border: "border-rose-200",
+          bg: "bg-rose-50",
+          text: "text-rose-600",
+          label: "Rejected Reason",
+        };
+      case "APPROVED":
+        return {
+          border: "border-emerald-200",
+          bg: "bg-emerald-50",
+          text: "text-emerald-600",
+          label: "Approval Note",
+        };
+      default:
+        return {
+          border: "border-gray-200",
+          bg: "bg-gray-50",
+          text: "text-gray-700",
+          label: "Review Note",
+        };
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <Spin size="large" tip="Loading submission details..." />
+      </div>
+    );
+  }
+
+  if (error || !submission) {
+    return (
+      <Alert
+        message="Error"
+        description={error || "Submission not found"}
+        type="error"
+        showIcon
+      />
+    );
+  }
+
+  const isLateSubmission = (submission.lateMinutes ?? 0) > 0;
+
+  return (
+    <div className="space-y-6 pb-6">
+      <Card className="shadow-sm">
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pb-4 border-b border-gray-200">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <h2 className="text-xl font-semibold text-gray-800">
+                  Submission #{submission.submissionId}
+                </h2>
+                {isLateSubmission && (
+                  <Tag color="orange" className="text-xs">
+                    Late by {submission.lateMinutes} min
+                  </Tag>
+                )}
+              </div>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <ClockCircleOutlined />
+                <span>
+                  Submitted on {dayjs(submission.submittedAt).format("MMM DD, YYYY hh:mm A")}
+                </span>
+              </div>
+            </div>
+            <Tag color={getStatusColor(submission.status)} className="text-sm px-3 py-1">
+              {submission.status}
+            </Tag>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div
+              className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+              onClick={() => navigate(`/infrastructure/department/${submission.departmentId}`)}
+            >
+              <div className="flex items-center justify-center w-10 h-10 bg-white rounded-lg shadow-sm">
+                <BankOutlined className="text-lg text-gray-700" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-gray-500 mb-1">Department</p>
+                <p className="text-sm font-medium text-gray-800 truncate">
+                  {submission.departmentName}
+                </p>
+              </div>
+            </div>
+
+            <div
+              className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+              onClick={() => navigate(`/infrastructure/equipment/${submission.equipmentId}`)}
+            >
+              <div className="flex items-center justify-center w-10 h-10 bg-white rounded-lg shadow-sm">
+                <ToolOutlined className="text-lg text-gray-700" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-gray-500 mb-1">Equipment</p>
+                <p className="text-sm font-medium text-gray-800 truncate">
+                  {submission.equipmentName}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-center w-10 h-10 bg-white rounded-lg shadow-sm">
+                <ClockCircleOutlined className="text-lg text-gray-700" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-gray-500 mb-1">Submitted By</p>
+                <p className="text-sm font-medium text-gray-800 truncate">
+                  {submission.creatorName}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {submission.reviewComments && (
+            <div
+              className={`mt-4 p-4 rounded-lg border-l-4 
+                ${getReviewStyles(submission.status).border}
+                ${getReviewStyles(submission.status).bg}`}
+            >
+              <p className={`text-xs font-medium mb-1 ${getReviewStyles(submission.status).text}`}>
+                {getReviewStyles(submission.status).label}
+              </p>
+              <p className="text-sm text-gray-800 leading-relaxed">
+                {submission.reviewComments}
+              </p>
+            </div>
+          )}
+        </div>
+      </Card>
+
+      {submission.data && (
+        <Card
+          title="Submission Data"
+          size="small"
+          extra={
+            <div className="flex items-center gap-3 text-xs">
+              <span className="flex items-center gap-1">
+                <span className="w-3 h-3 bg-blue-100 border-2 border-blue-400 rounded"></span>
+                <span className="text-gray-600">Changed Cell</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-3 h-3 bg-white border border-gray-300 rounded"></span>
+                <span className="text-gray-600">Full Access</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-3 h-3 bg-orange-50 border border-orange-200 rounded"></span>
+                <span className="text-gray-600">Restricted</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="w-3 h-3 bg-red-50 border border-red-200 rounded"></span>
+                <span className="text-gray-600">No Access</span>
+              </span>
+            </div>
+          }
+        >
+          <ReportSubmissionSpreadsheet
+            data={submission.data.data}
+            permissions={submission.data.permissions}
+            mergeCells={submission.data.mergeCells}
+            changes={submission.changes}
+          />
+        </Card>
+      )}
+
+      <ReportSubmissionActions
+        submissionId={submission.submissionId}
+        status={submission.status}
+        onActionComplete={fetchSubmissionDetail}
+      />
+    </div>
+  );
+};
+
+export default ReportSubmissionDetail;
