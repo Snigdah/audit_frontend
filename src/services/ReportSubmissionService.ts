@@ -5,6 +5,7 @@ import type {
   ReportSubmissionDetailResponse,
   ReportSubmissionRequest,
   ReportSubmissionSimpleResponse,
+  ReviewDecisionRequest,
 } from "../types/reportSubmission";
 
 export const ReportSubmissionService = {
@@ -58,5 +59,15 @@ export const ReportSubmissionService = {
     } catch {
       return null;
     }
+  },
+
+  async reviewSubmission(reportId: number, submissionId: number,payload: ReviewDecisionRequest):
+     Promise<void> {await apiClient.post(
+        ENDPOINTS.REPORT_SUBMISSION.REVIEW_SUBMISSION(
+            reportId,
+            submissionId
+        ),
+          payload
+    );
   },
 };

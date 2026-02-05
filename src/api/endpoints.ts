@@ -345,6 +345,8 @@ export const ENDPOINTS = {
     ) =>
       `${BASE.REPORT_SUBMISSION}/report/${reportId}/version/${versionId}/expected/${expectedSubmissionId}`,
     GET_SUBMISSION_DETAIL: (submissionId: number) => `${BASE.REPORT_SUBMISSION}/${submissionId}`,
+    REVIEW_SUBMISSION: (reportId: number,submissionId: number) =>
+      `${BASE.REPORT_SUBMISSION}/report/${reportId}/submission/${submissionId}/review`,
   },
 
 };

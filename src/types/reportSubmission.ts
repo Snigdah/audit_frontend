@@ -74,3 +74,8 @@ export interface ReportSubmissionDetailResponse {
 
   expectedSubmissionId: number;
 }
+
+export interface ReviewDecisionRequest {
+  status: "APPROVED" | "REJECTED";
+  reviewComment?: string;
+}
