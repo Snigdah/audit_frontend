@@ -360,6 +360,36 @@ export const ENDPOINTS = {
     GET_SUBMISSION_DETAIL: (submissionId: number) => `${BASE.REPORT_SUBMISSION}/${submissionId}`,
     REVIEW_SUBMISSION: (reportId: number, submissionId: number) =>
       `${BASE.REPORT_SUBMISSION}/report/${reportId}/submission/${submissionId}/review`,
+    STRUCTURE_CHANGE_SUBMISSIONS_LIST: (
+        reportId: number,
+        params?: {
+          all?: boolean;
+          page?: number;
+          size?: number;
+        }
+      ) => {
+        const query = new URLSearchParams();
+
+        if (params?.all !== undefined)
+          query.append("all", String(params.all));
+
+        if (params?.page !== undefined)
+          query.append("page", params.page.toString());
+
+        if (params?.size !== undefined)
+          query.append("size", params.size.toString());
+
+        const qs = query.toString();
+
+        return `${BASE.REPORT_SUBMISSION}/report/${reportId}/structure-change${
+          qs ? `?${qs}` : ""
+        }`;
+      },
+    APPROVE_SUPERVISOR_STRUCTURE_CHANGE: (reportId: number, submissionId: number) =>
+        `${BASE.REPORT_SUBMISSION}/report/${reportId}/submission/${submissionId}/approve-supervisor-structure-change`,
+    SUPERVISOR_STRUCTURE_CHANGE: (reportId: number) => `${BASE.REPORT_SUBMISSION}/report/${reportId}/supervisor/structure-change`,
+
+
   },
 
 };

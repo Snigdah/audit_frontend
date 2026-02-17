@@ -9,6 +9,7 @@ import ReportHistory from "../../components/report/ReportHistory";
 import ReportSubmission from "../../components/report/ReportSubmission";
 import { ReportService } from "../../services/ReportService";
 import type { TemplateReportResponse } from "../../types/report";
+import ReportStructure from "../../components/reportStructure/ReportStructure";
 
 const ReportDetails = () => {
     const { reportId } = useParams<{ reportId: string }>();
@@ -62,6 +63,11 @@ const ReportDetails = () => {
             key: "history",
             label: "History",
             children: <ReportHistory reportId={reportId} />,
+        },
+        {
+            key: "structure",
+            label: "Structure",
+            children: <ReportStructure reportId={reportId} />,
         },
     ];
 

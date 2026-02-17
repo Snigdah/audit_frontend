@@ -71,4 +71,49 @@ export const ReportSubmissionService = {
       payload
     );
   },
+
+  async fetchStructureChangeSubmissions(
+      reportId: number,
+      params?: {
+        all?: boolean;
+        page?: number;
+        size?: number;
+      }
+    ): Promise<PaginatedData<ReportSubmissionSimpleResponse>> {
+      const response = await apiClient.get<
+        ApiResponse<PaginatedData<ReportSubmissionSimpleResponse>>
+      >(
+        ENDPOINTS.REPORT_SUBMISSION.STRUCTURE_CHANGE_SUBMISSIONS_LIST(
+          reportId,
+          params
+        )
+      );
+
+      return response.data.data;
+    },
+
+  async approveSupervisorStructureChange(
+      reportId: number,
+      submissionId: number,
+      payload: ReviewDecisionRequest
+    ): Promise<void> {
+      await apiClient.post(
+        ENDPOINTS.REPORT_SUBMISSION.APPROVE_SUPERVISOR_STRUCTURE_CHANGE(
+          reportId,
+          submissionId
+        ),
+      payload
+    );
+  },
+  
+
+  async changeSupervisorStructure(reportId: number, payload: ReportSubmissionRequest
+    ): Promise<void> {
+      await apiClient.post(
+        ENDPOINTS.REPORT_SUBMISSION.SUPERVISOR_STRUCTURE_CHANGE(reportId),
+        payload
+      );
+    },
+
+
 };
