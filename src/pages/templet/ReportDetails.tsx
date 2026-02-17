@@ -10,11 +10,13 @@ import ReportSubmission from "../../components/report/ReportSubmission";
 import { ReportService } from "../../services/ReportService";
 import type { TemplateReportResponse } from "../../types/report";
 import ReportStructure from "../../components/reportStructure/ReportStructure";
+import SupervisorStructureChangeModal from "../../components/reportStructure/SupervisorStructureChangeModal";
 
 const ReportDetails = () => {
     const { reportId } = useParams<{ reportId: string }>();
     const [reportDetails, setReportDetails] = useState<TemplateReportResponse | null>(null);
     const [loading, setLoading] = useState(true);
+    const [changeRequestOpen, setChangeRequestOpen] = useState(false);
 
     useEffect(() => {
         if (reportId) {
@@ -67,7 +69,12 @@ const ReportDetails = () => {
         {
             key: "structure",
             label: "Structure",
-            children: <ReportStructure reportId={reportId} />,
+            children: (
+              <ReportStructure
+                reportId={reportId}
+                onOpenChangeRequest={() => setChangeRequestOpen(true)}
+              />
+            ),
         },
     ];
 
@@ -112,6 +119,18 @@ const ReportDetails = () => {
                     />
                 </div>
             </div>
+
+            {reportId && (
+              <SupervisorStructureChangeModal
+                reportId={Number(reportId)}
+                open={changeRequestOpen}
+                onClose={() => setChangeRequestOpen(false)}
+                onSuccess={() => {
+                  setChangeRequestOpen(false);
+                  window.dispatchEvent(new Event("structure-change-list-refresh"));
+                }}
+              />
+            )}
         </div>
     );
 };

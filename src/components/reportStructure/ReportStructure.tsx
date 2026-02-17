@@ -1,9 +1,17 @@
+import StructureChangeList from "./StructureChangeList";
+
 interface ReportStructureProps {
-    reportId: string;
+  reportId: string;
+  onOpenChangeRequest?: () => void;
 }
 
-const ReportStructure = ({ reportId }: ReportStructureProps) => {
-  return <div>Report Structure Component for report ID: {reportId}</div>;
-}
+const ReportStructure = ({ reportId, onOpenChangeRequest }: ReportStructureProps) => {
+  return (
+    <StructureChangeList
+      reportId={reportId}
+      onOpenChangeRequest={onOpenChangeRequest}
+    />
+  );
+};
 
 export default ReportStructure;
