@@ -218,7 +218,7 @@ const StructureChangeList = ({ reportId, onOpenChangeRequest }: StructureChangeL
           onRow={(record) => ({
             onClick: () => {
               navigate(
-                `/report/reports/${reportId}/submissions/${record.expectedSubmissionId}/detail/${record.submissionId}`
+                `/report/reports/${reportId}/structure-change/${record.submissionId}`
               );
             },
             className: "cursor-pointer",

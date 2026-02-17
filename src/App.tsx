@@ -39,6 +39,7 @@ import ReportPage from "./pages/templet/ReportsPage";
 import ReportDetails from "./pages/templet/ReportDetails";
 import ReportSubmissionListPage from "./pages/templet/ReportSubmissionListPage";
 import ReportSubmissionDetailsPage from "./pages/templet/ReportSubmissionDetailsPage";
+import StructureChangeDetailsPage from "./pages/templet/StructureChangeDetailsPage";
 
 function App() {
   return (
@@ -119,6 +120,10 @@ function App() {
                   {/* ======================= Templet ======================== */}
                   <Route path="/report/template" element={<TemplateRequestPage />} />
                   <Route path="/report/reports" element={<ReportPage />} />
+                  <Route
+                    path="/report/reports/:reportId/structure-change/:submissionId"
+                    element={<StructureChangeDetailsPage />}
+                  />
                   <Route
                     path="/report/reports/:reportId/submissions/:expectedSubmissionId/detail/:submissionId"
                     element={<ReportSubmissionDetailsPage />}
