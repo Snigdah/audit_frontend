@@ -308,7 +308,33 @@ export const ENDPOINTS = {
     SUBMISSION_DETAIL: (templateId: number, submissionId: number) => `${BASE.TEMPLET}/${templateId}/submission/${submissionId}`,
   },
   REPORT: {
-    FETCH_ALL: `${BASE.REPORT}`,
+    FETCH_ALL: (params?: {
+        status?: string;
+        departmentName?: string;
+        equipmentName?: string;
+        templateName?: string;
+        page?: number;
+        size?: number;
+      }) => {
+        const query = new URLSearchParams();
+
+        if (params?.status) query.append("status", params.status);
+        if (params?.departmentName)
+          query.append("departmentName", params.departmentName);
+        if (params?.equipmentName)
+          query.append("equipmentName", params.equipmentName);
+        if (params?.templateName)
+          query.append("templateName", params.templateName);
+        if (params?.page !== undefined)
+          query.append("page", params.page.toString());
+        if (params?.size !== undefined)
+          query.append("size", params.size.toString());
+
+        const qs = query.toString();
+
+        return `${BASE.REPORT}${qs ? `?${qs}` : ""}`;
+    },
+
     ASSIGN_OPERATOR: (reportId: number) => `${BASE.REPORT}/${reportId}/operator`,
     REMOVE_OPERATOR: (reportId: number, operatorId: number) => `${BASE.REPORT}/${reportId}/operator/${operatorId}`,
     FETCH_OPERATORS: (

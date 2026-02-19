@@ -8,13 +8,20 @@ import OperatorService from "./OperatorService";
 
 export const ReportService = {
 
-  async fetchAllReports(): Promise<TemplateReportResponse[]> {
-    const response = await apiClient.get<ApiResponse<TemplateReportResponse[]>>(
-      ENDPOINTS.REPORT.FETCH_ALL
-    );
-
+  async fetchAllReports(
+      params?: {
+        status?: string;
+        departmentName?: string;
+        equipmentName?: string;
+        templateName?: string;
+        page?: number;
+        size?: number;
+      }
+    ): Promise<PaginatedData<TemplateReportResponse>> {
+      const response = await apiClient.get<ApiResponse<PaginatedData<TemplateReportResponse>>>(ENDPOINTS.REPORT.FETCH_ALL(params));
     return response.data.data;
   },
+
 
   async assignOperator(
     reportId: number,
