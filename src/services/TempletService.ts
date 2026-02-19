@@ -13,15 +13,20 @@ export const TemplateService = {
     return response.data;
   },
   
-  async fetchTemplateRequests(): Promise<
-    ApiResponse<TemplateRequestList[]>
-  > {
-    const response = await apiClient.get<ApiResponse<TemplateRequestList[]>>(
-      ENDPOINTS.TEMPLATE.FETCH_REQUEST_TEMPLET
-    );
-
-    return response.data;
-  },
+  async fetchTemplateRequests(
+  params?: {
+      status?: string;
+      departmentName?: string;
+      equipmentName?: string;
+      templateName?: string;
+      page?: number;
+      size?: number;
+    }
+    ): Promise<PaginatedData<TemplateRequestList>> {
+      const response = await apiClient.get<ApiResponse<PaginatedData<TemplateRequestList>>
+      >(ENDPOINTS.TEMPLATE.FETCH_REQUEST_TEMPLET(params));
+      return response.data.data;
+    },
   
   async fetchTemplateDetails(templateId: number): Promise<
     ApiResponse<TemplateDetailResponse>

@@ -274,7 +274,33 @@ export const ENDPOINTS = {
       return `${BASE.TEMPLET}/${templateId}/submissions${qs ? `?${qs}` : ""}`;
     },
     CREATET_REQUEST: `${BASE.TEMPLET}`,
-    FETCH_REQUEST_TEMPLET: `${BASE.TEMPLET}`,
+    FETCH_REQUEST_TEMPLET: (params?: {
+          status?: string;
+          departmentName?: string;
+          equipmentName?: string;
+          templateName?: string;
+          page?: number;
+          size?: number;
+        }) => {
+         const query = new URLSearchParams();
+
+        if (params?.status) query.append("status", params.status);
+        if (params?.departmentName)
+          query.append("departmentName", params.departmentName);
+        if (params?.equipmentName)
+          query.append("equipmentName", params.equipmentName);
+        if (params?.templateName)
+          query.append("templateName", params.templateName);
+        if (params?.page !== undefined)
+          query.append("page", params.page.toString());
+        if (params?.size !== undefined)
+          query.append("size", params.size.toString());
+
+        const qs = query.toString();
+
+      return `${BASE.TEMPLET}${qs ? `?${qs}` : ""}`;
+    },
+
     DETAILS: (id: number) => `${BASE.TEMPLET}/${id}`,
     REVIEW_SUBMISSION: (templateId: number, submissionId: number) => `${BASE.TEMPLET}/${templateId}/approve/${submissionId}`,
     SUBMIT_TEMPLATE: (templateId: number) =>
