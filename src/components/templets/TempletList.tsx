@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Table, Input, Select, Tag, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
   PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import SectionHeader from "../../components/common/SectionHeader";
-import CustomButton from "../../components/common/CustomButton";
+import SectionHeader from "../common/SectionHeader";
+import CustomButton from "../common/CustomButton";
 import { useNavigate } from "react-router-dom";
 import type { TemplateRequestList as TemplateRow } from "../../types/template";
 import { debounce } from "lodash";
@@ -15,78 +15,125 @@ import { TemplateService } from "../../services/TempletService";
 const TemplateRequestList = () => {
   const navigate = useNavigate();
 
-  // Data states
   const [templates, setTemplates] = useState<TemplateRow[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
 
-  // Filter states (UI only - not sent to API yet)
   const [searchText, setSearchText] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState<string | undefined>();
   const [equipmentFilter, setEquipmentFilter] = useState<string | undefined>();
   const [statusFilter, setStatusFilter] = useState<string | undefined>();
 
-  // Fetch templates from API
-  const fetchTemplates = () => {
+  const fetchTemplates = useCallback(
+    (page: number = currentPage, size: number = pageSize) => {
+      setLoading(true);
+      const params = {
+        page: page - 1,
+        size,
+        ...(searchText?.trim() && { templateName: searchText.trim() }),
+        ...(departmentFilter && { departmentName: departmentFilter }),
+        ...(equipmentFilter && { equipmentName: equipmentFilter }),
+        ...(statusFilter && { status: statusFilter }),
+      };
+      TemplateService.fetchTemplateRequests(params)
+        .then((response) => {
+          setTemplates(response.content ?? []);
+          setTotalElements(response.pagination?.totalElements ?? 0);
+        })
+        .catch((err) => {
+          console.error(err);
+          message.error("Failed to fetch templates");
+          setTemplates([]);
+          setTotalElements(0);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    },
+    [currentPage, pageSize, searchText, departmentFilter, equipmentFilter, statusFilter]
+  );
+
+  const debouncedFetch = useCallback(
+    debounce((templateName: string, dept?: string, equip?: string, status?: string) => {
+      setCurrentPage(1);
+      setLoading(true);
+      const params = {
+        page: 0,
+        size: pageSize,
+        ...(templateName?.trim() && { templateName: templateName.trim() }),
+        ...(dept && { departmentName: dept }),
+        ...(equip && { equipmentName: equip }),
+        ...(status && { status }),
+      };
+      TemplateService.fetchTemplateRequests(params)
+        .then((response) => {
+          setTemplates(response.content ?? []);
+          setTotalElements(response.pagination?.totalElements ?? 0);
+        })
+        .catch((err) => {
+          console.error(err);
+          message.error("Failed to fetch templates");
+          setTemplates([]);
+          setTotalElements(0);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }, 500),
+    [pageSize, departmentFilter, equipmentFilter, statusFilter]
+  );
+
+  useEffect(() => {
+    fetchTemplates(1, pageSize);
+  }, [departmentFilter, equipmentFilter, statusFilter]);
+
+  useEffect(() => {
+    return () => {
+      debouncedFetch.cancel();
+    };
+  }, [debouncedFetch]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchText(value);
+    debouncedFetch(value, departmentFilter, equipmentFilter, statusFilter);
+  };
+
+  const handleTableChange = (pagination: { current?: number; pageSize?: number }) => {
+    const nextPage = pagination.current ?? currentPage;
+    const nextSize = pagination.pageSize ?? pageSize;
+    setCurrentPage(nextPage);
+    setPageSize(nextSize);
+    const params = {
+      page: nextPage - 1,
+      size: nextSize,
+      ...(searchText?.trim() && { templateName: searchText.trim() }),
+      ...(departmentFilter && { departmentName: departmentFilter }),
+      ...(equipmentFilter && { equipmentName: equipmentFilter }),
+      ...(statusFilter && { status: statusFilter }),
+    };
     setLoading(true);
-    TemplateService.fetchTemplateRequests()
+    TemplateService.fetchTemplateRequests(params)
       .then((response) => {
-        setTemplates(response.data || []);
+        setTemplates(response.content ?? []);
+        setTotalElements(response.pagination?.totalElements ?? 0);
       })
       .catch((err) => {
         console.error(err);
         message.error("Failed to fetch templates");
         setTemplates([]);
+        setTotalElements(0);
       })
       .finally(() => {
         setLoading(false);
       });
   };
 
-  useEffect(() => {
-    fetchTemplates();
-  }, []);
+  const uniqueDepartments = [...new Set(templates.map((t) => t.departmentName))].filter(Boolean);
+  const uniqueEquipment = [...new Set(templates.map((t) => t.equipmentName))].filter(Boolean);
 
-  // Debounced search (for future API integration)
-  const debouncedSearch = useCallback(
-    debounce((searchValue: string) => {
-      // When API supports search, call fetchTemplates with params here
-      console.log("Search term:", searchValue);
-    }, 500),
-    []
-  );
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchText(value);
-    debouncedSearch(value);
-  };
-
-  // Client-side filtering (until API supports query parameters)
-  const filteredData = useMemo(() => {
-    return templates.filter((t) => {
-      const matchesSearch =
-        t.templateName.toLowerCase().includes(searchText.toLowerCase()) ||
-        t.description?.toLowerCase().includes(searchText.toLowerCase());
-      const matchesDepartment = !departmentFilter || t.departmentName === departmentFilter;
-      const matchesEquipment = !equipmentFilter || t.equipmentName === equipmentFilter;
-      const matchesStatus = !statusFilter || t.status === statusFilter;
-
-      return matchesSearch && matchesDepartment && matchesEquipment && matchesStatus;
-    });
-  }, [templates, searchText, departmentFilter, equipmentFilter, statusFilter]);
-
-  // Extract unique values for filters
-  const uniqueDepartments = useMemo(
-    () => [...new Set(templates.map((t) => t.departmentName))].filter(Boolean),
-    [templates]
-  );
-
-  const uniqueEquipment = useMemo(
-    () => [...new Set(templates.map((t) => t.equipmentName))].filter(Boolean),
-    [templates]
-  );
-
-  // Status configuration
   const getStatusConfig = (status: string) => {
     switch (status) {
       case "APPROVED":
@@ -183,6 +230,7 @@ const TemplateRequestList = () => {
                 placeholder="Search templates..."
                 prefix={<SearchOutlined className="text-gray-400" />}
                 allowClear
+                value={searchText}
                 onChange={handleSearchChange}
                 className="w-full sm:w-48 lg:w-44 xl:w-52"
                 size="middle"
@@ -195,7 +243,12 @@ const TemplateRequestList = () => {
                 optionFilterProp="label"
                 className="w-full sm:w-32 lg:w-32 xl:w-36"
                 size="middle"
-                onChange={(value) => setDepartmentFilter(value)}
+                value={departmentFilter}
+                onChange={(value) => {
+                  setDepartmentFilter(value);
+                  setCurrentPage(1);
+                }}
+                onClear={() => setCurrentPage(1)}
                 filterOption={(input, option) =>
                   String(option?.label ?? "")
                     .toLowerCase()
@@ -216,7 +269,12 @@ const TemplateRequestList = () => {
                 optionFilterProp="label"
                 className="w-full sm:w-32 lg:w-32 xl:w-36"
                 size="middle"
-                onChange={(value) => setEquipmentFilter(value)}
+                value={equipmentFilter}
+                onChange={(value) => {
+                  setEquipmentFilter(value);
+                  setCurrentPage(1);
+                }}
+                onClear={() => setCurrentPage(1)}
                 filterOption={(input, option) =>
                   String(option?.label ?? "")
                     .toLowerCase()
@@ -235,7 +293,12 @@ const TemplateRequestList = () => {
                 allowClear
                 className="w-full sm:w-28 lg:w-28 xl:w-32"
                 size="middle"
-                onChange={(value) => setStatusFilter(value)}
+                value={statusFilter}
+                onChange={(value) => {
+                  setStatusFilter(value);
+                  setCurrentPage(1);
+                }}
+                onClear={() => setCurrentPage(1)}
               >
                 <Select.Option value="PENDING">Pending</Select.Option>
                 <Select.Option value="APPROVED">Approved</Select.Option>
@@ -254,12 +317,14 @@ const TemplateRequestList = () => {
         />
 
         <Table
-          dataSource={filteredData}
+          dataSource={templates}
           columns={columns}
           rowKey="templateId"
           loading={loading}
           pagination={{
-            pageSize: 10,
+            current: currentPage,
+            pageSize,
+            total: totalElements,
             pageSizeOptions: ["10", "20", "50"],
             showQuickJumper: true,
             showSizeChanger: true,
@@ -267,6 +332,7 @@ const TemplateRequestList = () => {
               `Showing ${range[0]}-${range[1]} of ${total} templates`,
           }}
           scroll={{ x: 50 }}
+          onChange={handleTableChange}
           bordered
           size="middle"
           className="shadow-sm cursor-pointer"
