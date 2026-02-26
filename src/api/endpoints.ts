@@ -174,7 +174,31 @@ export const ENDPOINTS = {
       return `${BASE.SUPERVISOR}/${params?.supervisorId}/operators${queryString ? `?${queryString}` : ""
         }`;
     },
-    GET_DEPARTMENT: (supervisorId: number) => `${BASE.SUPERVISOR}/${supervisorId}/departments`,
+    GET_DEPARTMENT: (
+      supervisorId: number,
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+    ) => {
+      const query = new URLSearchParams();
+
+      if (params?.search) query.append("search", params.search);
+      if (params?.page !== undefined)
+        query.append("page", params.page.toString());
+      if (params?.size !== undefined)
+        query.append("size", params.size.toString());
+      if (params?.all !== undefined)
+        query.append("all", String(params.all));
+
+      const qs = query.toString();
+
+      return `${BASE.SUPERVISOR}/${supervisorId}/departments${
+        qs ? `?${qs}` : ""
+      }`;
+    },
     SEARCH_DROP_DOWN: (query: string) => `${BASE.SUPERVISOR}/all?search=${query}`,
   },
   OPERATOR: {

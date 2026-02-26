@@ -16,37 +16,45 @@ const SupervisorDepartment = ({ supervisorId }: Props) => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
   const navigate = useNavigate();
 
-  const fetchDepartments = (search?: string) => {
+  const fetchDepartments = (
+    page: number = 1,
+    size: number = 10,
+    search?: string
+  ) => {
     setLoading(true);
-    SupervisorService.getDepartmentsBySupervisor(Number(supervisorId))
+    SupervisorService.getDepartmentsBySupervisor(Number(supervisorId), {
+      page: page - 1,
+      size,
+      search: search || undefined,
+    })
       .then((data) => {
-        if (search) {
-          const filtered = data.filter((department) =>
-            department.name.toLowerCase().includes(search.toLowerCase())
-          );
-          setDepartments(filtered);
-        } else {
-          setDepartments(data);
-        }
+        setDepartments(data.content ?? []);
+        setTotalElements(data.pagination?.totalElements ?? 0);
       })
       .catch((err) => {
         console.error(err);
         message.error("Failed to fetch departments");
+        setDepartments([]);
+        setTotalElements(0);
       })
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    fetchDepartments();
+    fetchDepartments(currentPage, pageSize, searchText);
   }, [supervisorId]);
 
   const debouncedSearch = useCallback(
     debounce((value: string) => {
-      fetchDepartments(value);
+      setCurrentPage(1);
+      fetchDepartments(1, pageSize, value);
     }, 500),
-    []
+    [pageSize]
   );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,11 +159,20 @@ const SupervisorDepartment = ({ supervisorId }: Props) => {
           rowKey="id"
           loading={loading}
           pagination={{
-            pageSize: 10,
+            current: currentPage,
+            pageSize: pageSize,
+            total: totalElements,
             pageSizeOptions: ["10", "20", "50"],
             showQuickJumper: true,
             showSizeChanger: true,
-            showTotal: (total) => `Total ${total} departments`,
+            showTotal: (total, range) =>
+              `Showing ${range[0]}-${range[1]} of ${total} departments`,
+          }}
+          onChange={(pagination) => {
+            const { current, pageSize: newPageSize } = pagination;
+            if (current) setCurrentPage(current);
+            if (newPageSize) setPageSize(newPageSize);
+            fetchDepartments(current || 1, newPageSize || 10, searchText);
           }}
           bordered
           size="middle"

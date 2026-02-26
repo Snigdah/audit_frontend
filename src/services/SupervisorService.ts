@@ -91,11 +91,20 @@ class SupervisorService {
 
   // ✅ Fetch Department by Supervisor
   async getDepartmentsBySupervisor(
-    supervisorId: number
-  ): Promise<Department[]> {
-    const response = await apiClient.get<ApiResponse<Department[]>>(
-      ENDPOINTS.SUPERVISOR.GET_DEPARTMENT(supervisorId)
-    );
+      supervisorId: number,
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+    ): Promise<PaginatedData<Department>> {
+      const response = await apiClient.get<
+        ApiResponse<PaginatedData<Department>>
+      >(
+        ENDPOINTS.SUPERVISOR.GET_DEPARTMENT(supervisorId, params)
+      );
+
     return response.data.data;
   }
 }
