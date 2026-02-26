@@ -193,10 +193,9 @@ export const ENDPOINTS = {
       if (params?.all !== undefined)
         query.append("all", String(params.all));
 
-      const qs = query.toString();
+      const queryString = query.toString();
 
-      return `${BASE.SUPERVISOR}/${supervisorId}/departments${
-        qs ? `?${qs}` : ""
+      return `${BASE.SUPERVISOR}/${supervisorId}/departments${queryString ? `?${queryString}` : ""
       }`;
     },
     SEARCH_DROP_DOWN: (query: string) => `${BASE.SUPERVISOR}/all?search=${query}`,
@@ -219,8 +218,56 @@ export const ENDPOINTS = {
       return `${BASE.OPERATOR}?${query.toString()}`;
     },
     UPDATE: (id: number) => `${BASE.OPERATOR}/${id}`,
-    GET_SUPERVISOR: (operatorId: number) => `${BASE.OPERATOR}/${operatorId}/supervisors`,
-    GET_EQUIPMENTS: (operatorId: number) => `${BASE.OPERATOR}/${operatorId}/equipments`,
+      GET_SUPERVISOR: (
+      operatorId: number,
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+    ) => {
+      const query = new URLSearchParams();
+
+      if (params?.search) query.append("search", params.search);
+      if (params?.page !== undefined)
+        query.append("page", params.page.toString());
+      if (params?.size !== undefined)
+        query.append("size", params.size.toString());
+      if (params?.all !== undefined)
+        query.append("all", String(params.all));
+
+      const qs = query.toString();
+
+      return `${BASE.OPERATOR}/${operatorId}/supervisors${
+        qs ? `?${qs}` : ""
+      }`;
+    },
+    GET_EQUIPMENTS: (
+      operatorId: number,
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+    ) => {
+      const query = new URLSearchParams();
+
+      if (params?.search) query.append("search", params.search);
+      if (params?.page !== undefined)
+        query.append("page", params.page.toString());
+      if (params?.size !== undefined)
+        query.append("size", params.size.toString());
+      if (params?.all !== undefined)
+        query.append("all", String(params.all));
+
+      const qs = query.toString();
+
+      return `${BASE.OPERATOR}/${operatorId}/equipments${
+        qs ? `?${qs}` : ""
+      }`;
+    },
     SEARCH_OPERATOR_DOWN: (query: string) => `${BASE.OPERATOR}/all?search=${query}`,
   },
   VIEWER: {

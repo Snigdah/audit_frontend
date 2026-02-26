@@ -52,23 +52,41 @@ class OperatorService {
   }
 
   // Fetch Supervisor by Operator
-   async getSupervisorByOperator(
-    operatorId: number
-  ): Promise<SupervisorSimple[]> {
-    const response = await apiClient.get<ApiResponse<SupervisorSimple[]>>(
-      ENDPOINTS.OPERATOR.GET_SUPERVISOR(operatorId)
-    );
+  async getSupervisorByOperator(
+      operatorId: number,
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+    ): Promise<PaginatedData<SupervisorSimple>> {
+      const response = await apiClient.get<
+        ApiResponse<PaginatedData<SupervisorSimple>>
+      >(
+        ENDPOINTS.OPERATOR.GET_SUPERVISOR(operatorId, params)
+      );
+
     return response.data.data;
   }
 
   // Fetch Equipments by Operator
-   async getEquipmentsByOperator(
-    operatorId: number
-  ): Promise<EquipmentResponse[]> {
-    const response = await apiClient.get<ApiResponse<EquipmentResponse[]>>(
-      ENDPOINTS.OPERATOR.GET_EQUIPMENTS(operatorId)
-    );
-    return response.data.data;
+  async getEquipmentsByOperator(
+      operatorId: number,
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+    ): Promise<PaginatedData<EquipmentResponse>> {
+      const response = await apiClient.get<
+        ApiResponse<PaginatedData<EquipmentResponse>>
+      >(
+        ENDPOINTS.OPERATOR.GET_EQUIPMENTS(operatorId, params)
+      );
+
+      return response.data.data;
   }
 
 }

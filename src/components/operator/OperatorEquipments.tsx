@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
-import { Space, Table, Input, message, Tooltip, Button } from "antd";
-import { EditOutlined, SearchOutlined } from "@ant-design/icons";
+import { Space, Table, Input, message } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import OperatorService from "../../services/OperatorService";
 import SectionHeader from "../common/SectionHeader";
@@ -16,39 +16,45 @@ const OperatorEquipments = ({ operatorId }: Props) => {
   const [equipments, setEquipments] = useState<EquipmentResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
   const navigate = useNavigate();
 
-  const fetchEquipments = (search?: string) => {
+  const fetchEquipments = (
+    page: number = 1,
+    size: number = 10,
+    search?: string
+  ) => {
     setLoading(true);
-    OperatorService.getEquipmentsByOperator(Number(operatorId))
+    OperatorService.getEquipmentsByOperator(Number(operatorId), {
+      page: page - 1,
+      size,
+      search: search || undefined,
+    })
       .then((data) => {
-        if (search) {
-          const filtered = data.filter(
-            (equipment) =>
-              equipment.equipmentName.toLowerCase().includes(search.toLowerCase()) ||
-              equipment.equipmentNumber.toLowerCase().includes(search.toLowerCase())
-          );
-          setEquipments(filtered);
-        } else {
-          setEquipments(data);
-        }
+        setEquipments(data.content ?? []);
+        setTotalElements(data.pagination?.totalElements ?? 0);
       })
       .catch((err) => {
         console.error(err);
         message.error("Failed to fetch equipments");
+        setEquipments([]);
+        setTotalElements(0);
       })
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    fetchEquipments();
+    fetchEquipments(currentPage, pageSize, searchText);
   }, [operatorId]);
 
   const debouncedSearch = useCallback(
     debounce((value: string) => {
-      fetchEquipments(value);
+      setCurrentPage(1);
+      fetchEquipments(1, pageSize, value);
     }, 500),
-    []
+    [pageSize]
   );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,7 +123,7 @@ const OperatorEquipments = ({ operatorId }: Props) => {
           </div>
         </div>
       ),
-    }
+    },
   ];
 
   return (
@@ -145,11 +151,20 @@ const OperatorEquipments = ({ operatorId }: Props) => {
           rowKey="id"
           loading={loading}
           pagination={{
-            pageSize: 10,
+            current: currentPage,
+            pageSize: pageSize,
+            total: totalElements,
             pageSizeOptions: ["10", "20", "50"],
             showQuickJumper: true,
             showSizeChanger: true,
-            showTotal: (total) => `Total ${total} equipments`,
+            showTotal: (total, range) =>
+              `Showing ${range[0]}-${range[1]} of ${total} equipments`,
+          }}
+          onChange={(pagination) => {
+            const { current, pageSize: newPageSize } = pagination;
+            if (current) setCurrentPage(current);
+            if (newPageSize) setPageSize(newPageSize);
+            fetchEquipments(current || 1, newPageSize || 10, searchText);
           }}
           bordered
           size="middle"
