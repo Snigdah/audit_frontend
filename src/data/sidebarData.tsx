@@ -99,16 +99,16 @@ const sidebarData: SidebarItem[] = [
         path: "/report/reports",
         icon: <FaLayerGroup className="text-green-500" />,
       },
-      {
-        title: "Submit Report",
-        path: "/reports/submit",
-        icon: <FaPaperPlane className="text-orange-500" />,
-      },
-      {
-        title: "Submitted Reports",
-        path: "/reports/submitted",
-        icon: <FaChartLine className="text-purple-500" />,
-      },
+      // {
+      //   title: "Submit Report",
+      //   path: "/reports/submit",
+      //   icon: <FaPaperPlane className="text-orange-500" />,
+      // },
+      // {
+      //   title: "Submitted Reports",
+      //   path: "/reports/submitted",
+      //   icon: <FaChartLine className="text-purple-500" />,
+      // },
     ],
   },
   {

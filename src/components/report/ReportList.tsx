@@ -157,8 +157,8 @@ const ReportList = () => {
   const columns: ColumnsType<TemplateReportResponse> = [
     {
       title: (
-        <div className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
-          <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+        <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm whitespace-nowrap">
+          <span className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></span>
           Report Name
         </div>
       ),
@@ -166,20 +166,35 @@ const ReportList = () => {
       key: "templateName",
       sorter: (a, b) => a.templateName.localeCompare(b.templateName),
       render: (name: string, record: TemplateReportResponse) => (
-        <div>
-          <div className="font-semibold text-gray-900 text-sm">{name}</div>
-          {record.description && (
-            <div className="text-xs text-gray-500 truncate max-w-[200px] mt-0.5">
-              {record.description}
-            </div>
-          )}
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 flex-shrink-0 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
+            <svg
+              className="w-5 h-5 text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </div>
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <div className="font-semibold text-gray-900 text-sm truncate">{name}</div>
+            {record.description && (
+              <div className="text-xs text-gray-500 truncate mt-0.5">
+                {record.description}
+              </div>
+            )}
+          </div>
         </div>
       ),
     },
     {
       title: (
-        <div className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
-          <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+        <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm whitespace-nowrap">
+          <span className="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0"></span>
           Department
         </div>
       ),
@@ -188,13 +203,13 @@ const ReportList = () => {
       sorter: (a, b) =>
         (a.departmentName ?? "").localeCompare(b.departmentName ?? ""),
       render: (dept: string) => (
-        <span className="text-sm text-gray-700">{dept}</span>
+        <span className="text-sm text-gray-700 truncate block">{dept ?? "—"}</span>
       ),
     },
     {
       title: (
-        <div className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
-          <span className="w-1.5 h-1.5 bg-teal-500 rounded-full"></span>
+        <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm whitespace-nowrap">
+          <span className="w-2 h-2 bg-teal-500 rounded-full flex-shrink-0"></span>
           Equipment
         </div>
       ),
@@ -203,13 +218,13 @@ const ReportList = () => {
       sorter: (a, b) =>
         (a.equipmentName ?? "").localeCompare(b.equipmentName ?? ""),
       render: (equipment: string) => (
-        <span className="text-sm text-gray-700">{equipment}</span>
+        <span className="text-sm text-gray-700 truncate block">{equipment ?? "—"}</span>
       ),
     },
     {
       title: (
-        <div className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
-          <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+        <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm whitespace-nowrap">
+          <span className="w-2 h-2 bg-amber-500 rounded-full flex-shrink-0"></span>
           Status
         </div>
       ),
@@ -220,7 +235,7 @@ const ReportList = () => {
       render: (status: ReportStatusEnum) => {
         const config = getStatusConfig(status);
         return (
-          <Tag color={config.color} className="font-medium text-xs">
+          <Tag color={config.color} className="font-medium text-xs whitespace-nowrap">
             {config.label}
           </Tag>
         );
@@ -331,7 +346,7 @@ const ReportList = () => {
             showTotal: (total, range) =>
               `Showing ${range[0]}-${range[1]} of ${total} reports`,
           }}
-          scroll={{ x: 50 }}
+          scroll={{ x: 400 }}
           onChange={handleTableChange}
           bordered
           size="middle"

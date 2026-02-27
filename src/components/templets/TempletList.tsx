@@ -150,8 +150,8 @@ const TemplateRequestList = () => {
   const columns: ColumnsType<TemplateRow> = [
     {
       title: (
-        <div className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
-          <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+        <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm whitespace-nowrap">
+          <span className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></span>
           Template
         </div>
       ),
@@ -159,20 +159,31 @@ const TemplateRequestList = () => {
       key: "templateName",
       sorter: (a, b) => a.templateName.localeCompare(b.templateName),
       render: (name: string, record: TemplateRow) => (
-        <div>
-          <div className="font-semibold text-gray-900 text-sm">{name}</div>
-          {record.description && (
-            <div className="text-xs text-gray-500 truncate max-w-[200px] mt-0.5">
-              {record.description}
-            </div>
-          )}
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 flex-shrink-0 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-sm">
+            <svg
+              className="w-5 h-5 text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+            </svg>
+          </div>
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <div className="font-semibold text-gray-900 text-sm truncate">{name}</div>
+            {record.description && (
+              <div className="text-xs text-gray-500 truncate mt-0.5">
+                {record.description}
+              </div>
+            )}
+          </div>
         </div>
       ),
     },
     {
       title: (
-        <div className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
-          <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+        <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm whitespace-nowrap">
+          <span className="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0"></span>
           Department
         </div>
       ),
@@ -180,13 +191,13 @@ const TemplateRequestList = () => {
       key: "departmentName",
       sorter: (a, b) => a.departmentName.localeCompare(b.departmentName),
       render: (dept: string) => (
-        <span className="text-sm text-gray-700">{dept}</span>
+        <span className="text-sm text-gray-700 truncate block">{dept}</span>
       ),
     },
     {
       title: (
-        <div className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
-          <span className="w-1.5 h-1.5 bg-teal-500 rounded-full"></span>
+        <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm whitespace-nowrap">
+          <span className="w-2 h-2 bg-teal-500 rounded-full flex-shrink-0"></span>
           Equipment
         </div>
       ),
@@ -194,13 +205,13 @@ const TemplateRequestList = () => {
       key: "equipmentName",
       sorter: (a, b) => a.equipmentName.localeCompare(b.equipmentName),
       render: (equipment: string) => (
-        <span className="text-sm text-gray-700">{equipment}</span>
+        <span className="text-sm text-gray-700 truncate block">{equipment}</span>
       ),
     },
     {
       title: (
-        <div className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
-          <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+        <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm whitespace-nowrap">
+          <span className="w-2 h-2 bg-amber-500 rounded-full flex-shrink-0"></span>
           Status
         </div>
       ),
@@ -211,7 +222,7 @@ const TemplateRequestList = () => {
       render: (status: string) => {
         const config = getStatusConfig(status);
         return (
-          <Tag color={config.color} className="font-medium text-xs">
+          <Tag color={config.color} className="font-medium text-xs whitespace-nowrap">
             {config.label}
           </Tag>
         );
@@ -331,7 +342,7 @@ const TemplateRequestList = () => {
             showTotal: (total, range) =>
               `Showing ${range[0]}-${range[1]} of ${total} templates`,
           }}
-          scroll={{ x: 50 }}
+          scroll={{ x: 400 }}
           onChange={handleTableChange}
           bordered
           size="middle"

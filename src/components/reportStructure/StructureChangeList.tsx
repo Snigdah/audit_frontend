@@ -182,7 +182,7 @@ const StructureChangeList = ({ reportId, onOpenChangeRequest }: StructureChangeL
   ];
 
   return (
-    <div className="p-4 md:p-6 bg-white rounded-xl shadow-sm border border-gray-100">
+    <div >
       <div className="flex flex-col gap-6">
         <SectionHeader
           title="Structure change requests"
