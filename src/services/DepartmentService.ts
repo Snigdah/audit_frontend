@@ -43,11 +43,23 @@ class DepartmentService {
     return response.data.data;
   }
 
-  async getDepartmentsByFloorId(floorId: number): Promise<Department[]> {
-    const url = ENDPOINTS.DEPARTMENT.FETCH_BY_FLOOR_ID(floorId);
-    const response = await apiClient.get<ApiResponse<Department[]>>(url);
-    return response.data.data;
-  }
+  async getDepartmentsByFloorId(
+      floorId: number,
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+    ): Promise<PaginatedData<Department>> {
+      const response = await apiClient.get<
+        ApiResponse<PaginatedData<Department>>
+      >(
+        ENDPOINTS.DEPARTMENT.FETCH_BY_FLOOR_ID(floorId, params)
+      );
+
+      return response.data.data;
+    }
 
   async getDepartmentById(id: number): Promise<DepartmentDetail> {
     const url = ENDPOINTS.DEPARTMENT.FETCH_BY_ID(id);
@@ -146,12 +158,21 @@ class DepartmentService {
 
   // ✅ Fetch Equipment by Department
   async getEquipmentsByDepartment(
-    departmentId: number
-  ): Promise<EquipmentResponse[]> {
-    const response = await apiClient.get<ApiResponse<EquipmentResponse[]>>(
-      ENDPOINTS.DEPARTMENT.GET_EQUIPMENTS(departmentId)
-    );
-    return response.data.data;
+    departmentId: number,
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+    ): Promise<PaginatedData<EquipmentResponse>> {
+      const response = await apiClient.get<
+        ApiResponse<PaginatedData<EquipmentResponse>>
+      >(
+        ENDPOINTS.DEPARTMENT.GET_EQUIPMENTS(departmentId, params)
+      );
+
+      return response.data.data;
   }
 
    async getEquipmentsByDepartmentDropdown(

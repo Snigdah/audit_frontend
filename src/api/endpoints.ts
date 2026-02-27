@@ -54,8 +54,31 @@ export const ENDPOINTS = {
     CREATE: `${BASE.FLOOR}`,
     FETCH_ALL: `${BASE.FLOOR}`,
     FETCH_BY_ID: (id: number) => `${BASE.FLOOR}/${id}`,
-    FETCH_BY_BUILDING_ID: (buildingId: number) =>
-      `${BASE.FLOOR}/building/${buildingId}`,
+    FETCH_BY_BUILDING_ID: (
+      buildingId: number,
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+    ) => {
+        const query = new URLSearchParams();
+
+        if (params?.search) query.append("search", params.search);
+        if (params?.page !== undefined)
+          query.append("page", params.page.toString());
+        if (params?.size !== undefined)
+          query.append("size", params.size.toString());
+        if (params?.all !== undefined)
+          query.append("all", String(params.all));
+
+        const qs = query.toString();
+
+        return `${BASE.FLOOR}/building/${buildingId}${
+          qs ? `?${qs}` : ""
+        }`;
+    },
     UPDATE: (id: number) => `${BASE.FLOOR}/${id}`,
     DELETE: (id: number) => `${BASE.FLOOR}/${id}`,
   },
@@ -77,8 +100,31 @@ export const ENDPOINTS = {
       return `${BASE.DEPARTMENT}?${query.toString()}`;
     },
     FETCH_BY_ID: (id: number) => `${BASE.DEPARTMENT}/${id}`,
-    FETCH_BY_FLOOR_ID: (floorId: number) =>
-      `${BASE.DEPARTMENT}/floor/${floorId}`,
+    FETCH_BY_FLOOR_ID: (
+      floorId: number,
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+     ) => {
+      const query = new URLSearchParams();
+
+      if (params?.search) query.append("search", params.search);
+      if (params?.page !== undefined)
+        query.append("page", params.page.toString());
+      if (params?.size !== undefined)
+        query.append("size", params.size.toString());
+      if (params?.all !== undefined)
+        query.append("all", String(params.all));
+
+      const qs = query.toString();
+
+      return `${BASE.DEPARTMENT}/floor/${floorId}${
+        qs ? `?${qs}` : ""
+      }`;
+    },
     SEARCH_DROP_DOWN: (query: string) => `${BASE.DEPARTMENT}/all?search=${query}`,
     UPDATE: (id: number) => `${BASE.DEPARTMENT}/${id}`,
     DELETE: (id: number) => `${BASE.DEPARTMENT}/${id}`,
@@ -106,8 +152,31 @@ export const ENDPOINTS = {
     ASSIGN_EQUIPMENT: `${BASE.DEPARTMENT}/assign-equipment`,
     REMOVE_EQUIPMENT: (equipmentId: number) =>
       `${BASE.DEPARTMENT}/remove-equipment/${equipmentId}`,
-    GET_EQUIPMENTS: (departmentId: number) =>
-      `${BASE.DEPARTMENT}/${departmentId}/equipments`,
+    GET_EQUIPMENTS: (
+      departmentId: number,
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+    ) => {
+      const query = new URLSearchParams();
+
+      if (params?.search) query.append("search", params.search);
+      if (params?.page !== undefined)
+        query.append("page", params.page.toString());
+      if (params?.size !== undefined)
+        query.append("size", params.size.toString());
+      if (params?.all !== undefined)
+        query.append("all", String(params.all));
+
+      const qs = query.toString();
+
+      return `${BASE.DEPARTMENT}/${departmentId}/equipments${
+        qs ? `?${qs}` : ""
+      }`;
+    },
     DROPDOWN_EQUIPMENTS: (departmentId: number) =>
       `${BASE.DEPARTMENT}/${departmentId}/equipments/all`,
   },
@@ -311,7 +380,31 @@ export const ENDPOINTS = {
     DELETE: (id: number) => `${BASE.EQUIPMENT}/${id}`,
     ASSIGN_OPERATOR: () => `${BASE.EQUIPMENT}/assign-operator`,
     REMOVE_OPERATOR: () => `${BASE.EQUIPMENT}/remove-operator`,
-    FETCH_OPERATORS: (id: number) => `${BASE.EQUIPMENT}/${id}/operators`,
+    FETCH_OPERATORS: (
+  equipmentId: number,
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+    ) => {
+      const query = new URLSearchParams();
+
+      if (params?.search) query.append("search", params.search);
+      if (params?.page !== undefined)
+        query.append("page", params.page.toString());
+      if (params?.size !== undefined)
+        query.append("size", params.size.toString());
+      if (params?.all !== undefined)
+        query.append("all", String(params.all));
+
+      const qs = query.toString();
+
+      return `${BASE.EQUIPMENT}/${equipmentId}/operators${
+        qs ? `?${qs}` : ""
+      }`;
+    },
   },
   PROFILE: {
     FETCH_FULL: `${BASE.PROFILE}/details`,

@@ -12,7 +12,6 @@ import CustomButton from "../common/CustomButton";
 import { toast } from "../common/Toast";
 import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import { debounce } from "lodash";
-
 import type { EquipmentResponse } from "../../types/equipment";
 import DepartmentEquipmentAddModal from "./DepartmentEquipmentAddModal ";
 import { useNavigate } from "react-router-dom";
@@ -30,43 +29,45 @@ const DepartmentEquipment = ({ departmentId }: Props) => {
     null
   );
   const [searchText, setSearchText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
   const navigate = useNavigate();
 
-  const fetchEquipments = (search?: string) => {
+  const fetchEquipments = (
+    page: number = 1,
+    size: number = 10,
+    search?: string
+  ) => {
     setLoading(true);
-    DepartmentService.getEquipmentsByDepartment(Number(departmentId))
+    DepartmentService.getEquipmentsByDepartment(Number(departmentId), {
+      page: page - 1,
+      size,
+      search: search || undefined,
+    })
       .then((data) => {
-        if (search) {
-          const filtered = data.filter(
-            (equipment) =>
-              equipment.equipmentName
-                .toLowerCase()
-                .includes(search.toLowerCase()) ||
-              equipment.equipmentNumber
-                .toLowerCase()
-                .includes(search.toLowerCase())
-          );
-          setEquipments(filtered);
-        } else {
-          setEquipments(data);
-        }
+        setEquipments(data.content ?? []);
+        setTotalElements(data.pagination?.totalElements ?? 0);
       })
       .catch((err) => {
         console.error(err);
         message.error("Failed to fetch equipments");
+        setEquipments([]);
+        setTotalElements(0);
       })
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    fetchEquipments();
+    fetchEquipments(currentPage, pageSize, searchText);
   }, [departmentId]);
 
   const debouncedSearch = useCallback(
     debounce((value: string) => {
-      fetchEquipments(value);
+      setCurrentPage(1);
+      fetchEquipments(1, pageSize, value);
     }, 500),
-    []
+    [pageSize]
   );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,7 +87,7 @@ const DepartmentEquipment = ({ departmentId }: Props) => {
 
   const handleModalSuccess = () => {
     handleModalClose();
-    fetchEquipments();
+    fetchEquipments(currentPage, pageSize, searchText);
   };
 
   const handleDeleteClick = (equipmentId: number) => {
@@ -100,7 +101,7 @@ const DepartmentEquipment = ({ departmentId }: Props) => {
     try {
       await DepartmentService.removeEquipment(selectedEquipmentId);
       toast.warning("Equipment removed successfully");
-      fetchEquipments(searchText);
+      fetchEquipments(currentPage, pageSize, searchText);
       setDeleteModalVisible(false);
     } catch (err: any) {
       console.error(err);
@@ -225,11 +226,20 @@ const DepartmentEquipment = ({ departmentId }: Props) => {
           rowKey="id"
           loading={loading}
           pagination={{
-            pageSize: 10,
+            current: currentPage,
+            pageSize: pageSize,
+            total: totalElements,
             pageSizeOptions: ["10", "20", "50"],
             showQuickJumper: true,
             showSizeChanger: true,
-            showTotal: (total) => `Total ${total} equipments`,
+            showTotal: (total, range) =>
+              `Showing ${range[0]}-${range[1]} of ${total} equipments`,
+          }}
+          onChange={(pagination) => {
+            const { current, pageSize: newPageSize } = pagination;
+            if (current) setCurrentPage(current);
+            if (newPageSize) setPageSize(newPageSize);
+            fetchEquipments(current || 1, newPageSize || 10, searchText);
           }}
           className="shadow-sm cursor-pointer"
           bordered

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Button, Input, Space, Table, message, Tooltip } from "antd";
 import {
   PlusOutlined,
@@ -13,12 +13,16 @@ import SectionHeader from "../common/SectionHeader";
 import FloorAddOrUpdate from "./FloorAddOrUpdate";
 import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import CustomButton from "../common/CustomButton";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { debounce } from "lodash";
 
 const FloorList = ({ buildingId }: { buildingId: string }) => {
   const [floors, setFloors] = useState<FloorResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState<FloorResponse | null>(
@@ -27,20 +31,47 @@ const FloorList = ({ buildingId }: { buildingId: string }) => {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const navigate = useNavigate();
 
-  const fetchFloors = () => {
+  const fetchFloors = (
+    page: number = 1,
+    size: number = 10,
+    search?: string
+  ) => {
     setLoading(true);
-    FloorService.getFloorsByBuildingId(Number(buildingId))
-      .then((res) => setFloors(res))
+    FloorService.getFloorsByBuildingId(Number(buildingId), {
+      page: page - 1,
+      size,
+      search: search || undefined,
+    })
+      .then((data) => {
+        setFloors(data.content ?? []);
+        setTotalElements(data.pagination?.totalElements ?? 0);
+      })
       .catch((err) => {
         console.error(err);
         message.error("Failed to fetch floors");
+        setFloors([]);
+        setTotalElements(0);
       })
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    fetchFloors();
+    fetchFloors(currentPage, pageSize, searchText);
   }, [buildingId]);
+
+  const debouncedSearch = useCallback(
+    debounce((value: string) => {
+      setCurrentPage(1);
+      fetchFloors(1, pageSize, value);
+    }, 500),
+    [pageSize]
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchText(value);
+    debouncedSearch(value);
+  };
 
   const handleAdd = () => {
     setSelectedFloor(null);
@@ -65,7 +96,7 @@ const FloorList = ({ buildingId }: { buildingId: string }) => {
         message.success(
           `Floor "${selectedFloor.floorName}" deleted successfully`
         );
-        fetchFloors();
+        fetchFloors(currentPage, pageSize, searchText);
         setDeleteModalVisible(false);
       })
       .catch((err) => {
@@ -82,14 +113,8 @@ const FloorList = ({ buildingId }: { buildingId: string }) => {
 
   const handleModalSuccess = () => {
     handleModalClose();
-    fetchFloors();
+    fetchFloors(currentPage, pageSize, searchText);
   };
-
-  const filteredFloors = floors.filter(
-    (floor) =>
-      floor.floorName.toLowerCase().includes(searchText.toLowerCase()) ||
-      floor.id.toString().includes(searchText)
-  );
 
   const columns: ColumnsType<FloorResponse> = [
     {
@@ -217,9 +242,10 @@ const FloorList = ({ buildingId }: { buildingId: string }) => {
               <Input
                 placeholder="Search floors..."
                 prefix={<SearchOutlined className="text-gray-400" />}
-                onChange={(e) => setSearchText(e.target.value)}
+                onChange={handleSearchChange}
                 allowClear
                 className="w-64"
+                value={searchText}
               />
 
               <CustomButton onClick={handleAdd} icon={<PlusOutlined />}>
@@ -230,16 +256,25 @@ const FloorList = ({ buildingId }: { buildingId: string }) => {
         />
 
         <Table
-          dataSource={filteredFloors}
+          dataSource={floors}
           columns={columns}
           rowKey="id"
           loading={loading}
           pagination={{
-            pageSize: 10,
+            current: currentPage,
+            pageSize: pageSize,
+            total: totalElements,
             pageSizeOptions: ["10", "20", "50"],
             showQuickJumper: true,
             showSizeChanger: true,
-            showTotal: (total) => `Total ${total} floors`,
+            showTotal: (total, range) =>
+              `Showing ${range[0]}-${range[1]} of ${total} floors`,
+          }}
+          onChange={(pagination) => {
+            const { current, pageSize: newPageSize } = pagination;
+            if (current) setCurrentPage(current);
+            if (newPageSize) setPageSize(newPageSize);
+            fetchFloors(current || 1, newPageSize || 10, searchText);
           }}
           bordered
           size="middle"

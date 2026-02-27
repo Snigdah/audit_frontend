@@ -1,6 +1,6 @@
 import apiClient from "../api/axios";
 import { ENDPOINTS } from "../api/endpoints";
-import type { ApiResponse } from "../types/api";
+import type { ApiResponse, PaginatedData } from "../types/api";
 import type { FloorResponse, FloorFormData, FloorModel } from "../types/floor";
 
 class FloorService {
@@ -18,11 +18,22 @@ class FloorService {
     return response.data.data;
   }
 
-  async getFloorsByBuildingId(buildingId: number): Promise<FloorResponse[]> {
-    const response = await apiClient.get<ApiResponse<FloorResponse[]>>(
-      ENDPOINTS.FLOOR.FETCH_BY_BUILDING_ID(buildingId)
-    );
-    return response.data.data;
+  async getFloorsByBuildingId(
+        buildingId: number,
+        params?: {
+          search?: string;
+          page?: number;
+          size?: number;
+          all?: boolean;
+        }
+      ): Promise<PaginatedData<FloorResponse>> {
+        const response = await apiClient.get<
+          ApiResponse<PaginatedData<FloorResponse>>
+        >(
+          ENDPOINTS.FLOOR.FETCH_BY_BUILDING_ID(buildingId, params)
+        );
+
+        return response.data.data;
   }
 
   async createFloor(floor: FloorModel): Promise<FloorResponse> {

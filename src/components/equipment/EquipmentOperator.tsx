@@ -29,39 +29,45 @@ const EquipmentOperator = ({ equipmentId }: Props) => {
     null
   );
   const [searchText, setSearchText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
   const navigate = useNavigate();
 
-  const fetchOperators = (search?: string) => {
+  const fetchOperators = (
+    page: number = 1,
+    size: number = 10,
+    search?: string
+  ) => {
     setLoading(true);
-    EquipmentService.getOperatorsByEquipment(Number(equipmentId))
+    EquipmentService.getOperatorsByEquipment(Number(equipmentId), {
+      page: page - 1,
+      size,
+      search: search || undefined,
+    })
       .then((data) => {
-        if (search) {
-          const filtered = data.filter(
-            (operator) =>
-              operator.name.toLowerCase().includes(search.toLowerCase()) ||
-              operator.employeeId.toLowerCase().includes(search.toLowerCase())
-          );
-          setOperators(filtered);
-        } else {
-          setOperators(data);
-        }
+        setOperators(data.content ?? []);
+        setTotalElements(data.pagination?.totalElements ?? 0);
       })
       .catch((err) => {
         console.error(err);
         message.error("Failed to fetch operators");
+        setOperators([]);
+        setTotalElements(0);
       })
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    fetchOperators();
+    fetchOperators(currentPage, pageSize, searchText);
   }, [equipmentId]);
 
   const debouncedSearch = useCallback(
     debounce((value: string) => {
-      fetchOperators(value);
+      setCurrentPage(1);
+      fetchOperators(1, pageSize, value);
     }, 500),
-    []
+    [pageSize]
   );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,7 +87,7 @@ const EquipmentOperator = ({ equipmentId }: Props) => {
 
   const handleModalSuccess = () => {
     handleModalClose();
-    fetchOperators();
+    fetchOperators(currentPage, pageSize, searchText);
   };
 
   const handleDeleteClick = (operatorId: number) => {
@@ -98,7 +104,7 @@ const EquipmentOperator = ({ equipmentId }: Props) => {
         operatorId: selectedOperatorId,
       });
       toast.warning("Operator removed successfully");
-      fetchOperators(searchText);
+      fetchOperators(currentPage, pageSize, searchText);
       setDeleteModalVisible(false);
     } catch (err: any) {
       console.error(err);
@@ -218,11 +224,20 @@ const EquipmentOperator = ({ equipmentId }: Props) => {
           rowKey="id"
           loading={loading}
           pagination={{
-            pageSize: 10,
+            current: currentPage,
+            pageSize,
+            total: totalElements,
             pageSizeOptions: ["10", "20", "50"],
             showQuickJumper: true,
             showSizeChanger: true,
-            showTotal: (total) => `Total ${total} operators`,
+            showTotal: (total, range) =>
+              `Showing ${range[0]}-${range[1]} of ${total} operators`,
+          }}
+          onChange={(pagination) => {
+            const { current, pageSize: newPageSize } = pagination;
+            if (current) setCurrentPage(current);
+            if (newPageSize) setPageSize(newPageSize);
+            fetchOperators(current || 1, newPageSize || 10, searchText);
           }}
           bordered
           size="middle"
@@ -232,7 +247,7 @@ const EquipmentOperator = ({ equipmentId }: Props) => {
               ? `No operators found matching "${searchText}"`
               : "No operators assigned to this equipment",
           }}
-           onRow={(record) => ({
+          onRow={(record) => ({
             onClick: () => navigate(`/resource/operator/${record.id}`),
             style: { cursor: "pointer" },
           })}

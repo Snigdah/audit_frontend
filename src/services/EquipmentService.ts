@@ -88,11 +88,20 @@ class EquipmentService {
 
   // ✅ Fetch Operators by Equipment
   async getOperatorsByEquipment(
-    equipmentId: number
-  ): Promise<OperatorSimple[]> {
-    const response = await apiClient.get<ApiResponse<OperatorSimple[]>>(
-      ENDPOINTS.EQUIPMENT.FETCH_OPERATORS(equipmentId)
-    );
+      equipmentId: number,
+      params?: {
+        search?: string;
+        page?: number;
+        size?: number;
+        all?: boolean;
+      }
+     ): Promise<PaginatedData<OperatorSimple>> {
+      const response = await apiClient.get<
+        ApiResponse<PaginatedData<OperatorSimple>>
+      >(
+        ENDPOINTS.EQUIPMENT.FETCH_OPERATORS(equipmentId, params)
+      );
+
     return response.data.data;
   }
 }
