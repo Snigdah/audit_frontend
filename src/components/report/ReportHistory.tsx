@@ -316,7 +316,7 @@ const ReportHistory = ({ reportId }: ReportHistoryProps) => {
   ];
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-sm">
+    <div >
       <div className="flex flex-col space-y-6">
         <SectionHeader
           title="Submission history"
