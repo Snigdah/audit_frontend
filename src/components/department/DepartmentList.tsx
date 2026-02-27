@@ -21,6 +21,9 @@ const DepartmentList = ({ floorId }: { floorId: string }) => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalElements, setTotalElements] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [selectedDepartment, setSelectedDepartment] =
@@ -28,24 +31,46 @@ const DepartmentList = ({ floorId }: { floorId: string }) => {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const navigate = useNavigate();
 
-  // ✅ Correct API call
-  const fetchDepartments = () => {
+  const fetchDepartments = (
+    page: number = 1,
+    size: number = 10,
+    search?: string
+  ) => {
     setLoading(true);
-    DepartmentService.getDepartmentsByFloorId(Number(floorId))
-      .then((res) => setDepartments(res))
+    DepartmentService.getDepartmentsByFloorId(Number(floorId), {
+      page: page - 1,
+      size,
+      search: search || undefined,
+    })
+      .then((res) => {
+        setDepartments(res.content ?? []);
+        setTotalElements(res.pagination?.totalElements ?? 0);
+      })
       .catch((err) => {
         console.error(err);
         message.error("Failed to fetch departments");
+        setDepartments([]);
+        setTotalElements(0);
       })
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    fetchDepartments();
+    fetchDepartments(currentPage, pageSize, searchText);
   }, [floorId]);
 
+  const debouncedSearch = useCallback(
+    debounce((value: string) => {
+      setCurrentPage(1);
+      fetchDepartments(1, pageSize, value);
+    }, 500),
+    [pageSize]
+  );
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchText(e.target.value);
+    const value = e.target.value;
+    setSearchText(value);
+    debouncedSearch(value);
   };
 
   const handleAdd = () => {
@@ -71,7 +96,7 @@ const DepartmentList = ({ floorId }: { floorId: string }) => {
         message.success(
           `Department "${selectedDepartment.name}" deleted successfully`
         );
-        fetchDepartments();
+        fetchDepartments(currentPage, pageSize, searchText);
         setDeleteModalVisible(false);
       })
       .catch((err) => {
@@ -89,15 +114,8 @@ const DepartmentList = ({ floorId }: { floorId: string }) => {
 
   const handleModalSuccess = () => {
     handleModalClose();
-    fetchDepartments();
+    fetchDepartments(currentPage, pageSize, searchText);
   };
-
-  // ✅ Frontend filtering
-  const filteredDepartments = departments.filter(
-    (dept) =>
-      dept.name.toLowerCase().includes(searchText.toLowerCase()) ||
-      dept.id.toString().includes(searchText)
-  );
 
   const columns: ColumnsType<Department> = [
     {
@@ -221,16 +239,25 @@ const DepartmentList = ({ floorId }: { floorId: string }) => {
         />
 
         <Table
-          dataSource={filteredDepartments}
+          dataSource={departments}
           columns={columns}
           rowKey="id"
           loading={loading}
           pagination={{
-            pageSize: 10,
+            current: currentPage,
+            pageSize,
+            total: totalElements,
             pageSizeOptions: ["10", "20", "50"],
             showQuickJumper: true,
             showSizeChanger: true,
-            showTotal: (total) => `Total ${total} departments`,
+            showTotal: (total, range) =>
+              `Showing ${range[0]}-${range[1]} of ${total} departments`,
+          }}
+          onChange={(pagination) => {
+            const { current, pageSize: newPageSize } = pagination;
+            if (current) setCurrentPage(current);
+            if (newPageSize) setPageSize(newPageSize);
+            fetchDepartments(current || 1, newPageSize || 10, searchText);
           }}
           bordered
           size="middle"
