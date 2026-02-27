@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react";
-import { useForm, Controller, type SubmitHandler } from "react-hook-form";
-import { Button, Select, Spin, message } from "antd";
+import { useEffect, useState, useMemo } from "react";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { Button, Spin } from "antd";
 import ModalComponent from "../common/ModalComponent";
 import CustomButton from "../common/CustomButton";
 import EquipmentService from "../../services/EquipmentService";
 import OperatorService from "../../services/OperatorService";
-import { debounce } from "lodash";
 import { toast } from "../common/Toast";
 import type { OperatorSimple } from "../../types/operator";
 import type { EquipmentOperatorRequest } from "../../types/equipment";
-
-const { Option } = Select;
+import {
+  ControlledSearchableSelect,
+  type SearchableSelectOption,
+} from "../common/SearchableSelectField";
 
 interface Props {
   visible: boolean;
@@ -26,54 +27,67 @@ const EquipmentOperatorAddModal = ({
   equipmentId,
 }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [operatorOptions, setOperatorOptions] = useState<OperatorSimple[]>([]);
-  const [operatorLoading, setOperatorLoading] = useState(false);
 
   const {
     handleSubmit,
     control,
     reset,
     formState: { errors, isDirty },
+    setValue,
   } = useForm<EquipmentOperatorRequest>({
     defaultValues: {
-      equipmentId: equipmentId,
+      equipmentId,
       operatorId: undefined,
     },
   });
 
   useEffect(() => {
-    if (!visible) {
-      reset();
-    }
+    if (!visible) reset();
   }, [visible, reset]);
 
-  const fetchOperators = debounce((search: string) => {
-    setOperatorLoading(true);
-    OperatorService.getAllOperators(search)
-      .then((data) => setOperatorOptions(data))
-      .catch((err) => {
+  const fetchOperators = useMemo(() => {
+    const fetcher = async (
+      search: string
+    ): Promise<SearchableSelectOption[]> => {
+      try {
+        const data: OperatorSimple[] =
+          await OperatorService.getAllOperatorsDropdown(search);
+        return data.map((op) => ({
+          value: op.id,
+          label: `${op.name} (${op.employeeId})`,
+        }));
+      } catch (err) {
         console.error(err);
-        message.error("Failed to load operators");
-      })
-      .finally(() => setOperatorLoading(false));
-  }, 500);
+        return [];
+      }
+    };
 
-  const handleFormSubmit: SubmitHandler<EquipmentOperatorRequest> = (data) => {
-    setIsSubmitting(true);
-    EquipmentService.assignOperator(data)
-      .then(() => {
-        toast.success("Operator assigned successfully");
-        onSuccess();
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error(
-          error.response?.data?.devMessage || "Failed to assign operator"
-        );
-      })
-      .finally(() => {
-        setIsSubmitting(false);
+    const debounced = (
+      ...args: [string]
+    ): Promise<SearchableSelectOption[]> =>
+      new Promise((resolve) => {
+        void fetcher(args[0]).then(resolve);
       });
+
+    return debounced;
+  }, []);
+
+  const handleFormSubmit: SubmitHandler<EquipmentOperatorRequest> = async (
+    data
+  ) => {
+    setIsSubmitting(true);
+    try {
+      await EquipmentService.assignOperator(data);
+      toast.success("Operator assigned successfully");
+      onSuccess();
+    } catch (error: any) {
+      console.error(error);
+      toast.error(
+        error.response?.data?.devMessage || "Failed to assign operator"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -85,44 +99,22 @@ const EquipmentOperatorAddModal = ({
     >
       <Spin spinning={isSubmitting}>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-          {/* Operator Dropdown */}
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Select Operator
-            </label>
-            <Controller
-              name="operatorId"
-              control={control}
-              rules={{ required: "Operator is required" }}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  showSearch
-                  placeholder="Select an operator"
-                  loading={operatorLoading}
-                  filterOption={false}
-                  onSearch={(value) => fetchOperators(value)}
-                  onFocus={() => fetchOperators("")}
-                  onChange={(value) => field.onChange(value)}
-                  className="w-full"
-                  listHeight={200}
-                  virtual
-                >
-                  {operatorOptions.map((operator) => (
-                    <Option key={operator.id} value={operator.id}>
-                      {operator.name} ({operator.employeeId})
-                    </Option>
-                  ))}
-                </Select>
-              )}
-            />
-
-            {errors.operatorId && (
-              <span className="text-red-600 text-sm">
-                {errors.operatorId.message}
-              </span>
-            )}
-          </div>
+          <ControlledSearchableSelect
+            name="operatorId"
+            control={control}
+            label="Select Operator"
+            placeholder="Search or select an operator..."
+            fetchOptions={fetchOperators}
+            debounceMs={300}
+            allowClear
+            rules={{ required: "Operator is required" }}
+            className="w-full"
+            selectClassName="searchable-select-custom"
+            onSelectChange={(value: number | string) =>
+              setValue("operatorId", Number(value))
+            }
+            error={errors.operatorId}
+          />
 
           <div className="flex flex-col-reverse md:flex-row justify-end gap-3 mt-3 pt-2 border-t border-gray-200">
             <Button
