@@ -1,3 +1,5 @@
+import type { SubmissionStatus, UserRole } from "../types/reportSubmission";
+
 const BASE = {
   AUTH: "audit",
   PROFILE: "profile",
@@ -567,45 +569,92 @@ export const ENDPOINTS = {
 
       return `${BASE.REPORT_SUBMISSION}/expected/${expectedSubmissionId}/submissions?${query.toString()}`;
     },
+
     CREATE_SUBMISSION: (
       reportId: number,
       versionId: number,
       expectedSubmissionId: number
     ) =>
       `${BASE.REPORT_SUBMISSION}/report/${reportId}/version/${versionId}/expected/${expectedSubmissionId}`,
-    GET_SUBMISSION_DETAIL: (submissionId: number) => `${BASE.REPORT_SUBMISSION}/${submissionId}`,
+
+    GET_SUBMISSION_DETAIL: (submissionId: number) =>
+      `${BASE.REPORT_SUBMISSION}/${submissionId}`,
+
     REVIEW_SUBMISSION: (reportId: number, submissionId: number) =>
       `${BASE.REPORT_SUBMISSION}/report/${reportId}/submission/${submissionId}/review`,
+
     STRUCTURE_CHANGE_SUBMISSIONS_LIST: (
-        reportId: number,
-        params?: {
-          all?: boolean;
-          page?: number;
-          size?: number;
-        }
-      ) => {
-        const query = new URLSearchParams();
+      reportId: number,
+      params?: {
+        all?: boolean;
+        page?: number;
+        size?: number;
+      }
+    ) => {
+      const query = new URLSearchParams();
 
-        if (params?.all !== undefined)
-          query.append("all", String(params.all));
+      if (params?.all !== undefined)
+        query.append("all", String(params.all));
 
-        if (params?.page !== undefined)
-          query.append("page", params.page.toString());
+      if (params?.page !== undefined)
+        query.append("page", params.page.toString());
 
-        if (params?.size !== undefined)
-          query.append("size", params.size.toString());
+      if (params?.size !== undefined)
+        query.append("size", params.size.toString());
 
-        const qs = query.toString();
+      const qs = query.toString();
 
-        return `${BASE.REPORT_SUBMISSION}/report/${reportId}/structure-change${
-          qs ? `?${qs}` : ""
-        }`;
-      },
-    APPROVE_SUPERVISOR_STRUCTURE_CHANGE: (reportId: number, submissionId: number) =>
-        `${BASE.REPORT_SUBMISSION}/report/${reportId}/submission/${submissionId}/approve-supervisor-structure-change`,
-    SUPERVISOR_STRUCTURE_CHANGE: (reportId: number) => `${BASE.REPORT_SUBMISSION}/report/${reportId}/supervisor/structure-change`,
+      return `${BASE.REPORT_SUBMISSION}/report/${reportId}/structure-change${
+        qs ? `?${qs}` : ""
+      }`;
+    },
 
+    APPROVE_SUPERVISOR_STRUCTURE_CHANGE: (
+      reportId: number,
+      submissionId: number
+    ) =>
+      `${BASE.REPORT_SUBMISSION}/report/${reportId}/submission/${submissionId}/approve-supervisor-structure-change`,
 
+    SUPERVISOR_STRUCTURE_CHANGE: (reportId: number) =>
+      `${BASE.REPORT_SUBMISSION}/report/${reportId}/supervisor/structure-change`,
+
+    // ✅ NEW API
+    FETCH_HISTORY: (
+      reportId: number,
+      params?: {
+        startDate?: string;
+        endDate?: string;
+        status?: SubmissionStatus;
+        late?: boolean;
+        role?: UserRole;
+        all?: boolean;
+        page?: number;
+        size?: number;
+      }
+    ) => {
+      const query = new URLSearchParams();
+
+      if (params?.startDate) query.append("startDate", params.startDate);
+      if (params?.endDate) query.append("endDate", params.endDate);
+      if (params?.status) query.append("status", params.status);
+      if (params?.late !== undefined)
+        query.append("late", String(params.late));
+      if (params?.role) query.append("role", params.role);
+
+      if (params?.all !== undefined)
+        query.append("all", String(params.all));
+
+      if (params?.page !== undefined)
+        query.append("page", params.page.toString());
+
+      if (params?.size !== undefined)
+        query.append("size", params.size.toString());
+
+      const qs = query.toString();
+
+      return `${BASE.REPORT_SUBMISSION}/report/${reportId}/history${
+        qs ? `?${qs}` : ""
+      }`;
+    },
   },
-
 };

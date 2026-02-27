@@ -85,3 +85,21 @@ export interface ReviewDecisionRequest {
   status: "APPROVED" | "REJECTED";
   reviewComment?: string;
 }
+
+export type UserRole =
+  | "ADMIN"
+  | "SUPERVISOR"
+  | "OPERATOR";
+
+export interface ReportSubmissionHistoryResponse {
+  reportId: number;
+  versionId: number;
+  submissionId: number;
+  status: SubmissionStatus;
+  reviewComment?: string | null;
+  reviewerName?: string | null;
+  creatorName: string;
+  submittedAt: string;
+  lateMinutes?: number | null;
+  expectedSubmissionId: number;
+}

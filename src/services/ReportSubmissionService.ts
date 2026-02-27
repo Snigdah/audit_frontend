@@ -3,9 +3,12 @@ import { ENDPOINTS } from "../api/endpoints";
 import type { ApiResponse, PaginatedData } from "../types/api";
 import type {
   ReportSubmissionDetailResponse,
+  ReportSubmissionHistoryResponse,
   ReportSubmissionRequest,
   ReportSubmissionSimpleResponse,
   ReviewDecisionRequest,
+  SubmissionStatus,
+  UserRole,
 } from "../types/reportSubmission";
 
 export const ReportSubmissionService = {
@@ -115,5 +118,25 @@ export const ReportSubmissionService = {
       );
     },
 
+  async fetchSubmissionHistory(
+    reportId: number,
+    params?: {
+      startDate?: string;
+      endDate?: string;
+      status?: SubmissionStatus;
+      late?: boolean;
+      role?: UserRole;
+      all?: boolean;
+      page?: number;
+      size?: number;
+    }
+  ): Promise<PaginatedData<ReportSubmissionHistoryResponse>> {
+    const response = await apiClient.get<
+      ApiResponse<PaginatedData<ReportSubmissionHistoryResponse>>
+    >(
+      ENDPOINTS.REPORT_SUBMISSION.FETCH_HISTORY(reportId, params)
+    );
 
+    return response.data.data;
+  },
 };
