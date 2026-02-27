@@ -11,6 +11,7 @@ import type {
   CellChangeRequest,
   MergeCellDto,
   TemplateStructureRequest,
+  ReportStructureResponse,
 } from "../../types/reportSubmission";
 import { toast } from "../common/Toast";
 import CustomButton from "../common/CustomButton";
@@ -21,7 +22,6 @@ registerAllModules();
 interface CreateSubmissionModalProps {
   reportId: number;
   expectedSubmissionId: number;
-  templateVersionId: number;
   open: boolean;
   onClose: () => void;
   onSuccess: () => void;
@@ -30,7 +30,6 @@ interface CreateSubmissionModalProps {
 const CreateSubmissionModal: React.FC<CreateSubmissionModalProps> = ({
   reportId,
   expectedSubmissionId,
-  templateVersionId,
   open,
   onClose,
   onSuccess,
@@ -41,6 +40,9 @@ const CreateSubmissionModal: React.FC<CreateSubmissionModalProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const [structure, setStructure] = useState<TemplateStructureRequest | null>(null);
   const [initialData, setInitialData] = useState<any[][] | null>(null);
+  const [structureVersionId, setStructureVersionId] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
     if (!open) {
@@ -51,13 +53,17 @@ const CreateSubmissionModal: React.FC<CreateSubmissionModalProps> = ({
     setLoading(true);
     (async () => {
       try {
-        const reportStructure = await ReportService.fetchReport(reportId);
+        const response: ReportStructureResponse =
+          await ReportService.fetchReport(reportId);
+        const reportStructure = response.structure;
         setStructure(reportStructure);
         setInitialData(reportStructure.data.map((row) => [...row]));
+        setStructureVersionId(response.versionId ?? null);
       } catch (err: any) {
         console.error("Error fetching report:", err);
         toast.error(err.response?.data?.devMessage ?? "Failed to load report structure");
         setStructure(null);
+        setStructureVersionId(null);
       } finally {
         setLoading(false);
       }
@@ -92,6 +98,12 @@ const CreateSubmissionModal: React.FC<CreateSubmissionModalProps> = ({
   const handleSubmit = async () => {
     const hot = hotRef.current?.hotInstance as Handsontable | undefined;
     if (!hot || !structure || !initialData) return;
+
+    // versionId is required by backend; block submission if missing
+    if (structureVersionId == null) {
+      toast.error("Report version information is missing. Please contact admin.");
+      return;
+    }
     setSubmitting(true);
     try {
       const currentData = hot.getData() as any[][];
@@ -135,7 +147,7 @@ const CreateSubmissionModal: React.FC<CreateSubmissionModalProps> = ({
       );
       await ReportSubmissionService.createSubmission(
         reportId,
-        templateVersionId,
+        structureVersionId,
         expectedSubmissionId,
         {
           templateStructure: {

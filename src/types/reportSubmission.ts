@@ -29,6 +29,12 @@ export interface TemplateStructureRequest {
   mergeCells?: MergeCellDto[];
 }
 
+// Response shape for report structure fetch API
+export interface ReportStructureResponse {
+  structure: TemplateStructureRequest;
+  versionId: number;
+}
+
 export interface CellChangeRequest {
   rowIndex: number;
   colIndex: number;

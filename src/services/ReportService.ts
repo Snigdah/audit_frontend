@@ -2,8 +2,11 @@ import apiClient from "../api/axios";
 import { ENDPOINTS } from "../api/endpoints";
 import type { ApiResponse, PaginatedData } from "../types/api";
 import type { OperatorSimple } from "../types/operator";
-import type { AssignReportOperatorRequest, TemplateReportResponse } from "../types/report";
-import type { TemplateStructureRequest } from "../types/reportSubmission";
+import type {
+  AssignReportOperatorRequest,
+  TemplateReportResponse,
+} from "../types/report";
+import type { ReportStructureResponse } from "../types/reportSubmission";
 import OperatorService from "./OperatorService";
 
 export const ReportService = {
@@ -58,9 +61,9 @@ export const ReportService = {
     return response.data.data;
   },
 
-  async fetchReport(reportId: number): Promise<TemplateStructureRequest> {
+  async fetchReport(reportId: number): Promise<ReportStructureResponse> {
     const response = await apiClient.get<
-      ApiResponse<TemplateStructureRequest>
+      ApiResponse<ReportStructureResponse>
     >(ENDPOINTS.REPORT.FETCH_STRUCTURE(reportId));
 
     return response.data.data;

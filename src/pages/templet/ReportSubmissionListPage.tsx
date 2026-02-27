@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import PageHeader from "../../components/common/PageHeader";
 import SubmissionList from "../../components/reportSubmission/SubmissionList";
 import CreateSubmissionModal from "../../components/reportSubmission/CreateSubmissionModal";
@@ -9,11 +9,7 @@ const ReportSubmissionListPage = () => {
     reportId: string;
     expectedSubmissionId: string;
   }>();
-  const [searchParams] = useSearchParams();
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const templateVersionId = searchParams.get("versionId")
-    ? Number(searchParams.get("versionId"))
-    : 1;
 
   if (!reportId || !expectedSubmissionId) {
     return null;
@@ -43,7 +39,6 @@ const ReportSubmissionListPage = () => {
       <CreateSubmissionModal
         reportId={Number(reportId)}
         expectedSubmissionId={Number(expectedSubmissionId)}
-        templateVersionId={templateVersionId}
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
         onSuccess={handleCreateSuccess}

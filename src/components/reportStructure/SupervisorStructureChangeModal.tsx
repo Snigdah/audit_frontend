@@ -19,6 +19,7 @@ import type {
   CellChangeRequest,
   MergeCellDto,
   TemplateStructureRequest,
+  ReportStructureResponse,
 } from "../../types/reportSubmission";
 import { toast } from "../common/Toast";
 import CustomButton from "../common/CustomButton";
@@ -78,6 +79,9 @@ const SupervisorStructureChangeModal: React.FC<
   const [structure, setStructure] = useState<TemplateStructureRequest | null>(
     null
   );
+  const [structureVersionId, setStructureVersionId] = useState<number | null>(
+    null
+  );
 
   const [selectedCells, setSelectedCells] = useState<
     Array<{ row: number; col: number }>
@@ -95,15 +99,19 @@ const SupervisorStructureChangeModal: React.FC<
     setLoading(true);
     (async () => {
       try {
-        const s = await ReportService.fetchReport(reportId);
+        const response: ReportStructureResponse =
+          await ReportService.fetchReport(reportId);
+        const s = response.structure;
         setInitialStructure(s);
         setInitialData(s.data.map((row) => [...row]));
         setStructure(s);
+        setStructureVersionId(response.versionId ?? null);
       } catch (err: any) {
         toast.error(
           err.response?.data?.devMessage ?? "Failed to load report structure"
         );
         setStructure(null);
+        setStructureVersionId(null);
       } finally {
         setLoading(false);
       }
