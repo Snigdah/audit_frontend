@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
-import { useForm, Controller, type SubmitHandler } from "react-hook-form";
-import { Button, Select, Spin, message } from "antd";
+import { useEffect, useState, useMemo } from "react";
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { Button, Spin } from "antd";
 import ModalComponent from "../common/ModalComponent";
 import CustomButton from "../common/CustomButton";
 import DepartmentService from "../../services/DepartmentService";
-import EquipmentService from "../../services/EquipmentService";
-import { debounce } from "lodash";
 import { toast } from "../common/Toast";
-import type { EquipmentResponse } from "../../types/equipment";
 import type { DepartmentEquipmentRequest } from "../../types/department";
-
-const { Option } = Select;
+import type { EquipmentResponse } from "../../types/equipment";
+import {
+  ControlledSearchableSelect,
+  type SearchableSelectOption,
+} from "../common/SearchableSelectField";
 
 interface Props {
   visible: boolean;
@@ -26,16 +26,13 @@ const DepartmentEquipmentAddModal = ({
   departmentId,
 }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [equipmentOptions, setEquipmentOptions] = useState<EquipmentResponse[]>(
-    []
-  );
-  const [equipmentLoading, setEquipmentLoading] = useState(false);
 
   const {
     handleSubmit,
     control,
     reset,
     formState: { errors, isDirty },
+    setValue,
   } = useForm<DepartmentEquipmentRequest>({
     defaultValues: {
       departmentId: departmentId,
@@ -49,16 +46,31 @@ const DepartmentEquipmentAddModal = ({
     }
   }, [visible, reset]);
 
-  const fetchEquipments = debounce((search: string) => {
-    setEquipmentLoading(true);
-    EquipmentService.getAllEquipments(search)
-      .then((data) => setEquipmentOptions(data))
-      .catch((err) => {
+  const fetchEquipments = useMemo(() => {
+    const fetcher = async (
+      search: string
+    ): Promise<SearchableSelectOption[]> => {
+      try {
+        const data: EquipmentResponse[] =
+          await DepartmentService.getEquipmentsByDepartmentDropdown(
+            departmentId,
+            search
+          );
+        return data.map((eq) => ({
+          value: eq.id,
+          label: `${eq.equipmentName} (${eq.equipmentNumber})`,
+        }));
+      } catch (err) {
         console.error(err);
-        message.error("Failed to load equipments");
-      })
-      .finally(() => setEquipmentLoading(false));
-  }, 500);
+        return [];
+      }
+    };
+
+    const wrapped = (search: string): Promise<SearchableSelectOption[]> =>
+      fetcher(search);
+
+    return wrapped;
+  }, [departmentId]);
 
   const handleFormSubmit: SubmitHandler<DepartmentEquipmentRequest> = (
     data
@@ -89,44 +101,22 @@ const DepartmentEquipmentAddModal = ({
     >
       <Spin spinning={isSubmitting}>
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-          {/* Equipment Dropdown */}
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Select Equipment
-            </label>
-            <Controller
-              name="equipmentId"
-              control={control}
-              rules={{ required: "Equipment is required" }}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  showSearch
-                  placeholder="Select an equipment"
-                  loading={equipmentLoading}
-                  filterOption={false}
-                  onSearch={(value) => fetchEquipments(value)}
-                  onFocus={() => fetchEquipments("")}
-                  onChange={(value) => field.onChange(value)}
-                  className="w-full"
-                  listHeight={200}
-                  virtual
-                >
-                  {equipmentOptions.map((equipment) => (
-                    <Option key={equipment.id} value={equipment.id}>
-                      {equipment.equipmentName} ({equipment.equipmentNumber})
-                    </Option>
-                  ))}
-                </Select>
-              )}
-            />
-
-            {errors.equipmentId && (
-              <span className="text-red-600 text-sm">
-                {errors.equipmentId.message}
-              </span>
-            )}
-          </div>
+          <ControlledSearchableSelect
+            name="equipmentId"
+            control={control}
+            label="Select Equipment"
+            placeholder="Search or select an equipment..."
+            fetchOptions={fetchEquipments}
+            debounceMs={300}
+            allowClear
+            rules={{ required: "Equipment is required" }}
+            className="w-full"
+            selectClassName="searchable-select-custom"
+            onSelectChange={(value: number | string) =>
+              setValue("equipmentId", Number(value))
+            }
+            error={errors.equipmentId}
+          />
 
           <div className="flex flex-col-reverse md:flex-row justify-end gap-3 mt-3 pt-2 border-t border-gray-200">
             <Button
