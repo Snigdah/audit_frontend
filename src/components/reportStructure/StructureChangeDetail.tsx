@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import { Card, Tag, Spin, Alert } from "antd";
 import { useNavigate } from "react-router-dom";
-import { BankOutlined, ToolOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import {
+  BankOutlined,
+  ToolOutlined,
+  ClockCircleOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  MinusCircleOutlined,
+} from "@ant-design/icons";
 import type { ReportSubmissionDetailResponse } from "../../types/reportSubmission";
 import StructureChangeSubmissionActions from "../reportSubmission/StructureChangeSubmissionActions";
 import { ReportSubmissionService } from "../../services/ReportSubmissionService";
@@ -45,18 +52,48 @@ const StructureChangeDetail = ({
     fetchSubmissionDetail();
   }, [submissionId]);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "APPROVED":
-        return "success";
-      case "PENDING":
-      case "NO_APPROVAL":
-        return "warning";
-      case "REJECTED":
-        return "error";
-      default:
-        return "default";
-    }
+  const renderStatusBadge = (status: string) => {
+    const configs: Record<
+      string,
+      { icon: React.ReactNode; className: string; label: string }
+    > = {
+      APPROVED: {
+        icon: <CheckCircleOutlined className="text-sm" />,
+        className:
+          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200",
+        label: "Approved",
+      },
+      REJECTED: {
+        icon: <CloseCircleOutlined className="text-sm" />,
+        className:
+          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200",
+        label: "Rejected",
+      },
+      PENDING: {
+        icon: <ClockCircleOutlined className="text-sm" />,
+        className:
+          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200",
+        label: "Pending",
+      },
+      NO_APPROVAL: {
+        icon: <MinusCircleOutlined className="text-sm" />,
+        className:
+          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200",
+        label: "No approval",
+      },
+    };
+    const c = configs[status] ?? {
+      icon: <ClockCircleOutlined className="text-sm" />,
+      className:
+        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200",
+      label: String(status),
+    };
+    return (
+      <span className={c.className}>
+        {c.icon}
+        {c.label}
+      </span>
+    );
   };
 
   const getReviewStyles = (status: string) => {
@@ -129,9 +166,7 @@ const StructureChangeDetail = ({
                 </span>
               </div>
             </div>
-            <Tag color={getStatusColor(submission.status)} className="text-sm px-3 py-1">
-              {submission.status}
-            </Tag>
+            {renderStatusBadge(submission.status)}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

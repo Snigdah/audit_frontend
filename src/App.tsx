@@ -39,6 +39,7 @@ import ReportPage from "./pages/templet/ReportsPage";
 import ReportDetails from "./pages/templet/ReportDetails";
 import ReportSubmissionListPage from "./pages/templet/ReportSubmissionListPage";
 import ReportSubmissionDetailsPage from "./pages/templet/ReportSubmissionDetailsPage";
+import ReportSubmissionHistoryDetailsPage from "./pages/templet/ReportSubmissionHistoryDetailsPage";
 import StructureChangeDetailsPage from "./pages/templet/StructureChangeDetailsPage";
 
 function App() {
@@ -123,6 +124,10 @@ function App() {
                   <Route
                     path="/report/reports/:reportId/structure-change/:submissionId"
                     element={<StructureChangeDetailsPage />}
+                  />
+                  <Route
+                    path="/report/reports/:reportId/history/:submissionId"
+                    element={<ReportSubmissionHistoryDetailsPage />}
                   />
                   <Route
                     path="/report/reports/:reportId/submissions/:expectedSubmissionId/detail/:submissionId"

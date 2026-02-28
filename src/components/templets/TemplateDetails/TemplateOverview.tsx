@@ -1,7 +1,16 @@
 import { useEffect, useState } from "react";
 import { Card, Tag, Spin, Alert, Button } from "antd";
 import { useNavigate } from "react-router-dom";
-import { BankOutlined, ToolOutlined, RedoOutlined, UserOutlined } from "@ant-design/icons";
+import {
+  BankOutlined,
+  ToolOutlined,
+  RedoOutlined,
+  UserOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  ClockCircleOutlined,
+  MinusCircleOutlined,
+} from "@ant-design/icons";
 import type { TemplateDetailResponse } from "../../../types/template";
 import TemplateActions from "./TemplateActions";
 import { TemplateService } from "../../../services/TempletService";
@@ -60,20 +69,51 @@ const TemplateOverview = ({ templateRequestId }: TemplateOverviewProps) => {
     );
   }
 
-  const getStatusColor = (status: string) => {
-      switch (status) {
-        case "APPROVED":
-          return "success";
-        case "PENDING":
-          return "warning";
-        case "REJECTED":
-          return "error";
-        default:
-          return "default";
-      }
+  const renderStatusBadge = (status: string) => {
+    const configs: Record<
+      string,
+      { icon: React.ReactNode; className: string; label: string }
+    > = {
+      APPROVED: {
+        icon: <CheckCircleOutlined className="text-sm" />,
+        className:
+          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200",
+        label: "Approved",
+      },
+      REJECTED: {
+        icon: <CloseCircleOutlined className="text-sm" />,
+        className:
+          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200",
+        label: "Rejected",
+      },
+      PENDING: {
+        icon: <ClockCircleOutlined className="text-sm" />,
+        className:
+          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200",
+        label: "Pending",
+      },
+      NO_APPROVAL: {
+        icon: <MinusCircleOutlined className="text-sm" />,
+        className:
+          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200",
+        label: "No approval",
+      },
     };
+    const c = configs[status] ?? {
+      icon: <ClockCircleOutlined className="text-sm" />,
+      className:
+        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200",
+      label: String(status),
+    };
+    return (
+      <span className={c.className}>
+        {c.icon}
+        {c.label}
+      </span>
+    );
+  };
 
-    const getReviewStyles = (status: string) => {
+  const getReviewStyles = (status: string) => {
     switch (status) {
       case "REJECTED":
         return {
@@ -120,9 +160,7 @@ const TemplateOverview = ({ templateRequestId }: TemplateOverviewProps) => {
                 <p className="text-sm text-gray-600">{templateData.description}</p>
               )}
             </div>
-            <Tag color={getStatusColor(templateData.status)} className="text-sm px-3 py-1">
-              {templateData.status}
-            </Tag>
+            {renderStatusBadge(templateData.status)}
           </div>
 
           {/* Info Grid */}

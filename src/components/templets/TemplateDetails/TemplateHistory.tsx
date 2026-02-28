@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Card, Table, Tag, Spin, Alert, Empty } from "antd";
+import { Card, Table, Spin, Alert, Empty } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
   ClockCircleOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
+  MinusCircleOutlined,
   CalendarOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -132,14 +133,7 @@ const TemplateHistory = ({ templateRequestId }: TemplateHistoryProps) => {
       dataIndex: "status",
       key: "status",
       width: 150,
-      render: (status: string) => {
-        const config = getStatusConfig(status);
-        return (
-          <Tag color={config.color} icon={config.icon} className="px-3 py-1">
-            {config.text}
-          </Tag>
-        );
-      },
+      render: (status: string) => renderStatusBadge(status),
     },
     {
       title: (

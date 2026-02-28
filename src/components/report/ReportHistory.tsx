@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Table, Select, DatePicker, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { RangePickerProps } from "antd/es/date-picker";
@@ -45,6 +46,7 @@ interface ReportHistoryProps {
 }
 
 const ReportHistory = ({ reportId }: ReportHistoryProps) => {
+  const navigate = useNavigate();
   const [list, setList] = useState<ReportSubmissionHistoryResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -396,10 +398,16 @@ const ReportHistory = ({ reportId }: ReportHistoryProps) => {
           scroll={{ x: "max-content" }}
           bordered
           size="middle"
-          className="shadow-sm"
+          className="shadow-sm cursor-pointer"
           locale={{
             emptyText: "No submission history found",
           }}
+          onRow={(record) => ({
+            onClick: () =>
+              navigate(`/report/reports/${reportId}/history/${record.submissionId}`),
+            style: { cursor: "pointer" },
+          })}
+          rowClassName={() => "hover:bg-gray-50"}
         />
       </div>
     </div>
