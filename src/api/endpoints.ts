@@ -555,19 +555,19 @@ export const ENDPOINTS = {
         page?: number;
         size?: number;
       }
-    ) => {
-      const query = new URLSearchParams();
+      ) => {
+        const query = new URLSearchParams();
 
-      if (params?.all !== undefined)
-        query.append("all", String(params.all));
+        if (params?.all !== undefined)
+          query.append("all", String(params.all));
 
-      if (params?.page !== undefined)
-        query.append("page", params.page.toString());
+        if (params?.page !== undefined)
+          query.append("page", params.page.toString());
 
-      if (params?.size !== undefined)
-        query.append("size", params.size.toString());
+        if (params?.size !== undefined)
+          query.append("size", params.size.toString());
 
-      return `${BASE.REPORT_SUBMISSION}/expected/${expectedSubmissionId}/submissions?${query.toString()}`;
+        return `${BASE.REPORT_SUBMISSION}/expected/${expectedSubmissionId}/submissions?${query.toString()}`;
     },
 
     CREATE_SUBMISSION: (
@@ -586,6 +586,8 @@ export const ENDPOINTS = {
     STRUCTURE_CHANGE_SUBMISSIONS_LIST: (
       reportId: number,
       params?: {
+        startDate?: string;
+        endDate?: string;
         all?: boolean;
         page?: number;
         size?: number;
@@ -593,6 +595,12 @@ export const ENDPOINTS = {
     ) => {
       const query = new URLSearchParams();
 
+      if (params?.startDate) 
+        query.append("startDate", params.startDate);
+
+      if (params?.endDate) 
+        query.append("endDate", params.endDate);
+      
       if (params?.all !== undefined)
         query.append("all", String(params.all));
 

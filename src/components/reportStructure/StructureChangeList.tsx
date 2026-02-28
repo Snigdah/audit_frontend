@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Table, Tag, Empty, message } from "antd";
+import { Table, Tag, Empty, message, DatePicker } from "antd";
+import type { RangePickerProps } from "antd/es/date-picker";
 import type { ColumnsType } from "antd/es/table";
 import {
   CheckCircleOutlined,
@@ -17,10 +18,13 @@ import type {
   ReportSubmissionSimpleResponse,
   SubmissionStatus,
 } from "../../types/reportSubmission";
-import dayjs from "dayjs";
+import dayjs, { type Dayjs } from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
 dayjs.extend(relativeTime);
+
+const { RangePicker } = DatePicker;
+const DATE_FORMAT = "YYYY-MM-DD";
 
 interface StructureChangeListProps {
   reportId: string;
@@ -34,14 +38,24 @@ const StructureChangeList = ({ reportId, onOpenChangeRequest }: StructureChangeL
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalElements, setTotalElements] = useState(0);
+  const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null] | null>(null);
 
   const fetchList = useCallback(
-    async (page: number = 1, size: number = 10) => {
+    async (
+      page: number = 1,
+      size: number = 10,
+      opts?: { startDate?: string; endDate?: string }
+    ) => {
       setLoading(true);
       try {
         const res = await ReportSubmissionService.fetchStructureChangeSubmissions(
           Number(reportId),
-          { page: page - 1, size }
+          {
+            page: page - 1,
+            size,
+            ...(opts?.startDate && { startDate: opts.startDate }),
+            ...(opts?.endDate && { endDate: opts.endDate }),
+          }
         );
         setList(res.content ?? []);
         setTotalElements(res.pagination?.totalElements ?? 0);
@@ -57,22 +71,39 @@ const StructureChangeList = ({ reportId, onOpenChangeRequest }: StructureChangeL
     [reportId]
   );
 
-  useEffect(() => {
-    fetchList(currentPage, pageSize);
-  }, [fetchList, currentPage, pageSize]);
+  const applyFilters = useCallback(
+    (page: number = 1, size: number = pageSize) => {
+      const startDate = dateRange?.[0]?.format(DATE_FORMAT);
+      const endDate = dateRange?.[1]?.format(DATE_FORMAT);
+      fetchList(page, size, { startDate, endDate });
+    },
+    [dateRange, pageSize, fetchList]
+  );
 
   useEffect(() => {
-    const onRefresh = () => fetchList(currentPage, pageSize);
+    applyFilters(currentPage, pageSize);
+  }, [currentPage, pageSize, dateRange, applyFilters]);
+
+  useEffect(() => {
+    const onRefresh = () => applyFilters(currentPage, pageSize);
     window.addEventListener("structure-change-list-refresh", onRefresh);
     return () => window.removeEventListener("structure-change-list-refresh", onRefresh);
-  }, [fetchList, currentPage, pageSize]);
+  }, [applyFilters, currentPage, pageSize]);
+
+  const handleRangeChange: RangePickerProps["onChange"] = (dates) => {
+    setDateRange(dates ?? null);
+    setCurrentPage(1);
+  };
 
   const handleTableChange = (pagination: {
     current?: number;
     pageSize?: number;
   }) => {
-    if (pagination.current != null) setCurrentPage(pagination.current);
-    if (pagination.pageSize != null) setPageSize(pagination.pageSize);
+    const nextPage = pagination.current ?? currentPage;
+    const nextSize = pagination.pageSize ?? pageSize;
+    setCurrentPage(nextPage);
+    setPageSize(nextSize);
+    applyFilters(nextPage, nextSize);
   };
 
   const getStatusConfig = (status: SubmissionStatus) => {
@@ -187,15 +218,25 @@ const StructureChangeList = ({ reportId, onOpenChangeRequest }: StructureChangeL
         <SectionHeader
           title="Structure change requests"
           rightContent={
-            onOpenChangeRequest ? (
-              <CustomButton
-                onClick={onOpenChangeRequest}
-                icon={<EditOutlined />}
-                className="bg-gray-800 hover:bg-gray-700 border-none text-white"
-              >
-                Change Request
-              </CustomButton>
-            ) : undefined
+            <div className="flex flex-wrap lg:flex-nowrap gap-2 w-full">
+              <RangePicker
+                value={dateRange ?? undefined}
+                onChange={handleRangeChange}
+                format={DATE_FORMAT}
+                className="w-full sm:w-auto min-w-0"
+                placeholder={["Start date", "End date"]}
+                size="middle"
+              />
+              {onOpenChangeRequest && (
+                <CustomButton
+                  onClick={onOpenChangeRequest}
+                  icon={<EditOutlined />}
+                  className="bg-gray-800 hover:bg-gray-700 border-none text-white whitespace-nowrap"
+                >
+                  Change Request
+                </CustomButton>
+              )}
+            </div>
           }
         />
         <Table

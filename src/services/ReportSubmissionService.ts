@@ -78,6 +78,8 @@ export const ReportSubmissionService = {
   async fetchStructureChangeSubmissions(
       reportId: number,
       params?: {
+        startDate?: string;
+        endDate?: string;
         all?: boolean;
         page?: number;
         size?: number;
