@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { Table, Input, Select, Tag, message } from "antd";
+import { Table, Input, Select, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { SearchOutlined } from "@ant-design/icons";
+import {
+  SearchOutlined,
+  CheckCircleOutlined,
+  MinusCircleOutlined,
+  ClockCircleOutlined,
+} from "@ant-design/icons";
 import SectionHeader from "../common/SectionHeader";
 import { useNavigate } from "react-router-dom";
 import type { TemplateReportResponse } from "../../types/report";
@@ -143,21 +148,42 @@ const ReportList = () => {
   const uniqueDepartments = [...new Set(reports.map((t) => t.departmentName))].filter(Boolean);
   const uniqueEquipment = [...new Set(reports.map((t) => t.equipmentName))].filter(Boolean);
 
-  const getStatusConfig = (status: ReportStatusEnum | string) => {
-    switch (status) {
-      case ReportStatusEnum.Active:
-        return { color: "green", label: ReportStatusEnum.Active };
-      case ReportStatusEnum.Inactive:
-        return { color: "default", label: ReportStatusEnum.Inactive };
-      default:
-        return { color: "default", label: String(status) };
-    }
+  const renderStatusBadge = (status: ReportStatusEnum | string) => {
+    const configs: Record<
+      string,
+      { icon: React.ReactNode; className: string; label: string }
+    > = {
+      [ReportStatusEnum.Active]: {
+        icon: <CheckCircleOutlined className="text-sm" />,
+        className:
+          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200",
+        label: ReportStatusEnum.Active,
+      },
+      [ReportStatusEnum.Inactive]: {
+        icon: <MinusCircleOutlined className="text-sm" />,
+        className:
+          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200",
+        label: ReportStatusEnum.Inactive,
+      },
+    };
+    const c = configs[status] ?? {
+      icon: <ClockCircleOutlined className="text-sm" />,
+      className:
+        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200",
+      label: String(status),
+    };
+    return (
+      <span className={`${c.className} whitespace-nowrap`}>
+        {c.icon}
+        {c.label}
+      </span>
+    );
   };
 
   const columns: ColumnsType<TemplateReportResponse> = [
     {
       title: (
-        <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm whitespace-nowrap">
+        <div className="flex items-center gap-2 font-semibold text-gray-700 whitespace-nowrap">
           <span className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></span>
           Report Name
         </div>
@@ -193,7 +219,7 @@ const ReportList = () => {
     },
     {
       title: (
-        <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm whitespace-nowrap">
+        <div className="flex items-center gap-2 font-semibold text-gray-700 whitespace-nowrap">
           <span className="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0"></span>
           Department
         </div>
@@ -203,12 +229,12 @@ const ReportList = () => {
       sorter: (a, b) =>
         (a.departmentName ?? "").localeCompare(b.departmentName ?? ""),
       render: (dept: string) => (
-        <span className="text-sm text-gray-700 truncate block">{dept ?? "—"}</span>
+        <span className="font-medium text-gray-800 text-sm truncate block">{dept ?? "—"}</span>
       ),
     },
     {
       title: (
-        <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm whitespace-nowrap">
+        <div className="flex items-center gap-2 font-semibold text-gray-700 whitespace-nowrap">
           <span className="w-2 h-2 bg-teal-500 rounded-full flex-shrink-0"></span>
           Equipment
         </div>
@@ -218,12 +244,12 @@ const ReportList = () => {
       sorter: (a, b) =>
         (a.equipmentName ?? "").localeCompare(b.equipmentName ?? ""),
       render: (equipment: string) => (
-        <span className="text-sm text-gray-700 truncate block">{equipment ?? "—"}</span>
+        <span className="font-medium text-gray-800 text-sm truncate block">{equipment ?? "—"}</span>
       ),
     },
     {
       title: (
-        <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm whitespace-nowrap">
+        <div className="flex items-center gap-2 font-semibold text-gray-700 whitespace-nowrap">
           <span className="w-2 h-2 bg-amber-500 rounded-full flex-shrink-0"></span>
           Status
         </div>
@@ -232,14 +258,7 @@ const ReportList = () => {
       key: "status",
       width: 120,
       sorter: (a, b) => a.status.localeCompare(b.status),
-      render: (status: ReportStatusEnum) => {
-        const config = getStatusConfig(status);
-        return (
-          <Tag color={config.color} className="font-medium text-xs whitespace-nowrap">
-            {config.label}
-          </Tag>
-        );
-      },
+      render: (status: ReportStatusEnum) => renderStatusBadge(status),
     },
   ];
 

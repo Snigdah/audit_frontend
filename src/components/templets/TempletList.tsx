@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import { Table, Input, Select, Tag, message } from "antd";
+import { Table, Input, Select, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
   PlusOutlined,
   SearchOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  ClockCircleOutlined,
+  MinusCircleOutlined,
 } from "@ant-design/icons";
 import SectionHeader from "../common/SectionHeader";
 import CustomButton from "../common/CustomButton";
@@ -134,23 +138,54 @@ const TemplateRequestList = () => {
   const uniqueDepartments = [...new Set(templates.map((t) => t.departmentName))].filter(Boolean);
   const uniqueEquipment = [...new Set(templates.map((t) => t.equipmentName))].filter(Boolean);
 
-  const getStatusConfig = (status: string) => {
-    switch (status) {
-      case "APPROVED":
-        return { color: "green", label: "Approved" };
-      case "REJECTED":
-        return { color: "red", label: "Rejected" };
-      case "PENDING":
-        return { color: "orange", label: "Pending" };
-      default:
-        return { color: "default", label: status };
-    }
+  const renderStatusBadge = (status: string) => {
+    const configs: Record<
+      string,
+      { icon: React.ReactNode; className: string; label: string }
+    > = {
+      APPROVED: {
+        icon: <CheckCircleOutlined className="text-sm" />,
+        className:
+          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200",
+        label: "Approved",
+      },
+      REJECTED: {
+        icon: <CloseCircleOutlined className="text-sm" />,
+        className:
+          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200",
+        label: "Rejected",
+      },
+      PENDING: {
+        icon: <ClockCircleOutlined className="text-sm" />,
+        className:
+          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200",
+        label: "Pending",
+      },
+      NO_APPROVAL: {
+        icon: <MinusCircleOutlined className="text-sm" />,
+        className:
+          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200",
+        label: "No approval",
+      },
+    };
+    const c = configs[status] ?? {
+      icon: <ClockCircleOutlined className="text-sm" />,
+      className:
+        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200",
+      label: status,
+    };
+    return (
+      <span className={`${c.className} whitespace-nowrap`}>
+        {c.icon}
+        {c.label}
+      </span>
+    );
   };
 
   const columns: ColumnsType<TemplateRow> = [
     {
       title: (
-        <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm whitespace-nowrap">
+        <div className="flex items-center gap-2 font-semibold text-gray-700 whitespace-nowrap">
           <span className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></span>
           Template
         </div>
@@ -182,7 +217,7 @@ const TemplateRequestList = () => {
     },
     {
       title: (
-        <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm whitespace-nowrap">
+        <div className="flex items-center gap-2 font-semibold text-gray-700 whitespace-nowrap">
           <span className="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0"></span>
           Department
         </div>
@@ -191,12 +226,12 @@ const TemplateRequestList = () => {
       key: "departmentName",
       sorter: (a, b) => a.departmentName.localeCompare(b.departmentName),
       render: (dept: string) => (
-        <span className="text-sm text-gray-700 truncate block">{dept}</span>
+        <span className="font-medium text-gray-800 text-sm truncate block">{dept}</span>
       ),
     },
     {
       title: (
-        <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm whitespace-nowrap">
+        <div className="flex items-center gap-2 font-semibold text-gray-700 whitespace-nowrap">
           <span className="w-2 h-2 bg-teal-500 rounded-full flex-shrink-0"></span>
           Equipment
         </div>
@@ -205,12 +240,12 @@ const TemplateRequestList = () => {
       key: "equipmentName",
       sorter: (a, b) => a.equipmentName.localeCompare(b.equipmentName),
       render: (equipment: string) => (
-        <span className="text-sm text-gray-700 truncate block">{equipment}</span>
+        <span className="font-medium text-gray-800 text-sm truncate block">{equipment}</span>
       ),
     },
     {
       title: (
-        <div className="flex items-center gap-2 font-semibold text-gray-700 text-sm whitespace-nowrap">
+        <div className="flex items-center gap-2 font-semibold text-gray-700 whitespace-nowrap">
           <span className="w-2 h-2 bg-amber-500 rounded-full flex-shrink-0"></span>
           Status
         </div>
@@ -219,14 +254,7 @@ const TemplateRequestList = () => {
       key: "status",
       width: 120,
       sorter: (a, b) => a.status.localeCompare(b.status),
-      render: (status: string) => {
-        const config = getStatusConfig(status);
-        return (
-          <Tag color={config.color} className="font-medium text-xs whitespace-nowrap">
-            {config.label}
-          </Tag>
-        );
-      },
+      render: (status: string) => renderStatusBadge(status),
     },
   ];
 

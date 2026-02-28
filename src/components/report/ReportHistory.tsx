@@ -233,8 +233,8 @@ const ReportHistory = ({ reportId }: ReportHistoryProps) => {
   const columns: ColumnsType<ReportSubmissionHistoryResponse> = [
     {
       title: (
-        <div className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
-          <span className="w-1.5 h-1.5 bg-blue-500 rounded-full" />
+        <div className="flex items-center gap-2 font-semibold text-gray-700">
+          <span className="w-2 h-2 bg-blue-500 rounded-full" />
           Creator
         </div>
       ),
@@ -242,13 +242,13 @@ const ReportHistory = ({ reportId }: ReportHistoryProps) => {
       key: "creatorName",
       width: 140,
       render: (name: string) => (
-        <span className="text-sm text-gray-800">{name ?? "—"}</span>
+        <span className="font-medium text-gray-800 text-sm">{name ?? "—"}</span>
       ),
     },
     {
       title: (
-        <div className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
-          <span className="w-1.5 h-1.5 bg-violet-500 rounded-full" />
+        <div className="flex items-center gap-2 font-semibold text-gray-700">
+          <span className="w-2 h-2 bg-violet-500 rounded-full" />
           Reviewer
         </div>
       ),
@@ -256,13 +256,13 @@ const ReportHistory = ({ reportId }: ReportHistoryProps) => {
       key: "reviewerName",
       width: 140,
       render: (name: string) => (
-        <span className="text-sm text-gray-800">{name ?? "—"}</span>
+        <span className="font-medium text-gray-800 text-sm">{name ?? "—"}</span>
       ),
     },
     {
       title: (
-        <div className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
-          <span className="w-1.5 h-1.5 bg-teal-500 rounded-full" />
+        <div className="flex items-center gap-2 font-semibold text-gray-700">
+          <span className="w-2 h-2 bg-teal-500 rounded-full" />
           Submitted at
         </div>
       ),
@@ -270,15 +270,15 @@ const ReportHistory = ({ reportId }: ReportHistoryProps) => {
       key: "submittedAt",
       width: 180,
       render: (val: string) => (
-        <span className="text-sm text-gray-700">
+        <span className="font-medium text-gray-700 text-sm">
           {val ? dayjs(val).format("MMM D, YYYY HH:mm") : "—"}
         </span>
       ),
     },
     {
       title: (
-        <div className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
-          <span className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
+        <div className="flex items-center gap-2 font-semibold text-gray-700">
+          <span className="w-2 h-2 bg-amber-500 rounded-full" />
           Review comment
         </div>
       ),
@@ -286,13 +286,13 @@ const ReportHistory = ({ reportId }: ReportHistoryProps) => {
       key: "reviewComment",
       ellipsis: true,
       render: (comment: string | null) => (
-        <span className="text-sm text-gray-600">{comment ?? "—"}</span>
+        <span className="font-medium text-gray-600 text-sm">{comment ?? "—"}</span>
       ),
     },
     {
       title: (
-        <div className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
-          <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+        <div className="flex items-center gap-2 font-semibold text-gray-700">
+          <span className="w-2 h-2 bg-emerald-500 rounded-full" />
           Status
         </div>
       ),
@@ -303,8 +303,8 @@ const ReportHistory = ({ reportId }: ReportHistoryProps) => {
     },
     {
       title: (
-        <div className="flex items-center gap-1.5 font-semibold text-gray-700 text-sm">
-          <span className="w-1.5 h-1.5 bg-slate-500 rounded-full" />
+        <div className="flex items-center gap-2 font-semibold text-gray-700">
+          <span className="w-2 h-2 bg-slate-500 rounded-full" />
           Late
         </div>
       ),
