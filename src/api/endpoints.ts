@@ -576,6 +576,12 @@ export const ENDPOINTS = {
       expectedSubmissionId: number
     ) =>
       `${BASE.REPORT_SUBMISSION}/report/${reportId}/version/${versionId}/expected/${expectedSubmissionId}`,
+      
+    SUPERVISOR_CREATE_SUBMISSION: (
+      reportId: number,
+      versionId: number
+    ) =>
+       `${BASE.REPORT_SUBMISSION}/report/${reportId}/version/${versionId}/supervisor`,  
 
     GET_SUBMISSION_DETAIL: (submissionId: number) =>
       `${BASE.REPORT_SUBMISSION}/${submissionId}`,

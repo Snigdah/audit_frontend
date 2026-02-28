@@ -52,6 +52,20 @@ export const ReportSubmissionService = {
     return response.data.data;
   },
 
+  async createSupervisorSubmission(
+      reportId: number,
+      versionId: number,
+      payload: ReportSubmissionRequest
+    ): Promise<void> {
+      await apiClient.post(
+        ENDPOINTS.REPORT_SUBMISSION.SUPERVISOR_CREATE_SUBMISSION(
+        reportId,
+        versionId
+      ),
+      payload
+    );
+  },
+
   async getSubmissionDetail(submissionId: number): Promise<ReportSubmissionDetailResponse | null> {
     try {
       const response = await apiClient.get<
