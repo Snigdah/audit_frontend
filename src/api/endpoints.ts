@@ -501,6 +501,8 @@ export const ENDPOINTS = {
         return `${BASE.REPORT}${qs ? `?${qs}` : ""}`;
     },
 
+    GET_DETAILS: (reportId: number) => `${BASE.REPORT}/${reportId}`,
+
     ASSIGN_OPERATOR: (reportId: number) => `${BASE.REPORT}/${reportId}/operator`,
     REMOVE_OPERATOR: (reportId: number, operatorId: number) => `${BASE.REPORT}/${reportId}/operator/${operatorId}`,
     FETCH_OPERATORS: (
@@ -576,7 +578,7 @@ export const ENDPOINTS = {
       expectedSubmissionId: number
     ) =>
       `${BASE.REPORT_SUBMISSION}/report/${reportId}/version/${versionId}/expected/${expectedSubmissionId}`,
-      
+
     SUPERVISOR_CREATE_SUBMISSION: (
       reportId: number,
       versionId: number

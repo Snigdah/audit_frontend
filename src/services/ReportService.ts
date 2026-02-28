@@ -4,6 +4,7 @@ import type { ApiResponse, PaginatedData } from "../types/api";
 import type { OperatorSimple } from "../types/operator";
 import type {
   AssignReportOperatorRequest,
+  ReportDetailResponse,
   TemplateReportResponse,
 } from "../types/report";
 import type { ReportStructureResponse } from "../types/reportSubmission";
@@ -22,6 +23,13 @@ export const ReportService = {
       }
     ): Promise<PaginatedData<TemplateReportResponse>> {
       const response = await apiClient.get<ApiResponse<PaginatedData<TemplateReportResponse>>>(ENDPOINTS.REPORT.FETCH_ALL(params));
+    return response.data.data;
+  },
+
+  async getReportDetails(reportId: number): Promise<ReportDetailResponse> {
+    const response = await apiClient.get<ApiResponse<ReportDetailResponse>>(
+      ENDPOINTS.REPORT.GET_DETAILS(reportId)
+    );
     return response.data.data;
   },
 
