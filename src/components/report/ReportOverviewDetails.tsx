@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Card } from "antd";
 import {
   FileTextOutlined,
@@ -12,6 +13,8 @@ interface ReportOverviewDetailsProps {
 }
 
 const ReportOverviewDetails = ({ report }: ReportOverviewDetailsProps) => {
+  const navigate = useNavigate();
+
   return (
     <Card className="shadow-sm" size="small">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
@@ -39,7 +42,10 @@ const ReportOverviewDetails = ({ report }: ReportOverviewDetailsProps) => {
           </div>
         </div>
 
-        <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg min-w-0 sm:col-span-2 lg:col-span-1">
+        <div
+          className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg min-w-0 sm:col-span-2 lg:col-span-1 hover:bg-gray-100 transition-colors cursor-pointer"
+          onClick={() => navigate(`/infrastructure/department/${report.departmentId}`)}
+        >
           <div className="flex items-center justify-center w-9 h-9 bg-white rounded-lg shadow-sm flex-shrink-0">
             <BankOutlined className="text-base text-gray-600" />
           </div>
@@ -51,7 +57,10 @@ const ReportOverviewDetails = ({ report }: ReportOverviewDetailsProps) => {
           </div>
         </div>
 
-        <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg min-w-0">
+        <div
+          className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg min-w-0 hover:bg-gray-100 transition-colors cursor-pointer"
+          onClick={() => navigate(`/infrastructure/equipment/${report.equipmentId}`)}
+        >
           <div className="flex items-center justify-center w-9 h-9 bg-white rounded-lg shadow-sm flex-shrink-0">
             <ToolOutlined className="text-base text-gray-600" />
           </div>
