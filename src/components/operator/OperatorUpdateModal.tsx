@@ -10,6 +10,7 @@ import type { Designation } from "../../types/designation";
 import type { UpdateOperatorRequest } from "../../types/operator";
 import { debounce } from "lodash";
 import { toast } from "../common/Toast";
+import { createLogger } from "../../utils/logger";
 
 const { Option } = Select;
 
@@ -26,6 +27,7 @@ const OperatorUpdateModal = ({
   onSuccess,
   operatorId,
 }: Props) => {
+  const logger = createLogger("OperatorUpdateModal");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [designationOptions, setDesignationOptions] = useState<Designation[]>(
     []
@@ -76,9 +78,11 @@ const OperatorUpdateModal = ({
   };
 
   const fetchDesignations = debounce((search: string) => {
+    logger.info("Fetching designations with search:", search);
+    
     setDesignationLoading(true);
-    DesignationService.getDesignations(search)
-      .then((data) => setDesignationOptions(data))
+    DesignationService.getDesignations({ search })
+      .then((data) => setDesignationOptions(data.content))
       .catch(() => {
         message.error("Failed to load designations");
       })
