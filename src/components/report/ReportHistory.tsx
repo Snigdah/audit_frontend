@@ -22,6 +22,22 @@ const { RangePicker } = DatePicker;
 
 const DATE_FORMAT = "YYYY-MM-DD";
 
+/** Renders backend `lateMinutes` as days / hours / minutes only (no months/years). */
+function formatLateDuration(totalMinutes: number): string {
+  if (totalMinutes <= 0) return "0m";
+  const minutesPerDay = 24 * 60;
+  const days = Math.floor(totalMinutes / minutesPerDay);
+  let rem = totalMinutes % minutesPerDay;
+  const hours = Math.floor(rem / 60);
+  const minutes = rem % 60;
+
+  const parts: string[] = [];
+  if (days > 0) parts.push(`${days}d`);
+  if (hours > 0) parts.push(`${hours}h`);
+  if (minutes > 0 || parts.length === 0) parts.push(`${minutes}m`);
+  return parts.join(" ");
+}
+
 const STATUS_OPTIONS: { value: SubmissionStatus; label: string }[] = [
   { value: "PENDING", label: "Pending" },
   { value: "APPROVED", label: "Approved" },
@@ -212,15 +228,17 @@ const ReportHistory = ({ reportId }: ReportHistoryProps) => {
   };
 
   const renderLateBadge = (lateMinutes: number | null | undefined) => {
-    const isLate = lateMinutes != null && lateMinutes > 0;
+    const minutes = lateMinutes ?? 0;
+    const isLate = minutes > 0;
     if (isLate) {
+      const label = formatLateDuration(minutes);
       return (
         <span
           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200"
-          title={`Late by ${lateMinutes} minutes`}
+          title={`Late by ${label} (${minutes} min total)`}
         >
           <ClockCircleOutlined className="text-sm" />
-          +{lateMinutes} min
+          +{label}
         </span>
       );
     }
@@ -311,7 +329,7 @@ const ReportHistory = ({ reportId }: ReportHistoryProps) => {
         </div>
       ),
       key: "late",
-      width: 110,
+      width: 140,
       render: (_: unknown, record: ReportSubmissionHistoryResponse) =>
         renderLateBadge(record.lateMinutes),
     },
