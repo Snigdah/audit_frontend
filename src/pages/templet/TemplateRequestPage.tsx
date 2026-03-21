@@ -1,6 +1,5 @@
 import PageHeader from "../../components/common/PageHeader";
 import TempletRequestList from "../../components/templets/TempletList";
-import TempletList from "../../components/templets/TempletList";
 
 const TemplateRequestPage = () => {
   return (

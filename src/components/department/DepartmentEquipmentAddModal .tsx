@@ -4,6 +4,7 @@ import { Button, Spin } from "antd";
 import ModalComponent from "../common/ModalComponent";
 import CustomButton from "../common/CustomButton";
 import DepartmentService from "../../services/DepartmentService";
+import EquipmentService from "../../services/EquipmentService";
 import { toast } from "../common/Toast";
 import type { DepartmentEquipmentRequest } from "../../types/department";
 import type { EquipmentResponse } from "../../types/equipment";
@@ -52,10 +53,7 @@ const DepartmentEquipmentAddModal = ({
     ): Promise<SearchableSelectOption[]> => {
       try {
         const data: EquipmentResponse[] =
-          await DepartmentService.getEquipmentsByDepartmentDropdown(
-            departmentId,
-            search
-          );
+          await EquipmentService.searchEquipmentsDropDown(search);
         return data.map((eq) => ({
           value: eq.id,
           label: `${eq.equipmentName} (${eq.equipmentNumber})`,
@@ -70,7 +68,7 @@ const DepartmentEquipmentAddModal = ({
       fetcher(search);
 
     return wrapped;
-  }, [departmentId]);
+  }, []);
 
   const handleFormSubmit: SubmitHandler<DepartmentEquipmentRequest> = (
     data

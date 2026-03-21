@@ -360,6 +360,7 @@ export const ENDPOINTS = {
   },
   EQUIPMENT: {
     FETCH_BY_ID: (id: number) => `${BASE.EQUIPMENT}/${id}`,
+    SEARCH_DROP_DOWN: (query: string) => `${BASE.EQUIPMENT}/all?search=${query}`,
     FETCH_ALL: (params?: {
       search?: string;
       page?: number;

@@ -1,8 +1,6 @@
 import { useParams } from "react-router-dom";
-import { Tabs, Space, Input } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { Tabs } from "antd";
 import PageHeader from "../../components/common/PageHeader";
-import SectionHeader from "../../components/common/SectionHeader";
 import TemplateOverview from "../../components/templets/TemplateDetails/TemplateOverview";
 import TemplateHistory from "../../components/templets/TemplateDetails/TemplateHistory";
 

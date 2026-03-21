@@ -23,7 +23,9 @@ const ReportDetails = () => {
             setLoading(true);
             ReportService.fetchAllReports()
                 .then((reports) => {
-                    const report = reports.find((r) => r.templateId === Number(reportId));
+                    const report = reports.content.find(
+                        (r) => r.templateId === Number(reportId)
+                    );
                     if (report) setReportDetails(report);
                 })
                 .catch((err) => {

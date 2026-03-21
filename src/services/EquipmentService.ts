@@ -50,6 +50,13 @@ class EquipmentService {
   //   return response.data.data;
   // }
 
+  async searchEquipmentsDropDown(query: string): Promise<EquipmentResponse[]> {
+    const response = await apiClient.get<ApiResponse<EquipmentResponse[]>>(
+      ENDPOINTS.EQUIPMENT.SEARCH_DROP_DOWN(query)
+    );
+    return response.data.data;
+  }
+
   async getEquipmentById(id: number): Promise<EquipmentResponse> {
     const response = await apiClient.get<ApiResponse<EquipmentResponse>>(
       ENDPOINTS.EQUIPMENT.FETCH_BY_ID(id)
