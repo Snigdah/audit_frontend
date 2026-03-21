@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, Table, Spin, Alert, Empty } from "antd";
+import {Table, Spin, Alert, Empty } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
   ClockCircleOutlined,
@@ -62,35 +62,6 @@ const TemplateHistory = ({ templateRequestId }: TemplateHistoryProps) => {
     setCurrentPage(current);
     setPageSize(newPageSize);
     fetchSubmissions(current - 1, newPageSize);
-  };
-
-  const getStatusConfig = (status: string) => {
-    switch (status) {
-      case "APPROVED":
-        return {
-          color: "success",
-          icon: <CheckCircleOutlined />,
-          text: status,
-        };
-      case "PENDING":
-        return {
-          color: "warning",
-          icon: <ClockCircleOutlined />,
-          text: status,
-        };
-      case "REJECTED":
-        return {
-          color: "error",
-          icon: <CloseCircleOutlined />,
-          text: status,
-        };
-      default:
-        return {
-          color: "default",
-          icon: <ClockCircleOutlined />,
-          text: status,
-        };
-    }
   };
 
   const getVersionLabel = (index: number, total: number) => {
@@ -215,6 +186,50 @@ const TemplateHistory = ({ templateRequestId }: TemplateHistoryProps) => {
       />
     );
   }
+
+    const renderStatusBadge = (status: string) => {
+    const configs: Record<
+      string,
+      { icon: React.ReactNode; className: string; label: string }
+    > = {
+      APPROVED: {
+        icon: <CheckCircleOutlined className="text-sm" />,
+        className:
+          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200",
+        label: "Approved",
+      },
+      REJECTED: {
+        icon: <CloseCircleOutlined className="text-sm" />,
+        className:
+          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200",
+        label: "Rejected",
+      },
+      PENDING: {
+        icon: <ClockCircleOutlined className="text-sm" />,
+        className:
+          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200",
+        label: "Pending",
+      },
+      NO_APPROVAL: {
+        icon: <MinusCircleOutlined className="text-sm" />,
+        className:
+          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200",
+        label: "No approval",
+      },
+    };
+    const c = configs[status] ?? {
+      icon: <ClockCircleOutlined className="text-sm" />,
+      className:
+        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200",
+      label: String(status),
+    };
+    return (
+      <span className={c.className}>
+        {c.icon}
+        {c.label}
+      </span>
+    );
+  };
 
   const dataWithIndex = submissions.map((item, index) => ({
     ...item,

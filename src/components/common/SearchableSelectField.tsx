@@ -1,5 +1,5 @@
 // components/common/SearchableSelectField.tsx
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Controller } from "react-hook-form";
 import type { FieldError, Control } from "react-hook-form";
 import { Select } from "antd";

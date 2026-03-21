@@ -9,7 +9,7 @@ import {
 
 import NotificationService from "../services/NotificationService";
 import { useAuth } from "./AuthContext";
-import type { NotificationDTO, NotificationResponse } from "../types/notification";
+import type { NotificationDTO } from "../types/notification";
 
 interface Notification {
   userNotificationId: number;

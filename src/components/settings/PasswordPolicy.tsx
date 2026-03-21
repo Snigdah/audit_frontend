@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { InputField } from "../common/InputField";
 import { PasswordPolicyModel } from "../../types/PasswordPolicy";
 import PasswordPolicyService from "../../services/PasswordPolicyService";
-import { Button, Spin } from "antd";
+import { Spin } from "antd";
 import CustomButton from "../common/CustomButton";
 
 type FormData = {

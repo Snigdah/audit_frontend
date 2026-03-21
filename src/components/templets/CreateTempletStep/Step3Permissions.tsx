@@ -179,7 +179,7 @@ const Step3Permissions: React.FC<Step3PermissionsProps> = ({
           <tbody>
             {localStructure.data.map((row, rowIdx) => (
               <tr key={rowIdx}>
-                {row.map((cell, colIdx) => {
+                {row.map((_, colIdx) => {
                   const cellDisplay = getCellDisplay(rowIdx, colIdx);
                   if (!cellDisplay.display) return null;
 

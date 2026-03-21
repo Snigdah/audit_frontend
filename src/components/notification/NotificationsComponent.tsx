@@ -1,7 +1,7 @@
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
 import { useNotification } from "../../context/NotificationContext";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const NotificationsComponent = () => {
   const {

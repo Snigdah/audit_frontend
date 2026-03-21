@@ -77,7 +77,7 @@ const OperatorUpdateModal = ({
 
   const fetchDesignations = debounce((search: string) => {
     setDesignationLoading(true);
-    DesignationService.getDesignations(search)
+    DesignationService.searchDesignations(search)
       .then((data) => setDesignationOptions(data))
       .catch(() => {
         message.error("Failed to load designations");

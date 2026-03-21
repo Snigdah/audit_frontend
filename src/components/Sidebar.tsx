@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { FaBars, FaTimes, FaSignOutAlt } from "react-icons/fa";
 import {
   MdKeyboardArrowDown,
@@ -23,7 +23,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapseChange }) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const { authState, logout } = useAuth();
   const { unreadCount } = useNotification();
-  const location = useLocation();
 
   useEffect(() => {
     const handleResize = () => {

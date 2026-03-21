@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, Tag, Spin, Alert, Button } from "antd";
+import { Card, Spin, Alert, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import {
   BankOutlined,

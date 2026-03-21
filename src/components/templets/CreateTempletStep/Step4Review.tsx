@@ -148,7 +148,7 @@ const Step4Review: React.FC<Step4ReviewProps> = ({
             <tbody>
               {structure.data.map((row, rowIdx) => (
                 <tr key={rowIdx}>
-                  {row.map((cell, colIdx) => {
+                  {row.map((_, colIdx) => {
                     const cellInfo = getCellDisplay(rowIdx, colIdx);
                     if (!cellInfo.display) return null;
 

@@ -28,7 +28,7 @@ const BuildingCard = ({
 
         <div className="mt-4 flex items-center text-gray-600">
           <LocationIcon />
-          <span>{building.location}</span>
+          {/* <span>{building.location}</span> */}
         </div>
 
         <div className="mt-6 flex justify-between items-center">
