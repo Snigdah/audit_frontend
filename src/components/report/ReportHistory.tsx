@@ -194,7 +194,7 @@ const ReportHistory = ({ reportId }: ReportHistoryProps) => {
         icon: <MinusCircleOutlined className="text-sm" />,
         className:
           "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200",
-        label: "No approval",
+        label: "NA",
       },
     };
     const c = configs[status] ?? {
