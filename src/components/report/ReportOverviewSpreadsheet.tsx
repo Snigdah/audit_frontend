@@ -26,6 +26,23 @@ const ReportOverviewSpreadsheet = ({
   useEffect(() => {
     if (!containerRef.current || !data?.length) return;
 
+    const columnCount = Math.max(...data.map((row) => row?.length ?? 0), 0);
+
+    const computedColWidths = Array.from({ length: columnCount }, (_, colIdx) => {
+      let maxLen = 0;
+
+      for (let rowIdx = 0; rowIdx < Math.min(data.length, 120); rowIdx += 1) {
+        const cellValue = data[rowIdx]?.[colIdx];
+        const cellText = String(cellValue ?? "");
+        if (cellText.length > maxLen) {
+          maxLen = cellText.length;
+        }
+      }
+
+      // Keeps columns readable while still allowing horizontal scrolling for dense sheets.
+      return Math.min(Math.max(maxLen * 7.5, 120), 340);
+    });
+
     const getCellClassName = (row: number, col: number): string => {
       if (!permissions?.[row]?.[col]) {
         return "overview-admin-only-cell";
@@ -45,14 +62,21 @@ const ReportOverviewSpreadsheet = ({
       colHeaders: true,
       rowHeaders: true,
       width: "100%",
-      height: 480,
+      height: "70vh",
       readOnly: true,
-      stretchH: "all",
-      autoWrapRow: true,
-      autoWrapCol: true,
+      stretchH: "none",
+      autoWrapRow: false,
+      autoWrapCol: false,
+      wordWrap: true,
+      autoRowSize: true,
+      colWidths: computedColWidths,
       manualRowResize: false,
       manualColumnResize: false,
       contextMenu: false,
+      copyPaste: true,
+      navigableHeaders: true,
+      viewportRowRenderingOffset: 30,
+      viewportColumnRenderingOffset: 10,
       licenseKey: "non-commercial-and-evaluation",
       mergeCells:
         mergeCells?.map((mc) => ({
@@ -67,7 +91,9 @@ const ReportOverviewSpreadsheet = ({
         if (row === 0) {
           className = `overview-header-cell ${baseClassName}`.trim();
         }
-        return { className };
+        return {
+          className: `${className} overview-cell-wrap`.trim(),
+        };
       },
     });
 
@@ -91,7 +117,13 @@ const ReportOverviewSpreadsheet = ({
         }
         .report-overview-sheet td {
           border-color: #e5e7eb !important;
-          vertical-align: middle;
+          vertical-align: top !important;
+          white-space: normal !important;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          line-height: 1.35;
+          padding-top: 6px !important;
+          padding-bottom: 6px !important;
         }
         .report-overview-sheet th {
           background-color: #f8fafc !important;
@@ -122,8 +154,23 @@ const ReportOverviewSpreadsheet = ({
         .report-overview-sheet .ht_master .wtHolder {
           overflow: auto !important;
         }
+        .report-overview-sheet .wtHolder::-webkit-scrollbar {
+          width: 10px;
+          height: 10px;
+        }
+        .report-overview-sheet .wtHolder::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 999px;
+        }
+        .report-overview-sheet .wtHolder::-webkit-scrollbar-track {
+          background: #f1f5f9;
+        }
         .report-overview-sheet .handsontable td.htInvalid {
           background-color: inherit !important;
+        }
+        .report-overview-sheet .overview-cell-wrap {
+          white-space: normal !important;
+          text-overflow: clip !important;
         }
         @media (max-width: 640px) {
           .report-overview-sheet .handsontable {
@@ -134,7 +181,7 @@ const ReportOverviewSpreadsheet = ({
           }
         }
       `}</style>
-      <div className="report-overview-sheet border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+      <div className="report-overview-sheet border border-gray-200 rounded-xl overflow-hidden shadow-sm bg-white">
         <div className="flex items-center gap-3 px-4 py-2 bg-gray-50 border-b border-gray-200 text-xs text-gray-500 flex-wrap">
           <span className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded bg-white border border-gray-300" />
@@ -148,8 +195,14 @@ const ReportOverviewSpreadsheet = ({
             <span className="w-3 h-3 rounded bg-amber-50 border border-amber-200" />
             Restricted
           </span>
+          <span className="text-gray-400">
+            Scroll horizontally and vertically to view full sheet
+          </span>
         </div>
-        <div ref={containerRef} className="min-h-[200px] overflow-auto" />
+        <div
+          ref={containerRef}
+          className="min-h-[220px] max-h-[70vh] overflow-auto overscroll-contain"
+        />
       </div>
     </>
   );
