@@ -14,6 +14,7 @@ import ReportOverviewSpreadsheet from "./ReportOverviewSpreadsheet";
 import { useAuth } from "../../context/AuthContext";
 import { ReportService } from "../../services/ReportService";
 import type { ReportDetailResponse } from "../../types/report";
+import type { MenuProps } from "antd";
 
 interface ReportOverviewProps {
   reportId: string;
@@ -24,6 +25,9 @@ const ReportOverview = ({ reportId }: ReportOverviewProps) => {
   const [submissionModalOpen, setSubmissionModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [exportingType, setExportingType] = useState<"excel" | "pdf" | null>(
+    null
+  );
   const [reportDetails, setReportDetails] =
     useState<ReportDetailResponse | null>(null);
 
@@ -48,32 +52,92 @@ const ReportOverview = ({ reportId }: ReportOverviewProps) => {
       .finally(() => setLoading(false));
   }, [reportId]);
 
-  // ✅ Dummy Export Functions
-  const handleExportExcel = () => {
-    console.log("Export Excel clicked");
-    alert("Downloading Excel...");
+  const getFileNameFromDisposition = (
+    contentDisposition?: string,
+    fallback?: string
+  ) => {
+    if (!contentDisposition) return fallback ?? "download";
+
+    const utf8Match = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+    if (utf8Match?.[1]) {
+      return decodeURIComponent(utf8Match[1]);
+    }
+
+    const asciiMatch = contentDisposition.match(/filename="?([^"]+)"?/i);
+    if (asciiMatch?.[1]) {
+      return asciiMatch[1];
+    }
+
+    return fallback ?? "download";
   };
 
-  const handleExportPDF = () => {
-    console.log("Export PDF clicked");
-    alert("Downloading PDF...");
+  const downloadBlob = (blob: Blob, fileName: string) => {
+    const blobUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(blobUrl);
   };
 
-  // ✅ Dropdown items
-  const exportItems = [
+  const handleExportExcel = async () => {
+    try {
+      setExportingType("excel");
+      const response = await ReportService.exportReportExcel(Number(reportId));
+      const fileName = getFileNameFromDisposition(
+        response.headers["content-disposition"],
+        `report-${reportId}.xlsx`
+      );
+      downloadBlob(response.data, fileName);
+    } catch (err) {
+      console.error("Failed to export report excel:", err);
+    } finally {
+      setExportingType(null);
+    }
+  };
+
+  const handleExportPDF = async () => {
+    try {
+      setExportingType("pdf");
+      const response = await ReportService.exportReportPdf(Number(reportId));
+      const fileName = getFileNameFromDisposition(
+        response.headers["content-disposition"],
+        `report-${reportId}.pdf`
+      );
+      downloadBlob(response.data, fileName);
+    } catch (err) {
+      console.error("Failed to export report pdf:", err);
+    } finally {
+      setExportingType(null);
+    }
+  };
+
+  const exportItems: MenuProps["items"] = [
     {
       key: "excel",
       label: "Export Excel",
       icon: <FileExcelOutlined />,
-      onClick: handleExportExcel,
+      disabled: exportingType !== null,
     },
     {
       key: "pdf",
       label: "Export PDF",
       icon: <FilePdfOutlined />,
-      onClick: handleExportPDF,
+      disabled: exportingType !== null,
     },
   ];
+
+  const handleExportMenuClick: MenuProps["onClick"] = ({ key }) => {
+    if (key === "excel") {
+      void handleExportExcel();
+      return;
+    }
+    if (key === "pdf") {
+      void handleExportPDF();
+    }
+  };
 
   return (
     <div>
@@ -94,8 +158,17 @@ const ReportOverview = ({ reportId }: ReportOverviewProps) => {
               )}
 
               {/* ✅ Export Button */}
-              <Dropdown menu={{ items: exportItems }} trigger={["click"]}>
+              <Dropdown
+                menu={{ items: exportItems, onClick: handleExportMenuClick }}
+                trigger={["click"]}
+              >
                 <CustomButton
+                  loading={exportingType !== null}
+                  loadingText={
+                    exportingType === "excel"
+                      ? "Exporting Excel..."
+                      : "Exporting PDF..."
+                  }
                   icon={<DownOutlined />}
                   className="bg-white border border-gray-300 text-gray-700"
                 >

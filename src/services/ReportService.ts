@@ -1,5 +1,6 @@
 import apiClient from "../api/axios";
 import { ENDPOINTS } from "../api/endpoints";
+import type { AxiosResponse } from "axios";
 import type { ApiResponse, PaginatedData } from "../types/api";
 import type { OperatorSimple } from "../types/operator";
 import type {
@@ -85,26 +86,26 @@ export const ReportService = {
     return response.data.data;
   },
 
-  async exportReportExcel(reportId: number): Promise<Blob> {
-    const response = await apiClient.get(
+  async exportReportExcel(reportId: number): Promise<AxiosResponse<Blob>> {
+    const response = await apiClient.get<Blob>(
       ENDPOINTS.REPORT.EXPORT_EXCEL(reportId),
       {
         responseType: "blob",
       }
     );
 
-    return response.data;
+    return response;
   },
 
-  async exportReportPdf(reportId: number): Promise<Blob> {
-    const response = await apiClient.get(
+  async exportReportPdf(reportId: number): Promise<AxiosResponse<Blob>> {
+    const response = await apiClient.get<Blob>(
       ENDPOINTS.REPORT.EXPORT_PDF(reportId),
       {
         responseType: "blob",
       }
     );
 
-    return response.data;
+    return response;
   },
 
 };
