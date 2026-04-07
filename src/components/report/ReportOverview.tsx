@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
-import { Spin, Alert } from "antd";
+import { Spin, Alert, Dropdown } from "antd";
 import SectionHeader from "../common/SectionHeader";
 import CustomButton from "../common/CustomButton";
-import { PlusOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  DownOutlined,
+  FileExcelOutlined,
+  FilePdfOutlined,
+} from "@ant-design/icons";
 import SupervisorSubmissionModal from "../reportSubmission/SupervisorSubmissionModal";
 import ReportOverviewDetails from "./ReportOverviewDetails";
 import ReportOverviewSpreadsheet from "./ReportOverviewSpreadsheet";
@@ -19,7 +24,8 @@ const ReportOverview = ({ reportId }: ReportOverviewProps) => {
   const [submissionModalOpen, setSubmissionModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [reportDetails, setReportDetails] = useState<ReportDetailResponse | null>(null);
+  const [reportDetails, setReportDetails] =
+    useState<ReportDetailResponse | null>(null);
 
   const canCreateSubmission =
     authState.role === "ADMIN" || authState.role === "SUPERVISOR";
@@ -34,11 +40,40 @@ const ReportOverview = ({ reportId }: ReportOverviewProps) => {
       })
       .catch((err) => {
         console.error("Failed to load report details:", err);
-        setError(err.response?.data?.devMessage ?? "Failed to load report details");
+        setError(
+          err.response?.data?.devMessage ?? "Failed to load report details"
+        );
         setReportDetails(null);
       })
       .finally(() => setLoading(false));
   }, [reportId]);
+
+  // ✅ Dummy Export Functions
+  const handleExportExcel = () => {
+    console.log("Export Excel clicked");
+    alert("Downloading Excel...");
+  };
+
+  const handleExportPDF = () => {
+    console.log("Export PDF clicked");
+    alert("Downloading PDF...");
+  };
+
+  // ✅ Dropdown items
+  const exportItems = [
+    {
+      key: "excel",
+      label: "Export Excel",
+      icon: <FileExcelOutlined />,
+      onClick: handleExportExcel,
+    },
+    {
+      key: "pdf",
+      label: "Export PDF",
+      icon: <FilePdfOutlined />,
+      onClick: handleExportPDF,
+    },
+  ];
 
   return (
     <div>
@@ -46,20 +81,34 @@ const ReportOverview = ({ reportId }: ReportOverviewProps) => {
         <SectionHeader
           title="Overview"
           rightContent={
-            canCreateSubmission ? (
-              <CustomButton
-                onClick={() => setSubmissionModalOpen(true)}
-                icon={<PlusOutlined />}
-                className="bg-gray-800 hover:bg-gray-700 border-none text-white whitespace-nowrap"
-              >
-                Submission
-              </CustomButton>
-            ) : undefined
+            <div className="flex gap-2">
+              {/* Submission Button */}
+              {canCreateSubmission && (
+                <CustomButton
+                  onClick={() => setSubmissionModalOpen(true)}
+                  icon={<PlusOutlined />}
+                  className="bg-gray-800 hover:bg-gray-700 border-none text-white whitespace-nowrap"
+                >
+                  Submission
+                </CustomButton>
+              )}
+
+              {/* ✅ Export Button */}
+              <Dropdown menu={{ items: exportItems }} trigger={["click"]}>
+                <CustomButton
+                  icon={<DownOutlined />}
+                  className="bg-white border border-gray-300 text-gray-700"
+                >
+                  Export
+                </CustomButton>
+              </Dropdown>
+            </div>
           }
         />
+
         <div className="text-sm text-gray-600">
           {canCreateSubmission
-            ? "View report structure. Use the Submission button to create a new submission (Admin / Supervisor can edit any cell; structure changes are not allowed)."
+            ? "View report structure. Use the Submission button to create a new submission."
             : "View report structure. Table is read-only."}
         </div>
 
@@ -72,6 +121,7 @@ const ReportOverview = ({ reportId }: ReportOverviewProps) => {
         ) : reportDetails ? (
           <>
             <ReportOverviewDetails report={reportDetails} />
+
             {reportDetails.data?.data?.length ? (
               <ReportOverviewSpreadsheet
                 data={reportDetails.data.data}

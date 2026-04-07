@@ -85,4 +85,26 @@ export const ReportService = {
     return response.data.data;
   },
 
+  async exportReportExcel(reportId: number): Promise<Blob> {
+    const response = await apiClient.get(
+      ENDPOINTS.REPORT.EXPORT_EXCEL(reportId),
+      {
+        responseType: "blob",
+      }
+    );
+
+    return response.data;
+  },
+
+  async exportReportPdf(reportId: number): Promise<Blob> {
+    const response = await apiClient.get(
+      ENDPOINTS.REPORT.EXPORT_PDF(reportId),
+      {
+        responseType: "blob",
+      }
+    );
+
+    return response.data;
+  },
+
 };

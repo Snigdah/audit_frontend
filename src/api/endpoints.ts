@@ -527,6 +527,8 @@ export const ENDPOINTS = {
     },
     FETCH_STRUCTURE: (reportId: number) => `${BASE.REPORT}/${reportId}/structure`,
     FETCH_BY_ID: (reportId: number) => `${BASE.REPORT}/${reportId}`,
+    EXPORT_EXCEL: (reportId: number) => `${BASE.REPORT}/${reportId}/export/excel`,
+    EXPORT_PDF: (reportId: number) => `${BASE.REPORT}/${reportId}/export/pdf`,
   },
   REPORT_TIME: {
     ADD_TIME_SLOT: (reportId: number) =>
