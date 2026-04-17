@@ -49,9 +49,10 @@ export const ReportService = {
     reportId: number,
     operatorId: number
   ): Promise<void> {
-    await apiClient.delete(
-      ENDPOINTS.REPORT.REMOVE_OPERATOR(reportId, operatorId)
-    );
+    const payload: AssignReportOperatorRequest = { operatorId };
+    await apiClient.delete(ENDPOINTS.REPORT.REMOVE_OPERATOR(reportId), {
+      data: payload,
+    });
   },
 
   async fetchOperatorsByReport(

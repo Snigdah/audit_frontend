@@ -505,7 +505,7 @@ export const ENDPOINTS = {
     GET_DETAILS: (reportId: number) => `${BASE.REPORT}/${reportId}`,
 
     ASSIGN_OPERATOR: (reportId: number) => `${BASE.REPORT}/${reportId}/operator`,
-    REMOVE_OPERATOR: (reportId: number, operatorId: number) => `${BASE.REPORT}/${reportId}/operator/${operatorId}`,
+    REMOVE_OPERATOR: (reportId: number) => `${BASE.REPORT}/${reportId}/operator`,
     FETCH_OPERATORS: (
       reportId: number,
       params?: {
