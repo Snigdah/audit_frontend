@@ -30,7 +30,7 @@ const TemplatRequestDetails = () => {
         title="Template Request"
         breadcrumbs={[
           { label: "Reports" },
-          { label: "Template Request", path: "/reports/template" },
+          { label: "Template Request", path: "/report/template" },
           { label: "Details" },
         ]}
       />

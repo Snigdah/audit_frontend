@@ -36,7 +36,7 @@ const CreateTemplate: React.FC = () => {
 
    // 🔙 Cancel → go back to template list
   const handleCancel = () => {
-    navigate("/reports/template");
+    navigate("/report/template");
   };
 
   const [structure, setStructure] = useState<TemplateStructureRequest | null>(null);
@@ -59,7 +59,7 @@ const CreateTemplate: React.FC = () => {
       await TemplateService.createTemplateRequest(payload);
       toast.success("Template created successfully and sent for approval");
 
-      navigate("/reports/template");
+      navigate("/report/template");
     } catch (error: any) {
       toast.error(
         error.response?.data?.devMessage || "Failed to create template"
@@ -79,13 +79,13 @@ const CreateTemplate: React.FC = () => {
   return (
     <div className="p-4 bg-white rounded-lg shadow-sm">
         <div className="mb-4 flex items-center gap-4">
-          <button 
+          {/* <button 
             onClick={handleCancel}
             className="p-2 hover:bg-white rounded-lg transition-colors"
             type="button"
           >
             <ArrowLeft size={24} className="text-gray-600" />
-          </button>
+          </button> */}
           <div>
             <h1 className="text-2xl font-bold text-gray-800">Create New Template</h1>
             <p className="text-gray-600 mt-1">Step {step} of 4: {steps[step-1]?.description}</p>
