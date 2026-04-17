@@ -29,14 +29,20 @@ function getDisplayStatus(
   slot: ExpectedSlotStatusResponse,
   selectedDate: Dayjs
 ): SlotDisplayStatus {
+  // "Incoming" is only for slots with no submission yet and a future window.
+  // PENDING / APPROVED / ALL_REJECTED always come from the API — never override with INCOMING.
+  if (slot.status !== "NO_SUBMISSION") {
+    return slot.status;
+  }
+
   const today = dayjs().startOf("day");
   const selected = selectedDate.startOf("day");
   if (selected.isAfter(today)) return "INCOMING";
-  if (selected.isBefore(today)) return slot.status;
+  if (selected.isBefore(today)) return "NO_SUBMISSION";
   const now = dayjs();
   const [h, m, s] = slot.time.split(":").map(Number);
   const slotToday = selectedDate.hour(h).minute(m).second(s ?? 0).millisecond(0);
-  return slotToday.isAfter(now) ? "INCOMING" : slot.status;
+  return slotToday.isAfter(now) ? "INCOMING" : "NO_SUBMISSION";
 }
 
 /** Card styling by status – whole card color. NO_SUBMISSION = danger (past, nobody submitted). */
