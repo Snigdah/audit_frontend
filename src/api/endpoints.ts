@@ -18,6 +18,7 @@ const BASE = {
   REPORT: "report",
   REPORT_TIME: "report-time",
   REPORT_SUBMISSION: "report-submission",
+  DASHBOARD: "dashboard",
 };
 
 export const ENDPOINTS = {
@@ -675,5 +676,8 @@ export const ENDPOINTS = {
         qs ? `?${qs}` : ""
       }`;
     },
+  },
+  DASHBOARD: {
+    ADMIN: `${BASE.DASHBOARD}/admin`,
   },
 };
