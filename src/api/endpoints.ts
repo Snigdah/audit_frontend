@@ -679,5 +679,16 @@ export const ENDPOINTS = {
   },
   DASHBOARD: {
     ADMIN: `${BASE.DASHBOARD}/admin`,
+    SUPERVISOR: `${BASE.DASHBOARD}/supervisor`,
+    OPERATOR: `${BASE.DASHBOARD}/operator`,
+    OPERATOR_SLOTS: (params?: { page?: number; size?: number }) => {
+      const query = new URLSearchParams();
+      if (params?.page !== undefined)
+        query.append("page", params.page.toString());
+      if (params?.size !== undefined)
+        query.append("size", params.size.toString());
+      const qs = query.toString();
+      return `${BASE.DASHBOARD}/operator/slots${qs ? `?${qs}` : ""}`;
+    },
   },
 };
