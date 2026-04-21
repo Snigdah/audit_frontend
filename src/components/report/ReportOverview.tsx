@@ -45,7 +45,7 @@ const ReportOverview = ({ reportId }: ReportOverviewProps) => {
       .catch((err) => {
         console.error("Failed to load report details:", err);
         setError(
-          err.response?.data?.devMessage ?? "Failed to load report details"
+          err.response?.data?.userMessage ?? "Failed to load report details"
         );
         setReportDetails(null);
       })

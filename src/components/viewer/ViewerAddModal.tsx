@@ -57,7 +57,7 @@ const ViewerAddModal = ({ visible, onCancel, onSuccess }: Props) => {
       })
       .catch((error) => {
         toast.error(
-          error.response?.data?.devMessage || "Failed to register viewer"
+          error.response?.data?.userMessage || "Failed to register viewer"
         );
       })
       .finally(() => {

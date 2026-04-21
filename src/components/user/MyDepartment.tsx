@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Input, Space, Table, message } from "antd";
+import { Input, Space, Table } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import ProfileService from "../../services/ProfileService";
@@ -7,6 +7,7 @@ import SectionHeader from "../common/SectionHeader";
 import type { DepartmentInfo } from "../../types/profile";
 import { debounce } from "lodash";
 import { useNavigate } from "react-router-dom";
+import { toast } from "../common/Toast";
 
 const MyDepartment = () => {
   const [departments, setDepartments] = useState<DepartmentInfo[]>([]);
@@ -39,7 +40,7 @@ const MyDepartment = () => {
       })
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch departments");
+        toast.error(err.response?.data?.userMessage || "Failed to fetch departments");
       })
       .finally(() => setLoading(false));
   };

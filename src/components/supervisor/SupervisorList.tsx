@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Input, Space, Table, message, Button, Tooltip } from "antd";
+import { Input, Space, Table, Button, Tooltip } from "antd";
 import {
   PlusOutlined,
   SearchOutlined,
@@ -65,7 +65,7 @@ const SupervisorList = () => {
       })
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch supervisors");
+        toast.error(err.response?.data?.userMessage || "Failed to fetch supervisors");
         setSupervisors([]);
         setTotalElements(0);
       })
@@ -133,7 +133,7 @@ const SupervisorList = () => {
       })
       .catch((err) => {
         console.error(err);
-        toast.error(err.response?.data?.devMessage || "Failed to delete supervisor");
+        toast.error(err.response?.data?.userMessage || "Failed to delete supervisor");
       })
       .finally(() => setDeleteLoading(false));
   };

@@ -1,9 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
-import { Space, Table, Input, message } from "antd";
+import { Space, Table, Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import SupervisorService from "../../services/SupervisorService";
 import SectionHeader from "../common/SectionHeader";
+import { toast } from "../common/Toast";
 import { debounce } from "lodash";
 import { useNavigate } from "react-router-dom";
 import type { Department } from "../../types/department";
@@ -38,7 +39,7 @@ const SupervisorDepartment = ({ supervisorId }: Props) => {
       })
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch departments");
+        toast.error(err.response?.data?.userMessage || "Failed to fetch departments");
         setDepartments([]);
         setTotalElements(0);
       })

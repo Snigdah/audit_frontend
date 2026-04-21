@@ -25,7 +25,7 @@ const ProfileInfo = () => {
       const data = await ProfileService.getBasicProfile();
       setProfile(data);
     } catch (err: any) {
-      toast.error(err.response?.data?.devMessage || "Failed to load profile info");
+      toast.error(err.response?.data?.userMessage || "Failed to load profile info");
     } finally {
       setLoading(false);
     }

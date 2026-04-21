@@ -87,7 +87,7 @@ const ReportSubmissionActions = ({
     } catch (err: any) {
       console.error("Error reviewing submission:", err);
       toast.error(
-        err.response?.data?.devMessage || "Failed to review submission"
+        err.response?.data?.userMessage || "Failed to review submission"
       );
     } finally {
       setActionLoading(false);

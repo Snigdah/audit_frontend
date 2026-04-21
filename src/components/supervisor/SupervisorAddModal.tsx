@@ -72,7 +72,7 @@ const SupervisorAddModal = ({ visible, onCancel, onSuccess }: Props) => {
         onSuccess();
       })
       .catch((error) => {
-        toast.error(error.response?.data?.devMessage || "Failed to register");
+        toast.error(error.response?.data?.userMessage || "Failed to register");
       })
       .finally(() => {
         setIsSubmitting(false);

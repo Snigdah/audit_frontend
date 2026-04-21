@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Space, Table, Button, Tooltip, message, Input } from "antd";
+import { Space, Table, Button, Tooltip, Input } from "antd";
 import {
   PlusOutlined,
   DeleteOutlined,
@@ -51,7 +51,7 @@ const DepartmentEquipment = ({ departmentId }: Props) => {
       })
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch equipments");
+        toast.error(err.response?.data?.userMessage || "Failed to fetch equipments");
         setEquipments([]);
         setTotalElements(0);
       })
@@ -106,7 +106,7 @@ const DepartmentEquipment = ({ departmentId }: Props) => {
     } catch (err: any) {
       console.error(err);
       toast.error(
-        err.response?.data?.devMessage || "Failed to remove equipment"
+        err.response?.data?.userMessage || "Failed to remove equipment"
       );
     }
   };

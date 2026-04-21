@@ -68,7 +68,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       toast.success("Login successful!");
       navigate("/dashboard", { replace: true });
     } catch (error: any) {
-      toast.error(error.response?.data?.devMessage || "Login failed");
+      toast.error(error.response?.data?.userMessage || "Login failed");
       throw error;
     } finally {
       setIsLoading(false);
@@ -92,7 +92,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       await AuthService.sendAdminOtp(); // new API call
       toast.success("OTP sent to admin email");
     } catch (error: any) {
-      toast.error(error.response?.data?.devMessage || "Failed to send OTP");
+      toast.error(error.response?.data?.userMessage || "Failed to send OTP");
       throw error;
     } finally {
       setIsLoading(false);
@@ -115,7 +115,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       toast.success("OTP verified, logged in!");
       navigate("/dashboard", { replace: true });
     } catch (error: any) {
-      toast.error(error.response?.data?.devMessage || "Invalid OTP");
+      toast.error(error.response?.data?.userMessage || "Invalid OTP");
       throw error;
     } finally {
       setIsLoading(false);

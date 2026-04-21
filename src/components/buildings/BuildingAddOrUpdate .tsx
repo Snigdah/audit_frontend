@@ -76,7 +76,7 @@ const BuildingAddOrUpdate = ({
       onSuccess();
     } catch (error: any) {
       toast.error(
-        error.response?.data?.devMessage || "Building operation failed"
+        error.response?.data?.userMessage || "Building operation failed"
       );
     } finally {
       setIsSubmitting(false);

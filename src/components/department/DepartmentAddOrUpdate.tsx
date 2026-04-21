@@ -72,7 +72,7 @@ const DepartmentAddOrUpdate = ({
       onSuccess();
     } catch (error: any) {
       toast.error(
-        error.response?.data?.devMessage || "Department operation failed"
+        error.response?.data?.userMessage || "Department operation failed"
       );
     } finally {
       setIsSubmitting(false);

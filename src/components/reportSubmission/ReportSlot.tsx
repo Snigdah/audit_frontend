@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Calendar, message, Spin, Pagination } from "antd";
+import { Calendar, Spin, Pagination } from "antd";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import { ReportTimeService } from "../../services/ReportTimeService";
+import { toast } from "../common/Toast";
 import type {
   ExpectedSlotStatusResponse,
   SlotDisplayStatus,
@@ -113,9 +114,9 @@ const ReportSlot = ({ reportId, templateVersionId }: ReportSlotProps) => {
         a.time.localeCompare(b.time)
       );
       setSlots(sorted);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      message.error("Failed to load expected slots");
+      toast.error(err.response?.data?.userMessage || "Failed to load expected slots");
       setSlots([]);
     } finally {
       setLoading(false);

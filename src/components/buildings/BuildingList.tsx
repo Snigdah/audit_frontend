@@ -10,7 +10,7 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import SectionHeader from "../common/SectionHeader";
-import { Table, Button, Space, message, Input } from "antd";
+import { Table, Button, Space, Input } from "antd";
 import BuildingAddOrUpdate from "./BuildingAddOrUpdate ";
 import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import CustomButton from "../common/CustomButton";
@@ -64,7 +64,7 @@ const BuildingList = () => {
       })
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch buildings");
+        toast.error(err.response?.data?.userMessage || "Failed to fetch buildings");
         setBuildings([]);
         setTotalElements(0);
       })
@@ -124,7 +124,7 @@ const BuildingList = () => {
       })
       .catch((error: any) => {
         toast.error(
-          error.response?.data?.devMessage || "Failed to delete building"
+          error.response?.data?.userMessage || "Failed to delete building"
         );
       })
       .finally(() => {

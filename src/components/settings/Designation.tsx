@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Button, Input, Space, Table, message, Tooltip } from "antd";
+import { Button, Input, Space, Table, Tooltip } from "antd";
 import { PlusOutlined, EditOutlined, SearchOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import DesignationService from "../../services/DesignationService";
@@ -7,6 +7,7 @@ import SectionHeader from "../common/SectionHeader";
 import DesignationAddOrUpdate from "./DesignationAddOrUpdate";
 import type { Designation } from "../../types/designation";
 import CustomButton from "../common/CustomButton";
+import { toast } from "../common/Toast";
 import { debounce } from "lodash";
 
 const DesignationList = () => {
@@ -50,7 +51,7 @@ const DesignationList = () => {
       })
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch designations");
+        toast.error(err.response?.data?.userMessage || "Failed to fetch designations");
         setDesignations([]);
         setTotalElements(0);
       })

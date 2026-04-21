@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Table, Input, Select, message } from "antd";
+import { Table, Input, Select } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
   PlusOutlined,
@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import type { TemplateRequestList as TemplateRow } from "../../types/template";
 import { debounce } from "lodash";
 import { TemplateService } from "../../services/TempletService";
+import { toast } from "../common/Toast";
 
 const TemplateRequestList = () => {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ const TemplateRequestList = () => {
         })
         .catch((err) => {
           console.error(err);
-          message.error("Failed to fetch templates");
+          toast.error(err.response?.data?.userMessage || "Failed to fetch templates");
           setTemplates([]);
           setTotalElements(0);
         })
@@ -78,7 +79,7 @@ const TemplateRequestList = () => {
         })
         .catch((err) => {
           console.error(err);
-          message.error("Failed to fetch templates");
+          toast.error(err.response?.data?.userMessage || "Failed to fetch templates");
           setTemplates([]);
           setTotalElements(0);
         })
@@ -126,7 +127,7 @@ const TemplateRequestList = () => {
       })
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch templates");
+        toast.error(err.response?.data?.userMessage || "Failed to fetch templates");
         setTemplates([]);
         setTotalElements(0);
       })

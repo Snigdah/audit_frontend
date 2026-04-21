@@ -91,7 +91,7 @@ const StructureChangeSubmissionActions = ({
     } catch (err: any) {
       console.error("Error reviewing structure change:", err);
       toast.error(
-        err.response?.data?.devMessage || "Failed to review structure change request"
+        err.response?.data?.userMessage || "Failed to review structure change request"
       );
     } finally {
       setActionLoading(false);

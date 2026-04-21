@@ -70,7 +70,7 @@ const EquipmentAddOrUpdate = ({
       onSuccess();
     } catch (error: any) {
       toast.error(
-        error.response?.data?.devMessage || "Equipment operation failed"
+        error.response?.data?.userMessage || "Equipment operation failed"
       );
     } finally {
       setIsSubmitting(false);

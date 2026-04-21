@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Button, Input, Space, Table, Tooltip, message } from "antd";
+import { Button, Input, Space, Table, Tooltip } from "antd";
 import {
   PlusOutlined,
   EditOutlined,
@@ -48,7 +48,7 @@ const DepartmentList = ({ floorId }: { floorId: string }) => {
       })
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch departments");
+        toast.error(err.response?.data?.userMessage || "Failed to fetch departments");
         setDepartments([]);
         setTotalElements(0);
       })
@@ -93,7 +93,7 @@ const DepartmentList = ({ floorId }: { floorId: string }) => {
     setDeleteLoading(true);
     DepartmentService.deleteDepartment(selectedDepartment.id)
       .then(() => {
-        message.success(
+        toast.success(
           `Department "${selectedDepartment.name}" deleted successfully`
         );
         fetchDepartments(currentPage, pageSize, searchText);
@@ -101,7 +101,7 @@ const DepartmentList = ({ floorId }: { floorId: string }) => {
       })
       .catch((err) => {
         toast.error(
-        err.response?.data?.devMessage || "Failed to delete department"
+        err.response?.data?.userMessage || "Failed to delete department"
       );
       })
       .finally(() => setDeleteLoading(false));

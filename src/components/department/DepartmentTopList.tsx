@@ -1,9 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
-import { Input, Table, message } from "antd";
+import { Input, Table } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import DepartmentService from "../../services/DepartmentService";
 import SectionHeader from "../common/SectionHeader";
+import { toast } from "../common/Toast";
 import type { Department } from "../../types/department";
 import { debounce } from "lodash";
 import { useNavigate } from "react-router-dom";
@@ -48,7 +49,7 @@ const DepartmentTopList = () => {
       })
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch departments");
+        toast.error(err.response?.data?.userMessage || "Failed to fetch departments");
         setDepartments([]);
         setTotalElements(0);
       })

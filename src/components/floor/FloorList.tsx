@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Button, Input, Space, Table, message, Tooltip } from "antd";
+import { Button, Input, Space, Table, Tooltip } from "antd";
 import {
   PlusOutlined,
   EditOutlined,
@@ -13,6 +13,7 @@ import SectionHeader from "../common/SectionHeader";
 import FloorAddOrUpdate from "./FloorAddOrUpdate";
 import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import CustomButton from "../common/CustomButton";
+import { toast } from "../common/Toast";
 import { useNavigate } from "react-router-dom";
 import { debounce } from "lodash";
 
@@ -48,7 +49,7 @@ const FloorList = ({ buildingId }: { buildingId: string }) => {
       })
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch floors");
+        toast.error(err.response?.data?.userMessage || "Failed to fetch floors");
         setFloors([]);
         setTotalElements(0);
       })
@@ -93,7 +94,7 @@ const FloorList = ({ buildingId }: { buildingId: string }) => {
     setDeleteLoading(true);
     FloorService.deleteFloor(selectedFloor.id)
       .then(() => {
-        message.success(
+        toast.success(
           `Floor "${selectedFloor.floorName}" deleted successfully`
         );
         fetchFloors(currentPage, pageSize, searchText);
@@ -101,7 +102,7 @@ const FloorList = ({ buildingId }: { buildingId: string }) => {
       })
       .catch((err) => {
         console.error(err);
-        message.error("Failed to delete floor");
+        toast.error(err.response?.data?.userMessage || "Failed to delete floor");
       })
       .finally(() => setDeleteLoading(false));
   };

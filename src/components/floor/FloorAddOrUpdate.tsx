@@ -74,7 +74,7 @@ const FloorAddOrUpdate = ({
 
       onSuccess();
     } catch (error: any) {
-      toast.error(error.response?.data?.devMessage || "Floor operation failed");
+      toast.error(error.response?.data?.userMessage || "Floor operation failed");
     } finally {
       setIsSubmitting(false);
     }

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Input, Space, Table, message, Button, Tooltip } from "antd";
+import { Input, Space, Table, Button, Tooltip } from "antd";
 import {
   PlusOutlined,
   SearchOutlined,
@@ -60,7 +60,7 @@ const ViewerList = () => {
       })
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch viewers");
+        toast.error(err.response?.data?.userMessage || "Failed to fetch viewers");
         setViewers([]);
         setTotalElements(0);
       })
@@ -122,7 +122,7 @@ const ViewerList = () => {
       })
       .catch((err) => {
         console.error(err);
-        toast.error(err.response?.data?.devMessage || "Failed to delete viewer");
+        toast.error(err.response?.data?.userMessage || "Failed to delete viewer");
       })
       .finally(() => setDeleteLoading(false));
   };

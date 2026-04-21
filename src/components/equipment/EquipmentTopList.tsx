@@ -10,7 +10,7 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import SectionHeader from "../common/SectionHeader";
-import { Table, Button, Space, message, Input } from "antd";
+import { Table, Button, Space, Input } from "antd";
 import EquipmentAddOrUpdate from "./EquipmentAddOrUpdate";
 import DeleteConfirmationModal from "../common/DeleteConfirmationModal";
 import CustomButton from "../common/CustomButton";
@@ -62,7 +62,7 @@ const EquipmentTopList = () => {
       })
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch equipment");
+        toast.error(err.response?.data?.userMessage || "Failed to fetch equipment");
         setEquipment([]);
         setTotalElements(0);
       })
@@ -114,7 +114,7 @@ const EquipmentTopList = () => {
       })
       .catch((error: any) => {
         toast.error(
-          error.response?.data?.devMessage || "Failed to delete equipment"
+          error.response?.data?.userMessage || "Failed to delete equipment"
         );
       })
       .finally(() => setDeleteLoading(false));

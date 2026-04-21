@@ -67,7 +67,7 @@ const ResubmitTemplateModal: React.FC<ResubmitTemplateModalProps> = ({
       onSuccess();
     } catch (error: any) {
       toast.error(
-        error.response?.data?.devMessage || "Failed to resubmit template"
+        error.response?.data?.userMessage || "Failed to resubmit template"
       );
     } finally {
       setIsSubmitting(false);

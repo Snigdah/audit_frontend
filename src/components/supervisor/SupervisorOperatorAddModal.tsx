@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
-import { Button, Select, Spin, message } from "antd";
+import { Button, Select, Spin } from "antd";
 import ModalComponent from "../common/ModalComponent";
 import CustomButton from "../common/CustomButton";
 import SupervisorService from "../../services/SupervisorService";
@@ -56,7 +56,7 @@ const SupervisorOperatorAddModal = ({
       .then((data) => setOperatorOptions(data))
       .catch((err) => {
         console.error(err);
-        message.error("Failed to load operators");
+        toast.error(err.response?.data?.userMessage || "Failed to load operators");
       })
       .finally(() => setOperatorLoading(false));
   }, 500);
@@ -71,7 +71,7 @@ const SupervisorOperatorAddModal = ({
       .catch((error) => {
         console.error(error);
         toast.error(
-          error.response?.data?.devMessage || "Failed to assign operator"
+          error.response?.data?.userMessage || "Failed to assign operator"
         );
       })
       .finally(() => {

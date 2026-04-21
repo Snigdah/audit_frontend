@@ -294,8 +294,8 @@ const SupervisorDashboard = () => {
     } catch (err: unknown) {
       console.error(err);
       const msg =
-        (err as { response?: { data?: { devMessage?: string } } })?.response
-          ?.data?.devMessage ?? "Failed to load supervisor dashboard";
+        (err as { response?: { data?: { userMessage?: string } } })?.response
+          ?.data?.userMessage ?? "Failed to load supervisor dashboard";
       setError(msg);
       setData(null);
     } finally {

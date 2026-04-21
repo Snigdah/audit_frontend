@@ -68,7 +68,7 @@ const ReportOperatorAddModal = ({
       onSuccess();
     } catch (error: any) {
       console.error(error);
-      toast.error(error.response?.data?.devMessage || "Failed to assign operator");
+      toast.error(error.response?.data?.userMessage || "Failed to assign operator");
     } finally {
       setIsSubmitting(false);
     }

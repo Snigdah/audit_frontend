@@ -83,7 +83,7 @@ const EquipmentOperatorAddModal = ({
     } catch (error: any) {
       console.error(error);
       toast.error(
-        error.response?.data?.devMessage || "Failed to assign operator"
+        error.response?.data?.userMessage || "Failed to assign operator"
       );
     } finally {
       setIsSubmitting(false);
