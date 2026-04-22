@@ -13,8 +13,11 @@ export const WebSocketProvider = ({ children }: { children: ReactNode }) => {
     // Only connect when user is authenticated
     if (!authState.isAuthenticated || !authState.employeeId) return;
 
+    const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const wsUrl = `${wsProtocol}://${window.location.host}/ws`;
+
     const client = new Client({
-      brokerURL: "ws://localhost:8080/ws",
+      brokerURL: wsUrl,
       reconnectDelay: 5000,
       connectHeaders: {
         Authorization: `Bearer ${localStorage.getItem("access_token")}`,
