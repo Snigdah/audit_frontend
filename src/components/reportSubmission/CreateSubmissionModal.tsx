@@ -61,7 +61,7 @@ const CreateSubmissionModal: React.FC<CreateSubmissionModalProps> = ({
         setStructureVersionId(response.versionId ?? null);
       } catch (err: any) {
         console.error("Error fetching report:", err);
-        toast.error(err.response?.data?.devMessage ?? "Failed to load report structure");
+        toast.error(err.response?.data?.userMessage ?? "Failed to load report structure");
         setStructure(null);
         setStructureVersionId(null);
       } finally {
@@ -161,7 +161,7 @@ const CreateSubmissionModal: React.FC<CreateSubmissionModalProps> = ({
       toast.success("Submission created successfully");
       onSuccess();
     } catch (err: any) {
-      toast.error(err.response?.data?.devMessage ?? "Failed to create submission");
+      toast.error(err.response?.data?.userMessage ?? "Failed to create submission");
     } finally {
       setSubmitting(false);
     }

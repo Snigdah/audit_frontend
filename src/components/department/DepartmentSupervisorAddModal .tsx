@@ -67,7 +67,7 @@ const DepartmentSupervisorAddModal = ({
       onSuccess();
     } catch (error: any) {
       console.error(error);
-      toast.error(error.response?.data?.devMessage || "Failed to assign supervisor");
+      toast.error(error.response?.data?.userMessage || "Failed to assign supervisor");
     } finally {
       setIsSubmitting(false);
     }

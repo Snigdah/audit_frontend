@@ -8,7 +8,6 @@ import {
   Modal,
   Checkbox,
   Empty,
-  message,
   Tooltip,
   Dropdown,
   Pagination,
@@ -57,9 +56,9 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
       // Sort time slots chronologically
       const sorted = [...data].sort((a, b) => a.time.localeCompare(b.time));
       setTimeSlots(sorted);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching time slots:", error);
-      message.error("Failed to load time slots");
+      toast.error(error.response?.data?.userMessage || "Failed to load time slots");
     } finally {
       setLoading(false);
     }
@@ -79,7 +78,7 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
 
   const handleAddTimeSlot = async () => {
     if (!selectedTime) {
-      message.warning("Please select a time");
+      toast.error("Please select a time");
       return;
     }
 
@@ -89,7 +88,6 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
         time: selectedTime.format("HH:mm:ss"),
         isAppliedFromToday,
       });
-      message.success("Time slot added successfully");
       setIsAddModalOpen(false);
       setSelectedTime(null);
       setIsAppliedFromToday(true);
@@ -98,7 +96,7 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
     } catch (error: any) {
       console.error("Error adding time slot:", error);
       toast.error(
-        error.response?.data?.devMessage || "Failed to add time slot"
+        error.response?.data?.userMessage || "Failed to add time slot"
       );
     } finally {
       setSubmitting(false);
@@ -121,7 +119,6 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
         deleteSlot.id,
         deleteAppliedFromToday
       );
-      message.success("Time slot removed successfully");
       setIsDeleteModalOpen(false);
       setDeleteSlot(null);
       setDeleteAppliedFromToday(true);
@@ -130,7 +127,7 @@ const ReportTime = ({ reportId }: ReportTimeProps) => {
     } catch (error: any) {
       console.error("Error deleting time slot:", error);
       toast.error(
-        error.response?.data?.devMessage || "Failed to delete time slot"
+        error.response?.data?.userMessage || "Failed to delete time slot"
       );
     } finally {
       setDeleting(false);

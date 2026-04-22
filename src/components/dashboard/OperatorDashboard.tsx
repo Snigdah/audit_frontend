@@ -375,8 +375,8 @@ const OperatorDashboard = () => {
     } catch (err: unknown) {
       console.error(err);
       const msg =
-        (err as { response?: { data?: { devMessage?: string } } })?.response
-          ?.data?.devMessage ?? "Failed to load operator dashboard";
+        (err as { response?: { data?: { userMessage?: string } } })?.response
+          ?.data?.userMessage ?? "Failed to load operator dashboard";
       setError(msg);
       setData(null);
     } finally {

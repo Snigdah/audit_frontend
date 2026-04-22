@@ -108,7 +108,7 @@ const SupervisorStructureChangeModal: React.FC<
         setStructureVersionId(response.versionId ?? null);
       } catch (err: any) {
         toast.error(
-          err.response?.data?.devMessage ?? "Failed to load report structure"
+          err.response?.data?.userMessage ?? "Failed to load report structure"
         );
         setStructure(null);
         setStructureVersionId(null);
@@ -325,7 +325,7 @@ const SupervisorStructureChangeModal: React.FC<
       onClose();
     } catch (err: any) {
       toast.error(
-        err.response?.data?.devMessage ?? "Failed to submit structure change"
+        err.response?.data?.userMessage ?? "Failed to submit structure change"
       );
     } finally {
       setSubmitting(false);

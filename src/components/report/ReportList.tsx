@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Table, Input, Select, message } from "antd";
+import { Table, Input, Select } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
   SearchOutlined,
@@ -13,6 +13,7 @@ import type { TemplateReportResponse } from "../../types/report";
 import { ReportStatusEnum } from "../../types/report";
 import { ReportService } from "../../services/ReportService";
 import { debounce } from "lodash";
+import { toast } from "../common/Toast";
 
 const ReportList = () => {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ const ReportList = () => {
         })
         .catch((err) => {
           console.error(err);
-          message.error("Failed to fetch reports");
+          toast.error(err.response?.data?.userMessage || "Failed to fetch reports");
           setReports([]);
           setTotalElements(0);
         })
@@ -87,7 +88,7 @@ const ReportList = () => {
           })
           .catch((err) => {
             console.error(err);
-            message.error("Failed to fetch reports");
+            toast.error(err.response?.data?.userMessage || "Failed to fetch reports");
             setReports([]);
             setTotalElements(0);
           })
@@ -138,7 +139,7 @@ const ReportList = () => {
       })
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch reports");
+        toast.error(err.response?.data?.userMessage || "Failed to fetch reports");
         setReports([]);
         setTotalElements(0);
       })

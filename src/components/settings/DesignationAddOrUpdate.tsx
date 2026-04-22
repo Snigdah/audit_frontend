@@ -68,7 +68,7 @@ const DesignationAddOrUpdate = ({
       onSuccess();
     } catch (error: any) {
       toast.error(
-        error.response?.data?.devMessage || "Designation operation failed"
+        error.response?.data?.userMessage || "Designation operation failed"
       );
     } finally {
       setIsSubmitting(false);

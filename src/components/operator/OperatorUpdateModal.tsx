@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Button, Select, Spin, message } from "antd";
+import { Button, Select, Spin } from "antd";
 import ModalComponent from "../common/ModalComponent";
 import { InputField } from "../common/InputField";
 import CustomButton from "../common/CustomButton";
@@ -66,9 +66,9 @@ const OperatorUpdateModal = ({
       setDesignationOptions([
         { id: operator.designationId, name: operator.designationName },
       ]);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching operator:", error);
-      message.error("Failed to fetch operator details");
+      toast.error(error.response?.data?.userMessage || "Failed to fetch operator details");
       onCancel();
     } finally {
       setLoadingOperator(false);
@@ -79,8 +79,8 @@ const OperatorUpdateModal = ({
     setDesignationLoading(true);
     DesignationService.searchDesignations(search)
       .then((data) => setDesignationOptions(data))
-      .catch(() => {
-        message.error("Failed to load designations");
+      .catch((err: any) => {
+        toast.error(err?.response?.data?.userMessage || "Failed to load designations");
       })
       .finally(() => setDesignationLoading(false));
   }, 500);
@@ -95,7 +95,7 @@ const OperatorUpdateModal = ({
       onSuccess();
     } catch (error: any) {
       toast.error(
-        error.response?.data?.devMessage || "Failed to update operator"
+        error.response?.data?.userMessage || "Failed to update operator"
       );
     } finally {
       setIsSubmitting(false);

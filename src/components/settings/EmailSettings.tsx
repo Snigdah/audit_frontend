@@ -45,7 +45,7 @@ const EmailSettings = () => {
       });
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.devMessage || "Failed to load email configuration"
+        error?.response?.data?.userMessage || "Failed to load email configuration"
       );
     } finally {
       setPageLoading(false);
@@ -59,7 +59,7 @@ const EmailSettings = () => {
       toast.success("Email configuration saved successfully");
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.devMessage || "Failed to save configuration"
+        error?.response?.data?.userMessage || "Failed to save configuration"
       );
     } finally {
       setIsLoading(false);
@@ -73,7 +73,7 @@ const EmailSettings = () => {
       toast.success("Connection successful! Check email");
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.devMessage || "Connection failed"
+        error?.response?.data?.userMessage || "Connection failed"
       );
     } finally {
       setTesting(false);

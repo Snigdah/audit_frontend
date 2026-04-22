@@ -30,7 +30,7 @@ const UserProfileInfo = ({ employeeId }: UserProfileInfoProps) => {
       const data = await ProfileService.getUserProfile(Number(employeeId));
       setProfile(data);
     } catch (err: any) {
-      toast.error(err.response?.data?.devMessage || "Failed to load user profile");
+      toast.error(err.response?.data?.userMessage || "Failed to load user profile");
     } finally {
       setLoading(false);
     }

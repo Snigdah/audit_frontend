@@ -62,7 +62,7 @@ const SupervisorSubmissionModal: React.FC<SupervisorSubmissionModalProps> = ({
       } catch (err: any) {
         console.error("Error fetching report:", err);
         toast.error(
-          err.response?.data?.devMessage ?? "Failed to load report structure"
+          err.response?.data?.userMessage ?? "Failed to load report structure"
         );
         setStructure(null);
         setStructureVersionId(null);
@@ -122,7 +122,7 @@ const SupervisorSubmissionModal: React.FC<SupervisorSubmissionModalProps> = ({
       onSuccess();
     } catch (err: any) {
       toast.error(
-        err.response?.data?.devMessage ?? "Failed to create submission"
+        err.response?.data?.userMessage ?? "Failed to create submission"
       );
     } finally {
       setSubmitting(false);

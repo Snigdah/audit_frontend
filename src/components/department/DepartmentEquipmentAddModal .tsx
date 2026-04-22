@@ -82,7 +82,7 @@ const DepartmentEquipmentAddModal = ({
       .catch((error) => {
         console.error(error);
         toast.error(
-          error.response?.data?.devMessage || "Failed to assign equipment"
+          error.response?.data?.userMessage || "Failed to assign equipment"
         );
       })
       .finally(() => {

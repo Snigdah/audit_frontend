@@ -282,8 +282,8 @@ const AdminDashboard = () => {
     } catch (err: unknown) {
       console.error(err);
       const msg =
-        (err as { response?: { data?: { devMessage?: string } } })?.response
-          ?.data?.devMessage ?? "Failed to load admin dashboard";
+        (err as { response?: { data?: { userMessage?: string } } })?.response
+          ?.data?.userMessage ?? "Failed to load admin dashboard";
       setError(msg);
       setData(null);
     } finally {

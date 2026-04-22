@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Table, Select, DatePicker, message } from "antd";
+import { Table, Select, DatePicker } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { RangePickerProps } from "antd/es/date-picker";
 import {
@@ -10,6 +10,7 @@ import {
   MinusCircleOutlined,
 } from "@ant-design/icons";
 import SectionHeader from "../common/SectionHeader";
+import { toast } from "../common/Toast";
 import { ReportSubmissionService } from "../../services/ReportSubmissionService";
 import type {
   ReportSubmissionHistoryResponse,
@@ -103,7 +104,7 @@ const ReportHistory = ({ reportId }: ReportHistoryProps) => {
         })
         .catch((err) => {
           console.error(err);
-          message.error("Failed to load submission history");
+          toast.error(err.response?.data?.userMessage || "Failed to load submission history");
           setList([]);
           setTotalElements(0);
         })

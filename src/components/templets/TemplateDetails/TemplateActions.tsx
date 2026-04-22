@@ -92,7 +92,7 @@ const TemplateActions = ({
     } catch (err: any) {
       console.error("Error reviewing template:", err);
       toast.error(
-        err.response?.data?.devMessage || "Failed to review template"
+        err.response?.data?.userMessage || "Failed to review template"
       );
     } finally {
       setActionLoading(false);

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Table, Empty, message, DatePicker } from "antd";
+import { Table, Empty, DatePicker } from "antd";
 import type { RangePickerProps } from "antd/es/date-picker";
 import type { ColumnsType } from "antd/es/table";
 import {
@@ -14,6 +14,7 @@ import {
 import { EditOutlined } from "@ant-design/icons";
 import SectionHeader from "../common/SectionHeader";
 import CustomButton from "../common/CustomButton";
+import { toast } from "../common/Toast";
 import { ReportSubmissionService } from "../../services/ReportSubmissionService";
 import type {
   ReportSubmissionSimpleResponse,
@@ -60,9 +61,9 @@ const StructureChangeList = ({ reportId, onOpenChangeRequest }: StructureChangeL
         );
         setList(res.content ?? []);
         setTotalElements(res.pagination?.totalElements ?? 0);
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
-        message.error("Failed to load structure change submissions");
+        toast.error(err.response?.data?.userMessage || "Failed to load structure change submissions");
         setList([]);
         setTotalElements(0);
       } finally {

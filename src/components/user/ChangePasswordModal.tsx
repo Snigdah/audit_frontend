@@ -61,7 +61,7 @@ const ChangePasswordModal = ({ visible, onCancel, onSuccess, employeeId }: Props
       
       onSuccess();
     } catch (error: any) {
-      toast.error(error.response?.data?.devMessage || "Failed to change password");
+      toast.error(error.response?.data?.userMessage || "Failed to change password");
     } finally {
       setIsSubmitting(false);
     }

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Space, Table, Button, Tooltip, message, Input } from "antd";
+import { Space, Table, Button, Tooltip, Input } from "antd";
 import {
   PlusOutlined,
   DeleteOutlined,
@@ -47,7 +47,7 @@ const SupervisorOperator = ({ supervisorId }: Props) => {
       })
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch operators");
+        toast.error(err.response?.data?.userMessage || "Failed to fetch operators");
         setOperators([]);
         setTotalElements(0);
       })
@@ -105,7 +105,7 @@ const SupervisorOperator = ({ supervisorId }: Props) => {
     } catch (err: any) {
       console.error(err);
       toast.error(
-        err.response?.data?.devMessage || "Failed to remove operator"
+        err.response?.data?.userMessage || "Failed to remove operator"
       );
     }
   };

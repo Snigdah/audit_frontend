@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Button, Input, Space, Table, Tooltip, message } from "antd";
+import { Button, Input, Space, Table, Tooltip } from "antd";
 import {
   PlusOutlined,
   EditOutlined,
@@ -16,6 +16,7 @@ import CustomButton from "../common/CustomButton";
 import { debounce } from "lodash";
 import { toast } from "../common/Toast";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const DepartmentList = ({ floorId }: { floorId: string }) => {
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -30,6 +31,7 @@ const DepartmentList = ({ floorId }: { floorId: string }) => {
     useState<Department | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const navigate = useNavigate();
+  const { authState } = useAuth();
 
   const fetchDepartments = (
     page: number = 1,
@@ -48,7 +50,7 @@ const DepartmentList = ({ floorId }: { floorId: string }) => {
       })
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch departments");
+        toast.error(err.response?.data?.userMessage || "Failed to fetch departments");
         setDepartments([]);
         setTotalElements(0);
       })
@@ -93,7 +95,7 @@ const DepartmentList = ({ floorId }: { floorId: string }) => {
     setDeleteLoading(true);
     DepartmentService.deleteDepartment(selectedDepartment.id)
       .then(() => {
-        message.success(
+        toast.success(
           `Department "${selectedDepartment.name}" deleted successfully`
         );
         fetchDepartments(currentPage, pageSize, searchText);
@@ -101,7 +103,7 @@ const DepartmentList = ({ floorId }: { floorId: string }) => {
       })
       .catch((err) => {
         toast.error(
-        err.response?.data?.devMessage || "Failed to delete department"
+        err.response?.data?.userMessage || "Failed to delete department"
       );
       })
       .finally(() => setDeleteLoading(false));
@@ -170,50 +172,57 @@ const DepartmentList = ({ floorId }: { floorId: string }) => {
         </div>
       ),
     },
-    {
-       title: (
-        <div className="flex items-center gap-2 font-semibold text-gray-700">
-          <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-          Actions
-        </div>
-      ),
-      key: "actions",
-      width: 200,
-      render: (_, record) => (
-        <Space size="small" className="flex justify-end">
-          <Tooltip title="Edit Department" placement="top">
-              <Button
-                type="text"
-                size="small"
-                icon={
-                <EditOutlined className="text-blue-600 hover:text-blue-700 transition-colors" />
-              }
-                onClick={() => handleEdit(record)}
-                 className="flex items-center gap-2 px-3 py-2 rounded-lg border border-blue-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 shadow-sm hover:shadow-md"
-              >
-               <span className="text-blue-700 font-medium text-sm">Edit</span>
-            </Button>
-         </Tooltip>
-        <Tooltip title="Delete Department" placement="top"> 
-              <Button
-                type="text"
-                size="small"
-                danger
-                 icon={
-                <DeleteOutlined className="text-red-600 hover:text-red-700 transition-colors" />
-              }
-              className="flex items-center gap-2 px-3 py-2 rounded-lg border border-red-200 hover:border-red-300 hover:bg-red-50 transition-all duration-200 shadow-sm hover:shadow-md"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleDeleteClick(record);
-              }}
-            >
-              <span className="text-red-700 font-medium text-sm">Delete</span>
-              </Button>
-        </Tooltip>        
-        </Space>
-      ),
-    },
+    ...(authState.role === "ADMIN"
+      ? [
+          {
+            title: (
+              <div className="flex items-center gap-2 font-semibold text-gray-700">
+                <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                Actions
+              </div>
+            ),
+            key: "actions",
+            width: 200,
+            render: (_: any, record: Department) => (
+              <Space size="small" className="flex justify-end">
+                <Tooltip title="Edit Department" placement="top">
+                  <Button
+                    type="text"
+                    size="small"
+                    icon={
+                      <EditOutlined className="text-blue-600 hover:text-blue-700 transition-colors" />
+                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEdit(record);
+                    }}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg border border-blue-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 shadow-sm hover:shadow-md"
+                  >
+                    <span className="text-blue-700 font-medium text-sm">Edit</span>
+                  </Button>
+                </Tooltip>
+                <Tooltip title="Delete Department" placement="top">
+                  <Button
+                    type="text"
+                    size="small"
+                    danger
+                    icon={
+                      <DeleteOutlined className="text-red-600 hover:text-red-700 transition-colors" />
+                    }
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg border border-red-200 hover:border-red-300 hover:bg-red-50 transition-all duration-200 shadow-sm hover:shadow-md"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteClick(record);
+                    }}
+                  >
+                    <span className="text-red-700 font-medium text-sm">Delete</span>
+                  </Button>
+                </Tooltip>
+              </Space>
+            ),
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -231,9 +240,11 @@ const DepartmentList = ({ floorId }: { floorId: string }) => {
                 allowClear
                 className="w-64"
               />
-              <CustomButton onClick={handleAdd} icon={<PlusOutlined />}>
-                Add Dept
-              </CustomButton>
+              {authState.role === "ADMIN" && (
+                <CustomButton onClick={handleAdd} icon={<PlusOutlined />}>
+                  Add Dept
+                </CustomButton>
+              )}
             </Space>
           }
         />
@@ -261,6 +272,7 @@ const DepartmentList = ({ floorId }: { floorId: string }) => {
           }}
           bordered
           size="middle"
+          className="shadow-sm cursor-pointer"
           scroll={{ x: 400 }}
           locale={{
             emptyText: searchText

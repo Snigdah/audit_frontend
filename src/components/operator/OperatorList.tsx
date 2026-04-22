@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Input, Space, Table, message, Button, Tooltip } from "antd";
+import { Input, Space, Table, Button, Tooltip } from "antd";
 import {
   PlusOutlined,
   SearchOutlined,
@@ -65,7 +65,7 @@ const OperatorList = () => {
       })
       .catch((err) => {
         console.error(err);
-        message.error("Failed to fetch operators");
+        toast.error(err.response?.data?.userMessage || "Failed to fetch operators");
         setOperators([]);
         setTotalElements(0);
       })
@@ -133,7 +133,7 @@ const OperatorList = () => {
       })
       .catch((err) => {
         console.error(err);
-        toast.error(err.response?.data?.devMessage || "Failed to delete operator");
+        toast.error(err.response?.data?.userMessage || "Failed to delete operator");
       })
       .finally(() => setDeleteLoading(false));
   };

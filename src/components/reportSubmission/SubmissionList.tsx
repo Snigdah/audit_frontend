@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Table, Tag, Empty, message } from "antd";
+import { Table, Tag, Empty } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
   CheckCircleOutlined,
@@ -12,6 +12,7 @@ import {
 import { PlusOutlined } from "@ant-design/icons";
 import SectionHeader from "../common/SectionHeader";
 import CustomButton from "../common/CustomButton";
+import { toast } from "../common/Toast";
 import { ReportSubmissionService } from "../../services/ReportSubmissionService";
 import type {
   ReportSubmissionSimpleResponse,
@@ -52,9 +53,9 @@ const SubmissionList = ({
         );
         setSubmissions(res.content ?? []);
         setTotalElements(res.pagination?.totalElements ?? 0);
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
-        message.error("Failed to load submissions");
+        toast.error(err.response?.data?.userMessage || "Failed to load submissions");
         setSubmissions([]);
         setTotalElements(0);
       } finally {

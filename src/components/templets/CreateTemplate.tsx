@@ -62,7 +62,7 @@ const CreateTemplate: React.FC = () => {
       navigate("/report/template");
     } catch (error: any) {
       toast.error(
-        error.response?.data?.devMessage || "Failed to create template"
+        error.response?.data?.userMessage || "Failed to create template"
       );
     } finally {
       setIsSubmitting(false);
